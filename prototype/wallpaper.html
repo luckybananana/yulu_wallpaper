@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语录壁纸 - 壁纸预览</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* 自定义CSS变量 */
+        :root {
+            --primary-color: #4A90E2;
+            --primary-light: #6BA3E8;
+            --primary-dark: #357ABD;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --bg-primary: #FFFFFF;
+            --bg-overlay: rgba(0,0,0,0.5);
+            --shadow-button: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        /* HUAWEI Mate70 屏幕适配 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* 壁纸预览容器 */
+        .wallpaper-preview {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 背景图案 */
+        .wallpaper-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* 状态栏模拟 */
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            z-index: 10;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
+        }
+
+        /* 语录内容区域 */
+        .quote-content-area {
+            max-width: 320px;
+            text-align: center;
+            padding: 20px;
+            z-index: 5;
+            margin-top: -60px; /* 向上调整位置 */
+        }
+
+        .quote-text {
+            color: white;
+            font-weight: 400;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+            /* 字体大小和行高将通过JavaScript根据字数动态调整 */
+        }
+
+        /* 作者样式已删除 */
+        
+
+        .quote-author::before {
+            content: "—— ";
+        }
+
+        /* 底部操作栏 */
+        .bottom-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-actions.hidden {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        /* 操作按钮 */
+        .action-button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .action-button:active {
+            transform: scale(0.95);
+        }
+
+        /* 主要操作按钮 */
+        .action-button.primary {
+            background: var(--primary-color);
+            border: none;
+            box-shadow: var(--shadow-button);
+        }
+
+        .action-button.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            background: rgba(0,0,0,0.5);
+            transform: scale(1.1);
+        }
+
+        /* 切换指示器 */
+        .navigation-hints {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .nav-hint {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 16px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-hint.show {
+            opacity: 1;
+        }
+
+        /* 分享生成遮罩 */
+        .share-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .share-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .share-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .share-preview {
+            width: 200px;
+            height: 400px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .share-preview-content {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .share-quote {
+            color: white;
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .share-watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 8px;
+            color: rgba(255,255,255,0.8);
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .share-button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-button.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .share-button.secondary {
+            background: #f0f0f0;
+            color: var(--text-primary);
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 成功提示 */
+        .success-message {
+            color: #52C41A;
+            font-size: 16px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .phone-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* 触摸反馈 */
+        .wallpaper-preview {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 背景主题变化 - 使用Canvas绘制分层波浪 */
+        .wallpaper-preview {
+            background: #E6E6E6;
+        }
+
+        .wallpaper-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-color: #E6E6E6; /* 与main.py保持一致 */
+        }
+
+        .quote-content-area {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="phone-container">
+        <!-- 壁纸预览主容器 -->
+        <div class="wallpaper-preview" id="wallpaperPreview" onclick="toggleControls()">
+            <!-- Canvas背景 -->
+            <canvas class="wallpaper-canvas" id="wallpaperCanvas"></canvas>
+            
+            <!-- 状态栏模拟 -->
+            <div class="status-bar">
+                <span>9:41</span>
+                <div class="flex items-center gap-1">
+                    <i class="fas fa-signal text-sm"></i>
+                    <i class="fas fa-wifi text-sm"></i>
+                    <i class="fas fa-battery-three-quarters text-sm"></i>
+                </div>
+            </div>
+
+            <!-- 返回按钮 -->
+            <button class="back-button" onclick="goBack(event)" title="返回">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+
+            <!-- 语录内容区域 -->
+            <div class="quote-content-area">
+                <div class="quote-text" id="quoteText">
+                    生活不是等待风暴过去，而是学会在雨中翩翩起舞。
+                </div>
+            </div>
+
+            <!-- 导航提示 -->
+            <div class="navigation-hints">
+                <div class="nav-hint" id="prevHint">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="nav-hint" id="nextHint">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-actions" id="bottomActions">
+            <button class="action-button" onclick="editQuote()" title="编辑语录">
+                <i class="fas fa-edit"></i>
+            </button>
+            
+            <button class="action-button primary" onclick="setWallpaper()" title="设置壁纸">
+                <i class="fas fa-download"></i>
+            </button>
+            
+            <button class="action-button" onclick="shareWallpaper()" title="分享壁纸">
+                <i class="fas fa-share"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 分享生成遮罩 -->
+    <div class="share-overlay" id="shareOverlay">
+        <div class="share-content">
+            <h3 class="text-lg font-semibold mb-4">生成分享图片</h3>
+            
+            <!-- 分享预览 -->
+            <div class="share-preview">
+                <div class="share-preview-content">
+                    <div class="share-quote" id="shareQuoteText">
+                        生活不是等待风暴过去，而是学会在雨中翩翩起舞。
+                    </div>
+                </div>
+                <div class="share-watermark">语录壁纸</div>
+            </div>
+            
+            <!-- 加载状态 -->
+            <div id="loadingState" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="text-gray-600">正在生成分享图片...</p>
+            </div>
+            
+            <!-- 成功状态 -->
+            <div id="successState" style="display: none;">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <span>图片生成成功！</span>
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="share-actions">
+                <button class="share-button secondary" onclick="closeShareOverlay()">取消</button>
+                <button class="share-button primary" onclick="confirmShare()" id="shareConfirmBtn">分享</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentQuoteIndex = 0;
+        let isControlsVisible = true;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let canvas, ctx;
+
+        // 主色候选（与main.py保持一致）
+        const COLORS = [
+            "#E57373", "#F06292", "#BA68C8", "#9575CD", "#7986CB",
+            "#64B5F6", "#4DB6AC", "#81C784", "#DCE775", "#FFD54F",
+            "#5488BC", "#917C6B", "#AA9F7C", "#A29296", "#515E68"
+        ];
+
+        // 语录数据
+        const quotes = [
+            {
+                content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
+                author: "佚名",
+                color: "#4A90E2"
+            },
+            {
+                content: "成功不是终点，失败不是末日，继续前进的勇气才最可贵。",
+                author: "温斯顿·丘吉尔",
+                color: "#E74C3C"
+            },
+            {
+                content: "人生就像骑自行车，想保持平衡就得往前走。",
+                author: "爱因斯坦",
+                color: "#2ECC71"
+            },
+            {
+                content: "世界上只有一种真正的英雄主义，那就是在认清生活的真相后依然热爱生活。",
+                author: "罗曼·罗兰",
+                color: "#F39C12"
+            },
+            {
+                content: "不要因为走得太远，而忘记了为什么出发。",
+                author: "纪伯伦",
+                color: "#9B59B6"
+            }
+        ];
+
+        /**
+         * 十六进制颜色转RGB
+         * @param {string} hex - 十六进制颜色值
+         * @returns {Array} RGB数组
+         */
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? [
+                parseInt(result[1], 16),
+                parseInt(result[2], 16),
+                parseInt(result[3], 16)
+            ] : [0, 0, 0];
+        }
+
+        /**
+         * 调整颜色亮度（与main.py的adjust_color函数保持一致）
+         * @param {Array} rgb - RGB颜色数组
+         * @param {number} factor - 调整因子
+         * @returns {Array} 调整后的RGB颜色
+         */
+        function adjustColor(rgb, factor = 1.0) {
+            const [r, g, b] = rgb;
+            return [
+                Math.max(0, Math.min(255, Math.floor(r * factor))),
+                Math.max(0, Math.min(255, Math.floor(g * factor))),
+                Math.max(0, Math.min(255, Math.floor(b * factor)))
+            ];
+        }
+
+        /**
+         * 绘制分层波浪背景（与main.py的draw_layered_waves函数保持一致）
+         * @param {string} baseColor - 基础颜色
+         */
+        function drawLayeredWaves(baseColor) {
+            if (!canvas || !ctx) return;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const baseRgb = hexToRgb(baseColor);
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 参数设置（与main.py保持一致）
+            const numLayers = 6;
+            const baseFromBottom = Math.floor(height * 0.32);
+            const gapPerLayer = Math.floor(height * 0.035);
+            const baseWavelength = 420;
+            const baseAmplitude = 52;
+            const step = 6;
+            
+            // 绘制6层波浪（从上到下，颜色逐渐加深）
+            for (let i = 0; i < numLayers; i++) {
+                // 颜色调整（与main.py的adjust_color逻辑一致）
+                const colorFactor = 1 - i * 0.06;
+                const adjustedRgb = adjustColor(baseRgb, colorFactor);
+                
+                // 透明度计算（与main.py一致：25 + i*38，转换为0-1范围）
+                const alpha = Math.min(255, 25 + i * 38) / 255;
+                
+                ctx.fillStyle = `rgba(${adjustedRgb[0]}, ${adjustedRgb[1]}, ${adjustedRgb[2]}, ${alpha})`;
+                
+                // 波浪参数（与main.py一致）
+                const wavelength = baseWavelength * (1.0 + i * 0.03);
+                const amplitude = baseAmplitude * (1.0 + i * 0.05);
+                const phase = Math.random() * Math.PI * 2; // 随机相位
+                
+                // 层偏移计算（与main.py一致）
+                const layerOffset = height - (baseFromBottom - i * gapPerLayer);
+                
+                // 创建波浪路径
+                ctx.beginPath();
+                
+                // 绘制正弦波（与main.py逻辑一致）
+                const points = [];
+                for (let x = 0; x <= width; x += step) {
+                    const y = layerOffset - amplitude * Math.sin(2 * Math.PI * x / wavelength + phase);
+                    points.push([x, y]);
+                }
+                
+                // 开始绘制路径
+                if (points.length > 0) {
+                    ctx.moveTo(points[0][0], points[0][1]);
+                    for (let j = 1; j < points.length; j++) {
+                        ctx.lineTo(points[j][0], points[j][1]);
+                    }
+                }
+                
+                // 封闭路径到底部（与main.py一致）
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        /**
+         * 初始化Canvas
+         */
+        function initCanvas() {
+            canvas = document.getElementById('wallpaperCanvas');
+            if (!canvas) return;
+            
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            const container = document.getElementById('wallpaperPreview');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            
+            // 背景色已在CSS中设置为#E6E6E6（与main.py保持一致）
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', () => {
+                canvas.width = container.offsetWidth;
+                canvas.height = container.offsetHeight;
+                drawLayeredWaves(quotes[currentQuoteIndex].color);
+            });
+        }
+
+        /**
+         * 切换控制栏显示/隐藏
+         */
+        function toggleControls() {
+            const bottomActions = document.getElementById('bottomActions');
+            isControlsVisible = !isControlsVisible;
+            
+            if (isControlsVisible) {
+                bottomActions.classList.remove('hidden');
+            } else {
+                bottomActions.classList.add('hidden');
+            }
+        }
+
+        /**
+         * 返回上一页
+         * @param {Event} event - 事件对象
+         */
+        function goBack(event) {
+            event.stopPropagation();
+            console.log('返回主界面');
+            showToast('返回主界面');
+        }
+
+        /**
+         * 设置壁纸
+         */
+        function setWallpaper() {
+            console.log('设置壁纸:', quotes[currentQuoteIndex]);
+            
+            // 模拟设置壁纸过程
+            showToast('正在设置壁纸...');
+            
+            setTimeout(() => {
+                showToast('壁纸设置成功！');
+            }, 2000);
+        }
+
+        /**
+         * 编辑语录
+         */
+        function editQuote() {
+            console.log('编辑语录:', quotes[currentQuoteIndex]);
+            showToast('跳转到编辑页面');
+        }
+
+        /**
+         * 分享壁纸
+         */
+        function shareWallpaper() {
+            const shareOverlay = document.getElementById('shareOverlay');
+            const shareQuoteText = document.getElementById('shareQuoteText');
+            const currentQuote = quotes[currentQuoteIndex];
+            
+            // 更新分享预览内容（不显示作者）
+            shareQuoteText.innerHTML = currentQuote.content;
+            
+            shareOverlay.classList.add('show');
+        }
+
+        /**
+         * 关闭分享遮罩
+         */
+        function closeShareOverlay() {
+            const shareOverlay = document.getElementById('shareOverlay');
+            shareOverlay.classList.remove('show');
+            
+            // 重置状态
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'none';
+            document.getElementById('shareConfirmBtn').textContent = '分享';
+        }
+
+        /**
+         * 确认分享
+         */
+        function confirmShare() {
+            const loadingState = document.getElementById('loadingState');
+            const successState = document.getElementById('successState');
+            const shareConfirmBtn = document.getElementById('shareConfirmBtn');
+            
+            // 显示加载状态
+            loadingState.style.display = 'block';
+            shareConfirmBtn.textContent = '生成中...';
+            shareConfirmBtn.disabled = true;
+            
+            // 模拟生成过程
+            setTimeout(() => {
+                loadingState.style.display = 'none';
+                successState.style.display = 'block';
+                shareConfirmBtn.textContent = '调用分享';
+                shareConfirmBtn.disabled = false;
+                
+                // 再次点击时调用系统分享
+                shareConfirmBtn.onclick = function() {
+                    console.log('调用系统分享面板');
+                    showToast('调用系统分享面板');
+                    closeShareOverlay();
+                };
+            }, 2000);
+        }
+
+        /**
+         * 根据字数自动调整文字样式
+         * @param {HTMLElement} textElement - 文字元素
+         * @param {string} content - 文字内容
+         */
+        function adjustTextStyle(textElement, content) {
+            const length = content.length;
+            let fontSize, lineHeight;
+            
+            if (length <= 15) {
+                fontSize = '28px';
+                lineHeight = '1.4';
+            } else if (length <= 30) {
+                fontSize = '24px';
+                lineHeight = '1.5';
+            } else if (length <= 50) {
+                fontSize = '20px';
+                lineHeight = '1.6';
+            } else {
+                fontSize = '18px';
+                lineHeight = '1.7';
+            }
+            
+            textElement.style.fontSize = fontSize;
+            textElement.style.lineHeight = lineHeight;
+        }
+
+        /**
+         * 切换到指定语录
+         * @param {number} index - 语录索引
+         */
+        function switchToQuote(index) {
+            if (index < 0 || index >= quotes.length) return;
+            
+            currentQuoteIndex = index;
+            const quote = quotes[index];
+            const wallpaperPreview = document.getElementById('wallpaperPreview');
+            const quoteText = document.getElementById('quoteText');
+            
+            // 更新内容
+            quoteText.textContent = quote.content;
+            
+            // 根据字数自动调整文字样式
+            adjustTextStyle(quoteText, quote.content);
+            
+            // 显示切换动画
+            wallpaperPreview.style.opacity = '0';
+            setTimeout(() => {
+                // 绘制新的波浪背景
+                drawLayeredWaves(quote.color);
+                wallpaperPreview.style.opacity = '1';
+            }, 150);
+        }
+
+        /**
+         * 上一条语录
+         */
+        function previousQuote() {
+            const newIndex = currentQuoteIndex > 0 ? currentQuoteIndex - 1 : quotes.length - 1;
+            switchToQuote(newIndex);
+            showNavigationHint('prev');
+        }
+
+        /**
+         * 下一条语录
+         */
+        function nextQuote() {
+            const newIndex = currentQuoteIndex < quotes.length - 1 ? currentQuoteIndex + 1 : 0;
+            switchToQuote(newIndex);
+            showNavigationHint('next');
+        }
+
+        /**
+         * 显示导航提示
+         * @param {string} direction - 方向 ('prev' 或 'next')
+         */
+        function showNavigationHint(direction) {
+            const hint = document.getElementById(direction === 'prev' ? 'prevHint' : 'nextHint');
+            hint.classList.add('show');
+            
+            setTimeout(() => {
+                hint.classList.remove('show');
+            }, 1000);
+        }
+
+        /**
+         * 显示提示消息
+         * @param {string} message - 提示消息
+         */
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg z-50 transition-all duration-300';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('壁纸预览界面加载完成');
+            
+            // 初始化Canvas
+            initCanvas();
+            
+            // 初始化第一条语录
+            switchToQuote(0);
+            
+            // 添加触摸事件监听
+            const wallpaperPreview = document.getElementById('wallpaperPreview');
+            
+            wallpaperPreview.addEventListener('touchstart', function(e) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            wallpaperPreview.addEventListener('touchend', function(e) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+                
+                // 判断是否为水平滑动
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                    if (deltaX > 0) {
+                        // 向右滑动 - 上一条
+                        previousQuote();
+                    } else {
+                        // 向左滑动 - 下一条
+                        nextQuote();
+                    }
+                }
+            });
+            
+            // 添加键盘事件监听
+            document.addEventListener('keydown', function(e) {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        previousQuote();
+                        break;
+                    case 'ArrowRight':
+                        nextQuote();
+                        break;
+                    case 'Escape':
+                        goBack(e);
+                        break;
+                    case ' ':
+                        e.preventDefault();
+                        toggleControls();
+                        break;
+                }
+            });
+        });
+
+        // 阻止默认的触摸行为
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // 点击分享遮罩背景关闭
+        document.getElementById('shareOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeShareOverlay();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语录壁纸 - 设置</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* 自定义CSS变量 */
+        :root {
+            --primary-color: #4A90E2;
+            --primary-light: #6BA3E8;
+            --primary-dark: #357ABD;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --text-placeholder: #999999;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --bg-success: #F6FFED;
+            --bg-warning: #FFFBE6;
+            --bg-error: #FFF2F0;
+            --border-color: #E5E5E5;
+            --error-color: #FF4D4F;
+            --success-color: #52C41A;
+            --warning-color: #FAAD14;
+            --info-color: #1890FF;
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-button: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        /* HUAWEI Mate70 屏幕适配 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* 状态栏模拟 */
+        .status-bar {
+            height: 44px;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            height: 56px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-back:hover {
+            background: var(--bg-secondary);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+        }
+
+        /* 设置分组 */
+        .settings-group {
+            background: var(--bg-primary);
+            margin-bottom: 12px;
+        }
+
+        .group-header {
+            padding: 16px 20px 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 设置项 */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item:hover {
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .setting-item:active {
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .setting-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .setting-icon.notification { background: linear-gradient(135deg, #FF6B6B, #FF8E8E); }
+        .setting-icon.wallpaper { background: linear-gradient(135deg, #45B7D1, #6BC5D8); }
+        .setting-icon.data { background: linear-gradient(135deg, #96CEB4, #A8D5BA); }
+        .setting-icon.about { background: linear-gradient(135deg, #FECA57, #FED766); }
+        .setting-icon.privacy { background: linear-gradient(135deg, #A29BFE, #B8B3FF); }
+        .setting-icon.feedback { background: linear-gradient(135deg, #FD79A8, #FE8FB5); }
+        .setting-icon.share { background: linear-gradient(135deg, #FDCB6E, #FED577); }
+
+        .setting-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .setting-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .setting-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .setting-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        .setting-arrow {
+            color: var(--text-placeholder);
+            font-size: 14px;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        /* 开关控件 */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary-color);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(20px);
+        }
+
+        /* 用户信息卡片 */
+        .user-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            margin: 20px;
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .user-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-stats {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 版本信息 */
+        .version-info {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        .app-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 16px;
+        }
+
+        .app-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .app-version {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .app-description {
+            font-size: 12px;
+            color: var(--text-placeholder);
+            line-height: 1.4;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .modal-button.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .modal-button.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-button.secondary:hover {
+            background: #e9ecef;
+        }
+
+        /* 选项列表 */
+        .option-list {
+            margin: 16px 0;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-item:hover {
+            background: rgba(74, 144, 226, 0.05);
+            margin: 0 -16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .option-radio.selected {
+            border-color: var(--primary-color);
+        }
+
+        .option-radio.selected::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .option-text {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .phone-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* 滚动条样式 */
+        .main-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+
+        /* 动画效果 */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .settings-group {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        /* 徽章样式 */
+        .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--error-color);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="phone-container flex flex-col">
+        <!-- 状态栏模拟 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="flex items-center gap-1">
+                <i class="fas fa-signal text-sm"></i>
+                <i class="fas fa-wifi text-sm"></i>
+                <i class="fas fa-battery-three-quarters text-sm"></i>
+            </div>
+        </div>
+
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="nav-left">
+                <button class="nav-back" onclick="goBack()" title="返回">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="nav-title">设置</h1>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+
+
+            <!-- 基础设置 -->
+            <div class="settings-group">
+                <div class="group-header">基础设置</div>
+                
+                <div class="setting-item" onclick="showWallpaperNotificationOptions()">
+                    <div class="setting-icon notification">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="setting-content">
+                        <div class="setting-title">通知栏更换壁纸</div>
+                        <div class="setting-description">在通知栏添加快捷更换壁纸选项</div>
+                    </div>
+                    <div class="toggle-switch" id="wallpaperNotificationToggle" onclick="event.stopPropagation(); toggleWallpaperNotification()">
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <!-- 关于应用 -->
+            <div class="settings-group">
+                <div class="group-header">关于应用</div>
+                
+                <div class="setting-item" onclick="showAbout()">
+                    <div class="setting-icon about">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="setting-content">
+                        <div class="setting-title">关于语录壁纸</div>
+                        <div class="setting-description">版本信息和开发团队</div>
+                    </div>
+                    <div class="setting-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 版本信息 -->
+            <div class="version-info">
+                <div class="app-logo">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <div class="app-name">语录壁纸</div>
+                <div class="app-version">版本 1.0.0 (Build 1)</div>
+                <div class="app-description">让每一句话都成为生活的美好装点</div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script>
+        // 全局变量
+        let currentSettings = {
+            wallpaperNotification: false
+        };
+
+        /**
+         * 页面初始化
+         */
+        function initPage() {
+            updateSettingsDisplay();
+            console.log('设置页面初始化完成');
+        }
+
+        /**
+         * 更新设置显示
+         */
+        function updateSettingsDisplay() {
+            // 更新通知栏壁纸开关显示
+            const toggle = document.getElementById('wallpaperNotificationToggle');
+            if (currentSettings.wallpaperNotification) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+
+
+
+        /**
+         * 显示通知栏壁纸选项说明
+         */
+        function showWallpaperNotificationOptions() {
+            showToast('点击右侧开关来启用或关闭通知栏壁纸快捷操作');
+        }
+
+        /**
+         * 切换通知栏壁纸功能
+         */
+        function toggleWallpaperNotification() {
+            currentSettings.wallpaperNotification = !currentSettings.wallpaperNotification;
+            updateSettingsDisplay();
+            
+            if (currentSettings.wallpaperNotification) {
+                showToast('已启用通知栏壁纸快捷操作', 'success');
+            } else {
+                showToast('已关闭通知栏壁纸快捷操作');
+            }
+        }
+
+
+
+        /**
+         * 显示关于页面
+         */
+        function showAbout() {
+            showToast('语录壁纸 v1.0.0');
+        }
+
+        /**
+         * 关闭弹窗
+         * @param {string} modalId - 弹窗ID
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        /**
+         * 返回上一页
+         */
+        function goBack() {
+            console.log('返回主界面');
+            showToast('返回主界面');
+        }
+
+        /**
+         * 显示提示消息
+         * @param {string} message - 提示消息
+         * @param {string} type - 消息类型
+         */
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg z-50 transition-all duration-300';
+            
+            // 设置不同类型的样式
+            switch (type) {
+                case 'success':
+                    toast.style.background = '#52c41a';
+                    toast.style.color = 'white';
+                    break;
+                case 'error':
+                    toast.style.background = '#ff4d4f';
+                    toast.style.color = 'white';
+                    break;
+                default:
+                    toast.style.background = '#1890ff';
+                    toast.style.color = 'white';
+            }
+            
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('设置界面加载完成');
+            initPage();
+            
+            // 添加键盘事件监听
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // 关闭所有打开的弹窗
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        if (modal.style.display === 'flex') {
+                            modal.style.display = 'none';
+                        }
+                    });
+                }
+            });
+            
+            // 添加弹窗背景点击关闭
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

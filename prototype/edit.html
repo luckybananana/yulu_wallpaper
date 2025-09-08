@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语录壁纸 - 编辑语录</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* 自定义CSS变量 */
+        :root {
+            --primary-color: #4A90E2;
+            --primary-light: #6BA3E8;
+            --primary-dark: #357ABD;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --text-placeholder: #999999;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --border-color: #E5E5E5;
+            --error-color: #FF4D4F;
+            --success-color: #52C41A;
+            --warning-color: #FAAD14;
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-button: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        /* HUAWEI Mate70 屏幕适配 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* 状态栏模拟 */
+        .status-bar {
+            height: 44px;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            height: 56px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-back:hover {
+            background: var(--bg-secondary);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .nav-action {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 60px;
+        }
+
+        .nav-action:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-action:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+        }
+
+        /* 表单容器 */
+        .form-container {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+        }
+
+        /* 表单组 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: var(--error-color);
+        }
+
+        /* 输入框样式 */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
+            resize: none;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-placeholder);
+        }
+
+        /* 文本域 */
+        .form-textarea {
+            min-height: 80px;
+            line-height: 1.5;
+        }
+
+        /* 字符计数 */
+        .char-count {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .char-count.warning {
+            color: var(--warning-color);
+        }
+
+        .char-count.error {
+            color: var(--error-color);
+        }
+
+        /* 错误提示 */
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 预览区域 */
+        .preview-container {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+        }
+
+        .preview-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preview-wallpaper {
+            width: 100%;
+            /* 使用竖向手机屏幕比例 */
+            aspect-ratio: 9/16;
+            border-radius: 12px;
+            background: #E6E6E6; /* 与main.py保持一致 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preview-wallpaper:hover {
+            transform: scale(1.02);
+        }
+
+        .preview-content {
+            text-align: center;
+            color: white;
+            padding: 12px;
+            max-width: 90%;
+        }
+
+        .preview-quote {
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.5;
+            /* 字体大小将通过JavaScript根据字数动态调整 */
+        }
+
+        /* 主题选择器 */
+        .theme-selector {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 20px;
+        }
+
+        .theme-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .theme-option {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .theme-option.active {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .theme-option::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .theme-option.active::after {
+            opacity: 1;
+        }
+
+        .theme-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .theme-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .theme-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .theme-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .theme-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .theme-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+
+
+        /* 成功提示 */
+        .success-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--success-color);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .success-toast.show {
+            opacity: 1;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .phone-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* 滚动条样式 */
+        .main-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+
+        /* 动画效果 */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .form-container,
+        .preview-container,
+        .theme-selector {
+            animation: slideInUp 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="phone-container flex flex-col">
+        <!-- 状态栏模拟 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="flex items-center gap-1">
+                <i class="fas fa-signal text-sm"></i>
+                <i class="fas fa-wifi text-sm"></i>
+                <i class="fas fa-battery-three-quarters text-sm"></i>
+            </div>
+        </div>
+
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="nav-left">
+                <button class="nav-back" onclick="goBack()" title="返回">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="nav-title" id="navTitle">新增语录</h1>
+            </div>
+            <div class="nav-right">
+                <button class="nav-action" onclick="saveQuote()" id="saveBtn" title="保存">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 表单容器 -->
+            <div class="form-container">
+                <!-- 语录内容 -->
+                <div class="form-group">
+                    <label class="form-label required" for="quoteContent">语录内容</label>
+                    <textarea 
+                        class="form-input form-textarea" 
+                        id="quoteContent" 
+                        placeholder="请输入语录内容，让文字传递力量..."
+                        maxlength="200"
+                        oninput="validateForm(); updateCharCount('quoteContent', 'quoteCharCount', 200)"
+                    ></textarea>
+                    <div class="char-count" id="quoteCharCount">0/200</div>
+                    <div class="error-message" id="quoteError" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>请输入语录内容</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 壁纸预览容器 -->
+            <div class="preview-container">
+                <div class="preview-title">
+                    <i class="fas fa-eye"></i>
+                    壁纸预览
+                </div>
+                <div class="preview-wallpaper" id="previewWallpaper">
+                    <canvas id="wallpaperCanvas" width="300" height="160" style="width: 100%; height: 100%; border-radius: 12px;"></canvas>
+                    <div class="preview-content" id="previewContent" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                        <div class="preview-quote" id="previewQuote">请输入语录内容...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 成功提示 -->
+    <div class="success-toast" id="successToast">
+        <i class="fas fa-check-circle"></i>
+        <span id="successMessage">保存成功！</span>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentTheme = 1;
+        let isEditMode = false;
+        let editingQuoteId = null;
+        
+        // 示例数据（模拟从主页面传递过来的编辑数据）
+        const editData = {
+            id: 1,
+            content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
+            author: "佚名",
+            theme: 1
+        };
+
+        /**
+         * 页面初始化
+         */
+        function initPage() {
+            // 检查是否为编辑模式（通过URL参数或其他方式）
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const quoteId = urlParams.get('id');
+            
+            if (mode === 'edit' && quoteId) {
+                isEditMode = true;
+                editingQuoteId = quoteId;
+                loadEditData();
+            }
+            
+            updateNavTitle();
+            initWallpaperPreview();
+            validateForm();
+        }
+
+        /**
+         * 加载编辑数据
+         */
+        function loadEditData() {
+            if (isEditMode && editData) {
+                document.getElementById('quoteContent').value = editData.content;
+                
+                updateCharCount('quoteContent', 'quoteCharCount', 200);
+                validateForm();
+            }
+        }
+
+        /**
+         * 更新导航标题
+         */
+        function updateNavTitle() {
+            const navTitle = document.getElementById('navTitle');
+            navTitle.textContent = isEditMode ? '编辑语录' : '新增语录';
+        }
+
+        /**
+         * 表单验证
+         */
+        function validateForm() {
+            const quoteContent = document.getElementById('quoteContent').value.trim();
+            const quoteError = document.getElementById('quoteError');
+            const quoteInput = document.getElementById('quoteContent');
+            
+            let isValid = true;
+            
+            // 验证语录内容
+            if (!quoteContent) {
+                isValid = false;
+                quoteError.style.display = 'flex';
+                quoteInput.classList.add('error');
+            } else {
+                quoteError.style.display = 'none';
+                quoteInput.classList.remove('error');
+            }
+            
+            // 更新壁纸预览
+            updateWallpaperPreview();
+            
+            return isValid;
+        }
+
+        /**
+         * 更新字符计数
+         * @param {string} inputId - 输入框ID
+         * @param {string} countId - 计数显示元素ID
+         * @param {number} maxLength - 最大长度
+         */
+        function updateCharCount(inputId, countId, maxLength) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(countId);
+            const currentLength = input.value.length;
+            
+            counter.textContent = `${currentLength}/${maxLength}`;
+            
+            // 更新计数器颜色
+            counter.classList.remove('warning', 'error');
+            if (currentLength > maxLength * 0.9) {
+                counter.classList.add('warning');
+            }
+            if (currentLength >= maxLength) {
+                counter.classList.add('error');
+            }
+            
+            // 更新壁纸预览
+            updateWallpaperPreview();
+        }
+
+        // 固定的预览颜色（使用蓝色主题）
+        const FIXED_PREVIEW_COLOR = "#3498DB";
+        
+        /**
+         * 初始化壁纸预览Canvas
+         */
+        function initWallpaperPreview() {
+            const canvas = document.getElementById('wallpaperCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸适应竖向比例
+            canvas.width = 180;
+            canvas.height = 320;
+            
+            // 绘制初始背景（使用固定颜色）
+            drawLayeredWaves(ctx, canvas.width, canvas.height, FIXED_PREVIEW_COLOR);
+        }
+
+        // 主色候选（与main.py保持一致）
+        const COLORS = [
+            "#3498DB", "#E74C3C", "#2ECC71", "#F39C12", "#9B59B6",
+            "#1ABC9C", "#E67E22", "#34495E", "#16A085", "#27AE60",
+            "#2980B9", "#8E44AD", "#2C3E50", "#F1C40F", "#E91E63",
+            "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03DAC6"
+        ];
+
+        /**
+         * 十六进制颜色转RGB
+         * @param {string} hex - 十六进制颜色值
+         * @returns {Array} RGB数组
+         */
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? [
+                parseInt(result[1], 16),
+                parseInt(result[2], 16),
+                parseInt(result[3], 16)
+            ] : [0, 0, 0];
+        }
+
+        /**
+         * 调整颜色亮度（与main.py的adjust_color函数保持一致）
+         * @param {Array} rgb - RGB颜色数组
+         * @param {number} factor - 调整因子
+         * @returns {Array} 调整后的RGB颜色
+         */
+        function adjustColor(rgb, factor = 1.0) {
+            const [r, g, b] = rgb;
+            return [
+                Math.max(0, Math.min(255, Math.floor(r * factor))),
+                Math.max(0, Math.min(255, Math.floor(g * factor))),
+                Math.max(0, Math.min(255, Math.floor(b * factor)))
+            ];
+        }
+
+        /**
+         * 绘制分层波浪背景（与main.py的draw_layered_waves函数保持一致）
+         * @param {CanvasRenderingContext2D} ctx - Canvas上下文
+         * @param {number} width - Canvas宽度
+         * @param {number} height - Canvas高度
+         * @param {string} baseColor - 基础颜色
+         */
+        function drawLayeredWaves(ctx, width, height, baseColor = '#4A90E2') {
+            const baseRgb = hexToRgb(baseColor);
+            
+            // 清空画布并设置背景色
+            ctx.fillStyle = '#E6E6E6';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 参数设置（与main.py保持一致，按比例缩放）
+            const scale = Math.min(width / 375, height / 812); // 相对于手机屏幕的缩放比例
+            const numLayers = 6;
+            const baseFromBottom = Math.floor(height * 0.32);
+            const gapPerLayer = Math.floor(height * 0.035);
+            const baseWavelength = 420 * scale;
+            const baseAmplitude = 52 * scale;
+            const step = Math.max(2, Math.floor(6 * scale));
+            
+            // 绘制6层波浪（从上到下，颜色逐渐加深）
+            for (let i = 0; i < numLayers; i++) {
+                // 颜色调整（与main.py的adjust_color逻辑一致）
+                const colorFactor = 1 - i * 0.06;
+                const adjustedRgb = adjustColor(baseRgb, colorFactor);
+                
+                // 透明度计算（与main.py一致：25 + i*38，转换为0-1范围）
+                const alpha = Math.min(255, 25 + i * 38) / 255;
+                
+                ctx.fillStyle = `rgba(${adjustedRgb[0]}, ${adjustedRgb[1]}, ${adjustedRgb[2]}, ${alpha})`;
+                
+                // 波浪参数（与main.py一致）
+                const wavelength = baseWavelength * (1.0 + i * 0.03);
+                const amplitude = baseAmplitude * (1.0 + i * 0.05);
+                const phase = Math.random() * Math.PI * 2; // 随机相位
+                
+                // 层偏移计算（与main.py一致）
+                const layerOffset = height - (baseFromBottom - i * gapPerLayer);
+                
+                // 创建波浪路径
+                ctx.beginPath();
+                
+                // 绘制正弦波（与main.py逻辑一致）
+                const points = [];
+                for (let x = 0; x <= width; x += step) {
+                    const y = layerOffset - amplitude * Math.sin(2 * Math.PI * x / wavelength + phase);
+                    points.push([x, y]);
+                }
+                
+                // 开始绘制路径
+                if (points.length > 0) {
+                    ctx.moveTo(points[0][0], points[0][1]);
+                    for (let j = 1; j < points.length; j++) {
+                        ctx.lineTo(points[j][0], points[j][1]);
+                    }
+                }
+                
+                // 封闭路径到底部（与main.py一致）
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        /**
+         * 根据字数自动调整文字样式
+         * @param {HTMLElement} textElement - 文字元素
+         * @param {string} content - 文字内容
+         */
+        function adjustTextStyle(textElement, content) {
+            const length = content.length;
+            let fontSize, lineHeight;
+            
+            if (length <= 15) {
+                fontSize = '16px';
+                lineHeight = '1.4';
+            } else if (length <= 30) {
+                fontSize = '14px';
+                lineHeight = '1.5';
+            } else if (length <= 50) {
+                fontSize = '12px';
+                lineHeight = '1.6';
+            } else {
+                fontSize = '11px';
+                lineHeight = '1.7';
+            }
+            
+            textElement.style.fontSize = fontSize;
+            textElement.style.lineHeight = lineHeight;
+        }
+
+        /**
+         * 更新壁纸预览
+         */
+        function updateWallpaperPreview() {
+            const quoteContent = document.getElementById('quoteContent').value.trim();
+            const previewQuote = document.getElementById('previewQuote');
+            
+            // 更新预览文本
+            if (quoteContent) {
+                previewQuote.textContent = quoteContent;
+                
+                // 根据字数自动调整文字样式
+                adjustTextStyle(previewQuote, quoteContent);
+            } else {
+                previewQuote.textContent = '请输入语录内容...';
+            }
+            
+            // 重新绘制背景（使用固定颜色，不随输入变化）
+            const canvas = document.getElementById('wallpaperCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                drawLayeredWaves(ctx, canvas.width, canvas.height, FIXED_PREVIEW_COLOR);
+            }
+        }
+
+
+
+
+
+        /**
+         * 返回上一页
+         */
+        function goBack() {
+            console.log('返回主界面');
+            showToast('返回主界面');
+        }
+
+        /**
+         * 保存语录
+         */
+        function saveQuote() {
+            const content = document.getElementById('quoteContent').value.trim();
+            
+            if (!content) {
+                showToast('请输入语录内容', 'error');
+                return;
+            }
+            
+            if (content.length > 200) {
+                showToast('语录内容不能超过200字', 'error');
+                return;
+            }
+            
+            // 模拟保存操作
+            try {
+                // 这里可以添加实际的保存逻辑，比如发送到服务器
+                // 目前只是模拟保存成功
+                showToast('语录保存成功！', 'success');
+                
+                // 可选：保存后返回上一页
+                // setTimeout(() => {
+                //     goBack();
+                // }, 1500);
+            } catch (error) {
+                showToast('保存失败，请重试', 'error');
+            }
+        }
+
+        /**
+         * 显示提示消息
+         * @param {string} message - 提示消息
+         * @param {string} type - 消息类型 ('success', 'error', 'info')
+         */
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('successToast');
+            const messageElement = document.getElementById('successMessage');
+            
+            messageElement.textContent = message;
+            
+            // 根据类型设置样式
+            toast.className = 'success-toast show';
+            if (type === 'error') {
+                toast.style.background = 'var(--error-color)';
+            } else if (type === 'success') {
+                toast.style.background = 'var(--success-color)';
+            } else {
+                toast.style.background = 'var(--primary-color)';
+            }
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        /**
+         * 处理输入框焦点
+         */
+        function handleInputFocus() {
+            // 为移动端优化，输入时滚动到可视区域
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                });
+            });
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('语录编辑界面加载完成');
+            initPage();
+            handleInputFocus();
+            
+            // 为保存按钮绑定点击事件
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveQuote);
+            }
+            
+            // 添加键盘事件监听
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case 's':
+                            e.preventDefault();
+                            saveQuote();
+                            break;
+                    }
+                }
+                
+                if (e.key === 'Escape') {
+                    goBack();
+                }
+            });
+            
+            // 添加表单变化监听
+            let hasUnsavedChanges = false;
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    hasUnsavedChanges = true;
+                });
+            });
+            
+            // 页面离开前提醒
+            window.addEventListener('beforeunload', function(e) {
+                if (hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '您有未保存的更改，确定要离开吗？';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

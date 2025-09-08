@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语录壁纸 - 主界面</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* 自定义CSS变量 - 基于UI设计规范 */
+        :root {
+            --primary-color: #4A90E2;
+            --primary-light: #6BA3E8;
+            --primary-dark: #357ABD;
+            --secondary-color: #8E7CC3;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --bg-tertiary: #F0F2F5;
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-button: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --border-radius-card: 12px;
+            --border-radius-button: 8px;
+        }
+
+        /* HUAWEI Mate70 屏幕适配 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* 状态栏样式 */
+        .status-bar {
+            height: 44px;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 顶部导航栏 */
+        .top-bar {
+            height: 56px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #E1E5E9;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .icon-button:hover {
+            background: var(--bg-secondary);
+            color: var(--primary-color);
+        }
+
+        /* 语录列表容器 */
+        .quotes-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: var(--bg-secondary);
+        }
+
+        /* 语录卡片样式 */
+        .quote-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-card);
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .quote-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        .quote-card.selected {
+            border: 2px solid var(--primary-color);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .quote-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .quote-author {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: right;
+            font-style: italic;
+        }
+
+        .quote-author::before {
+            content: "—— ";
+        }
+
+        /* 多选模式复选框 */
+        .checkbox {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            background: var(--bg-primary);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .multi-select-mode .checkbox {
+            display: flex;
+        }
+
+        .checkbox.checked {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 底部操作栏 */
+        .bottom-bar {
+            height: 80px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+            border-top: 1px solid #E1E5E9;
+        }
+
+        /* 操作按钮 */
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: var(--bg-secondary);
+            color: var(--primary-color);
+        }
+
+        .action-button i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        /* 悬浮操作按钮 */
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--shadow-button);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .fab:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* 底部按钮 */
+        .bottom-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            border-radius: var(--border-radius-button);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bottom-button:hover {
+            background: var(--bg-secondary);
+            color: var(--primary-color);
+        }
+
+        .bottom-button i {
+            font-size: 20px;
+        }
+
+        .bottom-button span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 操作菜单弹窗 */
+        .action-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .action-menu.show {
+            transform: translateY(0);
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .menu-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .menu-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 16px 8px;
+            border-radius: var(--border-radius-card);
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 80px;
+        }
+
+        .menu-action:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .menu-action i {
+            font-size: 20px;
+        }
+
+        .menu-action span {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* 空状态样式 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* 多选模式顶部栏 */
+        .multi-select-bar {
+            height: 56px;
+            background: var(--primary-color);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            color: white;
+        }
+
+        .multi-select-mode .multi-select-bar {
+            display: flex;
+        }
+
+        .multi-select-mode .top-bar {
+            display: none;
+        }
+
+        .select-count {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .select-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .select-action {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .phone-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* 滚动条样式 */
+        .quotes-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .quotes-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .quotes-container::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="phone-container flex flex-col">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="flex items-center gap-1">
+                <i class="fas fa-signal text-sm"></i>
+                <i class="fas fa-wifi text-sm"></i>
+                <i class="fas fa-battery-three-quarters text-sm"></i>
+            </div>
+        </div>
+
+        <!-- 顶部导航栏 -->
+        <div class="top-bar">
+            <h1 class="app-title">语录壁纸</h1>
+            <div class="top-actions">
+                <button class="icon-button" title="搜索">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 多选模式顶部栏 -->
+        <div class="multi-select-bar">
+            <div class="flex items-center gap-4">
+                <button class="select-action" onclick="exitMultiSelect()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <span class="select-count">已选择 0 条</span>
+            </div>
+            <div class="select-actions">
+                <button class="select-action" onclick="selectAll()" title="全选">
+                    <i class="fas fa-check-double"></i>
+                </button>
+                <button class="select-action" onclick="deleteSelected()" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 语录列表容器 -->
+        <div class="quotes-container" id="quotesContainer">
+            <!-- 示例语录卡片 -->
+            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
+                <div class="checkbox">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="quote-content">
+                    生活不是等待风暴过去，而是学会在雨中翩翩起舞。
+                </div>
+            </div>
+
+            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
+                <div class="checkbox">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="quote-content">
+                    成功不是终点，失败不是末日，继续前进的勇气才最可贵。
+                </div>
+            </div>
+
+            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
+                <div class="checkbox">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="quote-content">
+                    你的时间有限，不要浪费在重复别人的生活上。不要被教条束缚，那意味着你和别人思考的结果一起生活。
+                </div>
+            </div>
+
+            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
+                <div class="checkbox">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="quote-content">
+                    世界上只有一种真正的英雄主义，那就是在认清生活的真相后依然热爱生活。
+                </div>
+            </div>
+
+            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
+                <div class="checkbox">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="quote-content">
+                    不要因为走得太远，而忘记了为什么出发。
+                </div>
+            </div>
+
+            <!-- 空状态示例（当无语录时显示） -->
+            <!-- <div class="empty-state">
+                <i class="fas fa-quote-left"></i>
+                <h3>还没有语录</h3>
+                <p>点击下方的 + 按钮<br>添加你的第一条语录吧</p>
+            </div> -->
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-bar">
+            <button class="bottom-button" onclick="openImportExport()">
+                <i class="fas fa-exchange-alt"></i>
+                <span>导入导出</span>
+            </button>
+            
+            <button class="fab" onclick="addQuote()" title="新增语录">
+                <i class="fas fa-plus"></i>
+            </button>
+            
+            <button class="bottom-button" onclick="openSettings()">
+                <i class="fas fa-cog"></i>
+                <span>设置</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 操作菜单弹窗 -->
+    <div class="menu-overlay" id="menuOverlay" onclick="hideActionMenu()"></div>
+    <div class="action-menu" id="actionMenu">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-800">选择操作</h3>
+            <button class="icon-button" onclick="hideActionMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="menu-actions">
+            <button class="menu-action" onclick="editQuote()">
+                <i class="fas fa-edit"></i>
+                <span>修改语录</span>
+            </button>
+            <button class="menu-action" onclick="deleteQuote()">
+                <i class="fas fa-trash text-red-500"></i>
+                <span>删除语录</span>
+            </button>
+            <button class="menu-action" onclick="previewWallpaper()">
+                <i class="fas fa-eye"></i>
+                <span>壁纸预览</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let isMultiSelectMode = false;
+        let selectedQuotes = new Set();
+        let currentQuote = null;
+
+        /**
+         * 显示操作菜单
+         * @param {Element} quoteCard - 被点击的语录卡片
+         */
+        function showActionMenu(quoteCard) {
+            if (isMultiSelectMode) {
+                toggleSelect(quoteCard);
+                return;
+            }
+            
+            currentQuote = quoteCard;
+            document.getElementById('menuOverlay').classList.add('show');
+            document.getElementById('actionMenu').classList.add('show');
+        }
+
+        /**
+         * 隐藏操作菜单
+         */
+        function hideActionMenu() {
+            document.getElementById('menuOverlay').classList.remove('show');
+            document.getElementById('actionMenu').classList.remove('show');
+            currentQuote = null;
+        }
+
+        /**
+         * 切换语录选择状态
+         * @param {Element} quoteCard - 语录卡片
+         * @param {Event} event - 事件对象
+         */
+        function toggleSelect(quoteCard, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            if (!isMultiSelectMode) {
+                enterMultiSelectMode();
+            }
+
+            const checkbox = quoteCard.querySelector('.checkbox');
+            const quoteId = Array.from(quoteCard.parentNode.children).indexOf(quoteCard);
+
+            if (selectedQuotes.has(quoteId)) {
+                selectedQuotes.delete(quoteId);
+                quoteCard.classList.remove('selected');
+                checkbox.classList.remove('checked');
+            } else {
+                selectedQuotes.add(quoteId);
+                quoteCard.classList.add('selected');
+                checkbox.classList.add('checked');
+            }
+
+            updateSelectCount();
+
+            // 如果没有选中任何项，退出多选模式
+            if (selectedQuotes.size === 0) {
+                exitMultiSelect();
+            }
+        }
+
+        /**
+         * 进入多选模式
+         */
+        function enterMultiSelectMode() {
+            isMultiSelectMode = true;
+            document.body.classList.add('multi-select-mode');
+        }
+
+        /**
+         * 退出多选模式
+         */
+        function exitMultiSelect() {
+            isMultiSelectMode = false;
+            selectedQuotes.clear();
+            document.body.classList.remove('multi-select-mode');
+            
+            // 清除所有选中状态
+            document.querySelectorAll('.quote-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('.checkbox').classList.remove('checked');
+            });
+        }
+
+        /**
+         * 更新选中数量显示
+         */
+        function updateSelectCount() {
+            const countElement = document.querySelector('.select-count');
+            countElement.textContent = `已选择 ${selectedQuotes.size} 条`;
+        }
+
+        /**
+         * 全选/取消全选
+         */
+        function selectAll() {
+            const quoteCards = document.querySelectorAll('.quote-card');
+            const allSelected = selectedQuotes.size === quoteCards.length;
+
+            if (allSelected) {
+                // 取消全选
+                selectedQuotes.clear();
+                quoteCards.forEach(card => {
+                    card.classList.remove('selected');
+                    card.querySelector('.checkbox').classList.remove('checked');
+                });
+                exitMultiSelect();
+            } else {
+                // 全选
+                selectedQuotes.clear();
+                quoteCards.forEach((card, index) => {
+                    selectedQuotes.add(index);
+                    card.classList.add('selected');
+                    card.querySelector('.checkbox').classList.add('checked');
+                });
+            }
+
+            updateSelectCount();
+        }
+
+        /**
+         * 删除选中的语录
+         */
+        function deleteSelected() {
+            if (selectedQuotes.size === 0) return;
+
+            const confirmDelete = confirm(`确定要删除选中的 ${selectedQuotes.size} 条语录吗？`);
+            if (confirmDelete) {
+                // 这里应该调用实际的删除逻辑
+                console.log('删除语录:', Array.from(selectedQuotes));
+                
+                // 模拟删除操作
+                const quoteCards = document.querySelectorAll('.quote-card');
+                Array.from(selectedQuotes).sort((a, b) => b - a).forEach(index => {
+                    quoteCards[index].remove();
+                });
+                
+                exitMultiSelect();
+                showToast('删除成功');
+            }
+        }
+
+        /**
+         * 新增语录
+         */
+        function addQuote() {
+            hideActionMenu();
+            console.log('跳转到新增语录页面');
+            showToast('跳转到新增语录页面');
+        }
+
+        /**
+         * 编辑语录
+         */
+        function editQuote() {
+            hideActionMenu();
+            if (currentQuote) {
+                console.log('编辑语录:', currentQuote);
+                showToast('跳转到编辑语录页面');
+            }
+        }
+
+        /**
+         * 删除语录
+         */
+        function deleteQuote() {
+            hideActionMenu();
+            if (currentQuote) {
+                const confirmDelete = confirm('确定要删除这条语录吗？');
+                if (confirmDelete) {
+                    currentQuote.remove();
+                    showToast('删除成功');
+                }
+            }
+        }
+
+        /**
+         * 预览壁纸
+         */
+        function previewWallpaper() {
+            hideActionMenu();
+            if (currentQuote) {
+                console.log('预览壁纸:', currentQuote);
+                showToast('跳转到壁纸预览页面');
+            }
+        }
+
+        /**
+         * 随机壁纸
+         */
+        function randomWallpaper() {
+            console.log('设置随机壁纸');
+            showToast('正在设置随机壁纸...');
+        }
+
+        /**
+         * 打开设置
+         */
+        function openSettings() {
+            window.location.href = 'settings.html';
+        }
+
+        /**
+         * 打开导入导出
+         */
+        function openImportExport() {
+            window.location.href = 'import-export.html';
+        }
+
+        /**
+         * 显示提示消息
+         * @param {string} message - 提示消息
+         */
+        function showToast(message) {
+            // 创建提示元素
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg z-50 transition-all duration-300';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('语录壁纸主界面加载完成');
+            
+            // 模拟下拉刷新
+            let startY = 0;
+            let currentY = 0;
+            let isRefreshing = false;
+            
+            const quotesContainer = document.getElementById('quotesContainer');
+            
+            quotesContainer.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            });
+            
+            quotesContainer.addEventListener('touchmove', function(e) {
+                currentY = e.touches[0].clientY;
+                
+                if (quotesContainer.scrollTop === 0 && currentY > startY && !isRefreshing) {
+                    const diff = currentY - startY;
+                    if (diff > 100) {
+                        isRefreshing = true;
+                        showToast('正在刷新...');
+                        
+                        // 模拟刷新延迟
+                        setTimeout(() => {
+                            isRefreshing = false;
+                            showToast('刷新完成');
+                        }, 1500);
+                    }
+                }
+            });
+        });
+
+        // 阻止长按菜单（用于触发多选模式）
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.closest('.quote-card')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

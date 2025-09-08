@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语录壁纸 - 导入导出</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* 自定义CSS变量 */
+        :root {
+            --primary-color: #4A90E2;
+            --primary-light: #6BA3E8;
+            --primary-dark: #357ABD;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+            --text-placeholder: #999999;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --bg-success: #F6FFED;
+            --bg-warning: #FFFBE6;
+            --bg-error: #FFF2F0;
+            --border-color: #E5E5E5;
+            --error-color: #FF4D4F;
+            --success-color: #52C41A;
+            --warning-color: #FAAD14;
+            --info-color: #1890FF;
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-button: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        /* HUAWEI Mate70 屏幕适配 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        /* 状态栏模拟 */
+        .status-bar {
+            height: 44px;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            height: 56px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-back:hover {
+            background: var(--bg-secondary);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+        }
+
+        /* 功能卡片 */
+        .feature-card {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .feature-icon.import {
+            background: linear-gradient(135deg, var(--success-color), #73d13d);
+        }
+
+        .feature-icon.export {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        }
+
+        .feature-icon.share {
+            background: linear-gradient(135deg, var(--warning-color), #ffc53d);
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .feature-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .feature-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .action-button.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-button.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .action-button.success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .action-button.success:hover {
+            background: #389e0d;
+        }
+
+        .action-button.warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .action-button.warning:hover {
+            background: #d48806;
+        }
+
+        .action-button.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .action-button.secondary:hover {
+            background: #e9ecef;
+        }
+
+
+
+        /* 文件上传区域 */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 32px 20px;
+            text-align: center;
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 16px 0;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: var(--text-placeholder);
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 隐藏的文件输入 */
+        .file-input {
+            display: none;
+        }
+
+        /* 进度条 */
+        .progress-container {
+            margin: 16px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* 结果显示 */
+        .result-container {
+            margin: 16px 0;
+            padding: 16px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result-container.success {
+            background: var(--bg-success);
+            border: 1px solid #b7eb8f;
+        }
+
+        .result-container.error {
+            background: var(--bg-error);
+            border: 1px solid #ffccc7;
+        }
+
+        .result-container.warning {
+            background: var(--bg-warning);
+            border: 1px solid #ffe58f;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .result-content {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .result-container.success .result-title {
+            color: var(--success-color);
+        }
+
+        .result-container.error .result-title {
+            color: var(--error-color);
+        }
+
+        .result-container.warning .result-title {
+            color: var(--warning-color);
+        }
+
+        /* JSON预览 */
+        .json-preview {
+            background: #f6f8fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* 分享选项 */
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .share-option {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+        }
+
+        .share-option:hover {
+            border-color: var(--primary-color);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .share-option-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .share-option-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 375px) {
+            .phone-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        /* 滚动条样式 */
+        .main-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+
+        /* 动画效果 */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .feature-card,
+        .stats-container {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        /* 加载动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="phone-container flex flex-col">
+        <!-- 状态栏模拟 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="flex items-center gap-1">
+                <i class="fas fa-signal text-sm"></i>
+                <i class="fas fa-wifi text-sm"></i>
+                <i class="fas fa-battery-three-quarters text-sm"></i>
+            </div>
+        </div>
+
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="nav-left">
+                <button class="nav-back" onclick="goBack()" title="返回">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="nav-title">导入导出</h1>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+
+
+            <!-- 导入功能 -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon import">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">导入语录</div>
+                        <div class="feature-description">从JSON文件导入语录数据，支持批量添加</div>
+                    </div>
+                </div>
+                
+
+                
+                <!-- 进度条 -->
+                <div class="progress-container" id="importProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="importProgressFill"></div>
+                    </div>
+                    <div class="progress-text" id="importProgressText">正在导入...</div>
+                </div>
+                
+                <!-- 导入结果 -->
+                <div class="result-container" id="importResult">
+                    <div class="result-header">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="result-title" id="importResultTitle">导入成功</div>
+                    </div>
+                    <div class="result-content" id="importResultContent">成功导入 5 条语录</div>
+                </div>
+                
+                <div class="feature-actions">
+                    <button class="action-button success" onclick="importQuotes()">
+                        <i class="fas fa-upload"></i>
+                        <span>导入语录</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 导出功能 -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon export">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">导出语录</div>
+                        <div class="feature-description">将所有语录导出为JSON文件，便于备份和分享</div>
+                    </div>
+                </div>
+                
+
+                
+                <!-- 导出结果 -->
+                <div class="result-container" id="exportResult">
+                    <div class="result-header">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="result-title">导出完成</div>
+                    </div>
+                    <div class="result-content">已生成包含 12 条语录的JSON文件</div>
+                </div>
+                
+                <div class="feature-actions">
+                    <button class="action-button primary" onclick="exportQuotes()">
+                        <i class="fas fa-download"></i>
+                        <span>导出文件</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 分享功能 -->
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon share">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">分享语录</div>
+                        <div class="feature-description">通过多种方式分享您的语录收藏</div>
+                    </div>
+                </div>
+                
+                <!-- 分享选项 -->
+                <div class="share-options">
+                    <div class="share-option" onclick="shareViaWeChat()">
+                        <div class="share-option-icon" style="color: #07C160;">
+                            <i class="fab fa-weixin"></i>
+                        </div>
+                        <div class="share-option-text">微信分享</div>
+                    </div>
+                    <div class="share-option" onclick="shareViaQQ()">
+                        <div class="share-option-icon" style="color: #12B7F5;">
+                            <i class="fab fa-qq"></i>
+                        </div>
+                        <div class="share-option-text">QQ分享</div>
+                    </div>
+                    <div class="share-option" onclick="shareViaEmail()">
+                        <div class="share-option-icon" style="color: #EA4335;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="share-option-text">邮件分享</div>
+                    </div>
+                    <div class="share-option" onclick="copyShareLink()">
+                        <div class="share-option-icon" style="color: var(--primary-color);">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="share-option-text">复制链接</div>
+                    </div>
+                </div>
+                
+                <div class="feature-actions">
+                    <button class="action-button warning" onclick="shareQuotes()">
+                        <i class="fas fa-share"></i>
+                        <span>立即分享</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentQuotes = [
+            {
+                id: 1,
+                content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
+                author: "佚名",
+                theme: 1,
+                createdAt: "2024-01-15T10:30:00Z"
+            },
+            {
+                id: 2,
+                content: "成功不是终点，失败不是末日，继续前进的勇气才最可贵。",
+                author: "温斯顿·丘吉尔",
+                theme: 2,
+                createdAt: "2024-01-15T11:15:00Z"
+            }
+            // ... 更多示例数据
+        ];
+
+        /**
+         * 页面初始化
+         */
+        function initPage() {
+            setupDragAndDrop();
+            hideAllResults();
+        }
+
+        /**
+         * 设置拖拽上传 - 已简化，不再需要拖拽功能
+         */
+        function setupDragAndDrop() {
+            // 功能已简化，不再需要拖拽上传
+        }
+
+        /**
+         * 导入语录 - 直接触发文件选择
+         */
+        function importQuotes() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    handleFile(file);
+                }
+            };
+            input.click();
+        }
+
+        /**
+         * 处理文件选择
+         * @param {Event} event - 文件选择事件
+         */
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        /**
+         * 处理文件
+         * @param {File} file - 选择的文件
+         */
+        function handleFile(file) {
+            // 验证文件类型
+            if (!file.name.toLowerCase().endsWith('.json')) {
+                showImportResult('error', '文件格式错误', '请选择 .json 格式的文件');
+                return;
+            }
+            
+            // 验证文件大小
+            if (file.size > 5 * 1024 * 1024) {
+                showImportResult('error', '文件过大', '文件大小不能超过 5MB');
+                return;
+            }
+            
+            // 开始导入
+            startImport(file);
+        }
+
+        /**
+         * 开始导入
+         * @param {File} file - 要导入的文件
+         */
+        function startImport(file) {
+            const progressContainer = document.getElementById('importProgress');
+            const progressFill = document.getElementById('importProgressFill');
+            const progressText = document.getElementById('importProgressText');
+            
+            // 显示进度条
+            progressContainer.style.display = 'block';
+            hideAllResults();
+            
+            // 模拟进度
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `正在导入... ${Math.round(progress)}%`;
+            }, 200);
+            
+            // 读取文件
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    
+                    // 验证数据格式
+                    if (!Array.isArray(jsonData)) {
+                        throw new Error('JSON数据格式错误，应为数组格式');
+                    }
+                    
+                    // 验证每个语录项
+                    const validQuotes = jsonData.filter(quote => {
+                        return quote.content && typeof quote.content === 'string';
+                    });
+                    
+                    if (validQuotes.length === 0) {
+                        throw new Error('未找到有效的语录数据');
+                    }
+                    
+                    // 完成进度
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+                    progressText.textContent = '导入完成！';
+                    
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        
+                        // 模拟添加到现有数据
+                        const newQuotes = validQuotes.map(quote => ({
+                            ...quote,
+                            id: Date.now() + Math.random(),
+                            createdAt: new Date().toISOString()
+                        }));
+                        
+                        currentQuotes.push(...newQuotes);
+                        
+                        showImportResult('success', '导入成功', 
+                            `成功导入 ${validQuotes.length} 条语录${jsonData.length > validQuotes.length ? `，跳过 ${jsonData.length - validQuotes.length} 条无效数据` : ''}`);
+                    }, 500);
+                    
+                } catch (error) {
+                    clearInterval(progressInterval);
+                    progressContainer.style.display = 'none';
+                    showImportResult('error', '导入失败', error.message);
+                }
+            };
+            
+            reader.onerror = function() {
+                clearInterval(progressInterval);
+                progressContainer.style.display = 'none';
+                showImportResult('error', '读取失败', '无法读取文件内容');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        /**
+         * 显示导入结果
+         * @param {string} type - 结果类型 ('success', 'error', 'warning')
+         * @param {string} title - 标题
+         * @param {string} content - 内容
+         */
+        function showImportResult(type, title, content) {
+            const resultContainer = document.getElementById('importResult');
+            const resultTitle = document.getElementById('importResultTitle');
+            const resultContent = document.getElementById('importResultContent');
+            
+            resultContainer.className = `result-container ${type}`;
+            resultTitle.textContent = title;
+            resultContent.textContent = content;
+            resultContainer.style.display = 'block';
+            
+            // 更新图标
+            const icon = resultContainer.querySelector('i');
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            } else if (type === 'warning') {
+                icon.className = 'fas fa-exclamation-triangle';
+            }
+        }
+
+
+
+        /**
+         * 导出语录 - 自动导出到Downloads文件夹
+         */
+        function exportQuotes() {
+            const exportData = currentQuotes.map(quote => ({
+                content: quote.content,
+                author: quote.author,
+                theme: quote.theme,
+                createdAt: quote.createdAt
+            }));
+            
+            const jsonString = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const fileName = `语录壁纸_${new Date().toISOString().split('T')[0]}.json`;
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // 显示导出成功通知
+            showExportSuccess(fileName);
+        }
+
+        /**
+         * 显示导出成功通知
+         * @param {string} fileName - 导出的文件名
+         */
+        function showExportSuccess(fileName) {
+            const notification = document.createElement('div');
+            notification.className = 'export-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="notification-text">
+                        <div class="notification-title">导出成功</div>
+                        <div class="notification-message">文件已保存到 Downloads 文件夹</div>
+                        <div class="notification-filename">${fileName}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加通知样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .export-notification {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+                    padding: 24px;
+                    z-index: 1000;
+                    max-width: 300px;
+                    animation: slideInUp 0.3s ease-out;
+                }
+                .notification-content {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+                .notification-content i {
+                    color: #10B981;
+                    font-size: 24px;
+                    margin-top: 2px;
+                }
+                .notification-title {
+                    font-weight: 600;
+                    color: var(--text-primary);
+                    margin-bottom: 4px;
+                }
+                .notification-message {
+                    color: var(--text-secondary);
+                    font-size: 14px;
+                    margin-bottom: 8px;
+                }
+                .notification-filename {
+                    color: var(--primary-color);
+                    font-size: 12px;
+                    font-family: monospace;
+                    background: rgba(74, 144, 226, 0.1);
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                }
+            `;
+            
+            document.head.appendChild(style);
+            document.body.appendChild(notification);
+            
+            // 3秒后自动移除通知
+            setTimeout(() => {
+                notification.remove();
+                style.remove();
+            }, 3000);
+        }
+
+        /**
+         * 微信分享
+         */
+        function shareViaWeChat() {
+            console.log('微信分享');
+            showToast('调用微信分享');
+        }
+
+        /**
+         * QQ分享
+         */
+        function shareViaQQ() {
+            console.log('QQ分享');
+            showToast('调用QQ分享');
+        }
+
+        /**
+         * 邮件分享
+         */
+        function shareViaEmail() {
+            const subject = encodeURIComponent('分享我的语录收藏');
+            const body = encodeURIComponent(`我想与您分享我收藏的 ${currentQuotes.length} 条语录，这些都是很有意义的句子。`);
+            const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
+            
+            window.open(mailtoUrl);
+            showToast('打开邮件客户端');
+        }
+
+        /**
+         * 复制分享链接
+         */
+        function copyShareLink() {
+            const shareText = `我在语录壁纸App中收藏了 ${currentQuotes.length} 条精美语录，推荐给你！`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast('分享文本已复制到剪贴板');
+                });
+            } else {
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = shareText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('分享文本已复制到剪贴板');
+            }
+        }
+
+        /**
+         * 分享语录
+         */
+        function shareQuotes() {
+            // 调用系统分享面板
+            if (navigator.share) {
+                navigator.share({
+                    title: '语录壁纸 - 我的语录收藏',
+                    text: `我在语录壁纸App中收藏了 ${currentQuotes.length} 条精美语录`,
+                    url: window.location.href
+                }).then(() => {
+                    showToast('分享成功');
+                }).catch(() => {
+                    copyShareLink();
+                });
+            } else {
+                copyShareLink();
+            }
+        }
+
+        /**
+         * 隐藏所有结果显示
+         */
+        function hideAllResults() {
+            document.getElementById('importResult').style.display = 'none';
+            document.getElementById('exportResult').style.display = 'none';
+            document.getElementById('jsonPreview').style.display = 'none';
+        }
+
+        /**
+         * 返回上一页
+         */
+        function goBack() {
+            console.log('返回主界面');
+            showToast('返回主界面');
+        }
+
+        /**
+         * 显示提示消息
+         * @param {string} message - 提示消息
+         */
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg z-50 transition-all duration-300';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('导入导出界面加载完成');
+            initPage();
+            
+            // 添加键盘事件监听
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    goBack();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
