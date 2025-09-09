@@ -143,7 +143,13 @@ struct Index {
     if (this.currentQuote) {
       router.pushUrl({
         url: 'pages/EditPage',
-        params: { quote: this.currentQuote, mode: 'edit' }
+        params: { quote: JSON.stringify(this.currentQuote), mode: 'edit' }
+      }).catch((error: Error) => {
+        console.error('跳转编辑页面失败:', error);
+        const errorToast: ShowToastOptions = {
+          message: '跳转失败，请重试'
+        };
+        promptAction.showToast(errorToast);
       });
     }
   }
@@ -153,14 +159,42 @@ struct Index {
     this.hideQuoteActionMenu();
     if (this.currentQuote) {
       try {
-        await this.dataManager.deleteQuotes([this.currentQuote.id]);
-        const deleteSuccessToast: ShowToastOptions = {
-          message: '删除成功'
-        };
-        promptAction.showToast(deleteSuccessToast);
-        await this.loadData();
+        // 显示确认对话框
+        promptAction.showDialog({
+          title: '确认删除',
+          message: '确定要删除这条语录吗？此操作不可撤销。',
+          buttons: [
+            {
+              text: '取消',
+              color: '#666666'
+            },
+            {
+              text: '删除',
+              color: '#FF3B30'
+            }
+          ]
+        }).then(async (result) => {
+          if (result.index === 1) { // 用户点击了删除
+            try {
+              await this.dataManager.deleteQuotes([this.currentQuote!.id]);
+              const deleteSuccessToast: ShowToastOptions = {
+                message: '删除成功'
+              };
+              promptAction.showToast(deleteSuccessToast);
+              await this.loadData();
+            } catch (error) {
+              console.error('删除语录失败:', error);
+              const deleteErrorToast: ShowToastOptions = {
+                message: '删除失败，请重试'
+              };
+              promptAction.showToast(deleteErrorToast);
+            }
+          }
+        }).catch((error: Error) => {
+          console.error('显示删除确认对话框失败:', error);
+        });
       } catch (error) {
-        console.error('删除语录失败:', error);
+        console.error('删除操作失败:', error);
         const deleteErrorToast: ShowToastOptions = {
           message: '删除失败，请重试'
         };
@@ -175,7 +209,13 @@ struct Index {
     if (this.currentQuote) {
       router.pushUrl({
         url: 'pages/WallpaperPage',
-        params: { quote: this.currentQuote }
+        params: { quote: JSON.stringify(this.currentQuote) }
+      }).catch((error: Error) => {
+        console.error('跳转壁纸预览页面失败:', error);
+        const errorToast: ShowToastOptions = {
+          message: '跳转失败，请重试'
+        };
+        promptAction.showToast(errorToast);
       });
     }
   }

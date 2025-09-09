@@ -196,7 +196,7 @@ struct SettingsPage {
         Button() {
           Text('←')
             .fontSize(20)
-            .fontColor('#333333')
+            .fontColor('#1D1D1F')
         }
         .backgroundColor(Color.Transparent)
         .onClick(() => this.goBack())
@@ -204,7 +204,7 @@ struct SettingsPage {
         Text('设置')
           .fontSize(18)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor('#1D1D1F')
           .layoutWeight(1)
           .textAlign(TextAlign.Center)
         
@@ -219,32 +219,39 @@ struct SettingsPage {
       .border({ width: { bottom: 1 }, color: '#E5E5E5' })
 
       Scroll() {
-        Column() {
-
-          // 功能设置
           Column() {
-            Text('功能设置')
-              .fontSize(14)
-              .fontColor('#666666')
-              .alignSelf(ItemAlign.Start)
-              .margin({ bottom: 12 })
+            // 功能设置
+            Column() {
+            Row() {
+              Text('⚙️')
+                .fontSize(24)
+                .margin({ right: 8 })
+              
+              Text('功能设置')
+                .fontSize(18)
+                .fontWeight(FontWeight.Medium)
+                .fontColor('#1D1D1F')
+            }
+            .width('100%')
+            .margin({ bottom: 20 })
 
             // 自动备份
             Row() {
               Row() {
                 Text('💾')
-                  .fontSize(20)
-                  .margin({ right: 12 })
+                  .fontSize(24)
+                  .margin({ right: 16 })
                 
                 Column() {
                   Text('自动备份')
                     .fontSize(16)
-                    .fontColor('#333333')
+                    .fontWeight(FontWeight.Medium)
+                    .fontColor('#1D1D1F')
                   
                   Text('定期自动备份语录数据')
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .margin({ top: 2 })
+                    .fontSize(14)
+                    .fontColor('#86868B')
+                    .margin({ top: 4 })
                 }
                 .alignItems(HorizontalAlign.Start)
               }
@@ -256,25 +263,26 @@ struct SettingsPage {
                 })
             }
             .width('100%')
-            .padding({ top: 16, bottom: 16 })
-            .border({ width: { bottom: 1 }, color: '#F0F0F0' })
+            .padding({ top: 20, bottom: 20 })
+            .border({ width: { bottom: 1 }, color: '#F2F2F7' })
 
             // 通知设置
             Row() {
               Row() {
                 Text('🔔')
-                  .fontSize(20)
-                  .margin({ right: 12 })
+                  .fontSize(24)
+                  .margin({ right: 16 })
                 
                 Column() {
                   Text('推送通知')
                     .fontSize(16)
-                    .fontColor('#333333')
+                    .fontWeight(FontWeight.Medium)
+                    .fontColor('#1D1D1F')
                   
                   Text('接收应用相关通知')
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .margin({ top: 2 })
+                    .fontSize(14)
+                    .fontColor('#86868B')
+                    .margin({ top: 4 })
                 }
                 .alignItems(HorizontalAlign.Start)
               }
@@ -286,81 +294,91 @@ struct SettingsPage {
                 })
             }
             .width('100%')
-            .padding({ top: 16, bottom: 16 })
+            .padding({ top: 20, bottom: 20 })
           }
           .width('100%')
-          .padding(16)
+          .padding(24)
           .backgroundColor('#FFFFFF')
-          .borderRadius(12)
-          .margin({ bottom: 16 })
+          .borderRadius(16)
+          .margin({ bottom: 20 })
+          .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
 
 
 
           // 关于应用
           Column() {
-            Text('关于应用')
-              .fontSize(14)
-              .fontColor('#666666')
-              .alignSelf(ItemAlign.Start)
-              .margin({ bottom: 12 })
+            Row() {
+              Text('📱')
+                .fontSize(24)
+                .margin({ right: 8 })
+              
+              Text('关于应用')
+                .fontSize(18)
+                .fontWeight(FontWeight.Medium)
+                .fontColor('#1D1D1F')
+            }
+            .width('100%')
+            .margin({ bottom: 20 })
 
             // 版本信息
             Row() {
               Row() {
                 Text('ℹ️')
-                  .fontSize(20)
-                  .margin({ right: 12 })
+                  .fontSize(24)
+                  .margin({ right: 16 })
                 
                 Column() {
                   Text('版本信息')
                     .fontSize(16)
-                    .fontColor('#333333')
+                    .fontWeight(FontWeight.Medium)
+                    .fontColor('#1D1D1F')
                   
                   Text(`v${this.appVersion}`)
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .margin({ top: 2 })
+                    .fontSize(14)
+                    .fontColor('#86868B')
+                    .margin({ top: 4 })
                 }
                 .alignItems(HorizontalAlign.Start)
               }
               .layoutWeight(1)
               
               Text('>')
-                .fontSize(16)
-                .fontColor('#CCCCCC')
+                .fontSize(18)
+                .fontColor('#C7C7CC')
             }
             .width('100%')
-            .padding({ top: 16, bottom: 16 })
-            .border({ width: { bottom: 1 }, color: '#F0F0F0' })
+            .padding({ top: 20, bottom: 20 })
+            .border({ width: { bottom: 1 }, color: '#F2F2F7' })
             .onClick(() => this.showAbout())
 
             // 检查更新
             Row() {
               Row() {
                 Text('🔄')
-                  .fontSize(20)
-                  .margin({ right: 12 })
+                  .fontSize(24)
+                  .margin({ right: 16 })
                 
                 Text('检查更新')
                   .fontSize(16)
-                  .fontColor('#333333')
+                  .fontWeight(FontWeight.Medium)
+                  .fontColor('#1D1D1F')
               }
               .layoutWeight(1)
               
               if (this.isLoading) {
                 LoadingProgress()
-                  .width(20)
-                  .height(20)
+                  .width(24)
+                  .height(24)
                   .color('#007AFF')
               } else {
                 Text('>')
-                  .fontSize(16)
-                  .fontColor('#CCCCCC')
+                  .fontSize(18)
+                  .fontColor('#C7C7CC')
               }
             }
             .width('100%')
-            .padding({ top: 16, bottom: 16 })
-            .border({ width: { bottom: 1 }, color: '#F0F0F0' })
+            .padding({ top: 20, bottom: 20 })
+            .border({ width: { bottom: 1 }, color: '#F2F2F7' })
             .onClick(() => {
               if (!this.isLoading) {
                 this.checkUpdate();
@@ -371,36 +389,38 @@ struct SettingsPage {
             Row() {
               Row() {
                 Text('🔒')
-                  .fontSize(20)
-                  .margin({ right: 12 })
+                  .fontSize(24)
+                  .margin({ right: 16 })
                 
                 Text('隐私政策')
                   .fontSize(16)
-                  .fontColor('#333333')
+                  .fontWeight(FontWeight.Medium)
+                  .fontColor('#1D1D1F')
               }
               .layoutWeight(1)
               
               Text('>')
-                .fontSize(16)
-                .fontColor('#CCCCCC')
+                .fontSize(18)
+                .fontColor('#C7C7CC')
             }
             .width('100%')
-            .padding({ top: 16, bottom: 16 })
+            .padding({ top: 20, bottom: 20 })
             .onClick(() => this.showPrivacyPolicy())
           }
           .width('100%')
-          .padding(16)
+          .padding(24)
           .backgroundColor('#FFFFFF')
-          .borderRadius(12)
+          .borderRadius(16)
           .margin({ bottom: 32 })
+          .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
         }
         .padding(16)
       }
       .layoutWeight(1)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor('#F8F9FA')
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor('#F8F9FA')
   }
 }

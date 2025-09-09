@@ -317,22 +317,22 @@ struct EditPage {
   }
 
   /**
-   * 根据字数自动调整文字样式
+   * 根据字数自动调整文字样式（与WallpaperPage保持一致）
    */
   getTextStyle(content: string): TextStyle {
     const length = content.length;
     
     if (length <= 15) {
-      const style: TextStyle = { fontSize: 16, lineHeight: 1.4 };
+      const style: TextStyle = { fontSize: 28, lineHeight: 1.4 };
       return style;
     } else if (length <= 30) {
-      const style: TextStyle = { fontSize: 14, lineHeight: 1.5 };
+      const style: TextStyle = { fontSize: 24, lineHeight: 1.5 };
       return style;
     } else if (length <= 50) {
-      const style: TextStyle = { fontSize: 12, lineHeight: 1.6 };
+      const style: TextStyle = { fontSize: 20, lineHeight: 1.6 };
       return style;
     } else {
-      const style: TextStyle = { fontSize: 11, lineHeight: 1.7 };
+      const style: TextStyle = { fontSize: 18, lineHeight: 1.7 };
       return style;
     }
   }
@@ -449,6 +449,16 @@ struct EditPage {
                 .onReady(() => {
                   if (this.canvasContext) {
                     this.initWallpaperPreview(this.canvasContext);
+                  }
+                })
+                .onAreaChange((oldValue: Area, newValue: Area) => {
+                  // 当Canvas尺寸改变时更新尺寸并重绘
+                  this.canvasWidth = Number(newValue.width);
+                  this.canvasHeight = Number(newValue.height);
+                  if (this.canvasContext) {
+                    setTimeout(() => {
+                      this.updateWallpaperPreview();
+                    }, 50);
                   }
                 })
               

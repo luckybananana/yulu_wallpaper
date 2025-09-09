@@ -7,6 +7,7 @@ import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
  */
 interface RouterParams {
   index?: number;
+  quote?: Quote;
 }
 
 /**
@@ -74,6 +75,13 @@ struct WallpaperPage {
       }
       
       this.isLoading = false;
+      
+      // 数据加载完成后重绘Canvas
+      setTimeout(() => {
+        if (this.canvasContext) {
+          this.drawLayeredWaves('#4A90E2');
+        }
+      }, 200);
     } catch (error) {
       console.error('加载语录失败:', error);
       // 使用默认语录作为备选
@@ -86,6 +94,13 @@ struct WallpaperPage {
       };
       this.quotes = [defaultQuote];
       this.isLoading = false;
+      
+      // 数据加载完成后重绘Canvas
+      setTimeout(() => {
+        if (this.canvasContext) {
+          this.drawLayeredWaves('#4A90E2');
+        }
+      }, 200);
     }
   }
 
@@ -94,9 +109,21 @@ struct WallpaperPage {
    */
   initializeIndex() {
     const params = router.getParams() as RouterParams;
-    if (params && typeof params.index === 'number' && 
-        params.index >= 0 && params.index < this.quotes.length) {
-      this.currentQuoteIndex = params.index;
+    if (params) {
+      // 优先使用传递的quote参数
+      if (params.quote) {
+        const quoteIndex = this.quotes.findIndex(q => q.id === params.quote!.id);
+        if (quoteIndex >= 0) {
+          this.currentQuoteIndex = quoteIndex;
+        } else {
+          // 如果没找到对应的quote，将传递的quote添加到列表开头
+          this.quotes.unshift(params.quote);
+          this.currentQuoteIndex = 0;
+        }
+      } else if (typeof params.index === 'number' && 
+                 params.index >= 0 && params.index < this.quotes.length) {
+        this.currentQuoteIndex = params.index;
+      }
     }
   }
 
@@ -345,15 +372,29 @@ struct WallpaperPage {
           .height('100%')
           .backgroundColor('#E6E6E6') // 与wallpaper.html保持一致
           .onReady(() => {
-            if (this.canvasContext) {
-              // 获取Canvas尺寸
-              this.canvasWidth = 360; // 根据实际容器宽度调整
-              this.canvasHeight = 640; // 根据实际容器高度调整
-              
-              // 初始绘制
-              if (this.quotes.length > 0) {
+            // 获取Canvas尺寸
+            this.canvasWidth = 360; // 根据实际容器宽度调整
+            this.canvasHeight = 640; // 根据实际容器高度调整
+            
+            console.log('Canvas初始化完成，尺寸:', this.canvasWidth, 'x', this.canvasHeight);
+            
+            // 延迟绘制，确保数据已加载
+            setTimeout(() => {
+              if (this.canvasContext && !this.isLoading) {
+                console.log('开始绘制波浪背景');
                 this.drawLayeredWaves('#4A90E2');
               }
+            }, 100);
+          })
+          .onAreaChange((oldValue: Area, newValue: Area) => {
+            // 当Canvas尺寸改变时更新尺寸
+            this.canvasWidth = Number(newValue.width);
+            this.canvasHeight = Number(newValue.height);
+            // 重新绘制
+            if (this.canvasContext && !this.isLoading) {
+              setTimeout(() => {
+                this.drawLayeredWaves('#4A90E2');
+              }, 50);
             }
           })
       }

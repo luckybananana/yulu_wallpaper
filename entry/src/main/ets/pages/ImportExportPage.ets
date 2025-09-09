@@ -3,6 +3,7 @@ import { promptAction } from '@kit.ArkUI';
 import { picker } from '@kit.CoreFileKit';
 import { QuoteDataManager, Quote, AddQuoteParams } from '../common/QuoteDataManager';
 import { fileIo } from '@kit.CoreFileKit';
+import { util } from '@kit.ArkTS';
 
 /**
  * 导入数据接口
@@ -89,14 +90,39 @@ struct ImportExportPage {
       const jsonString = JSON.stringify(exportData, null, 2);
       const fileName = `语录备份_${new Date().toISOString().split('T')[0]}.json`;
       
-      // TODO: 实现文件保存功能
-      // 这里需要使用HarmonyOS的文件保存API
+      // 使用文档保存选择器保存文件
+      const documentSaveOptions = new picker.DocumentSaveOptions();
+      documentSaveOptions.newFileNames = [fileName];
+      documentSaveOptions.fileSuffixChoices = ['.json'];
       
-      const exportSuccessToast: ShowToastOptions = {
-        message: `成功导出${quotes.length}条语录`,
-        duration: 2000
-      };
-      promptAction.showToast(exportSuccessToast);
+      const documentViewPicker = new picker.DocumentViewPicker();
+      const saveResult = await documentViewPicker.save(documentSaveOptions);
+      
+      if (saveResult && saveResult.length > 0) {
+        const filePath = saveResult[0];
+        
+        // 写入文件内容
+        const file = fileIo.openSync(filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE);
+        const buffer = new ArrayBuffer(jsonString.length);
+        const uint8Array = new Uint8Array(buffer);
+        for (let i = 0; i < jsonString.length; i++) {
+          uint8Array[i] = jsonString.charCodeAt(i);
+        }
+        fileIo.writeSync(file.fd, buffer);
+        fileIo.closeSync(file.fd);
+        
+        const exportSuccessToast: ShowToastOptions = {
+          message: `成功导出${quotes.length}条语录\n文件位置: ${filePath}`,
+          duration: 3000
+        };
+        promptAction.showToast(exportSuccessToast);
+      } else {
+        const cancelToast: ShowToastOptions = {
+          message: '导出已取消',
+          duration: 2000
+        };
+        promptAction.showToast(cancelToast);
+      }
     } catch (error) {
       console.error('导出数据失败:', error);
       const exportErrorToast: ShowToastOptions = {
@@ -148,11 +174,11 @@ struct ImportExportPage {
       const readLen = fileIo.readSync(file.fd, buffer);
       fileIo.closeSync(file.fd);
       
+      // 使用util.TextDecoder正确解码UTF-8文件内容
       const uint8Array = new Uint8Array(buffer, 0, readLen);
-      let content = '';
-      for (let i = 0; i < uint8Array.length; i++) {
-        content += String.fromCharCode(uint8Array[i]);
-      }
+      const decoder = util.TextDecoder.create('utf-8');
+      const content = decoder.decodeWithStream(uint8Array, { stream: false });
+      
       const importData: ImportData = JSON.parse(content);
       
       if (importData.quotes && Array.isArray(importData.quotes)) {
@@ -186,16 +212,16 @@ struct ImportExportPage {
       const readLen = fileIo.readSync(file.fd, buffer);
       fileIo.closeSync(file.fd);
       
-      const uint8Array2 = new Uint8Array(buffer, 0, readLen);
-      let content2 = '';
-      for (let i = 0; i < uint8Array2.length; i++) {
-        content2 += String.fromCharCode(uint8Array2[i]);
-      }
-      const importData2: ImportData = JSON.parse(content2);
+      // 使用util.TextDecoder正确解码UTF-8文件内容
+      const uint8Array = new Uint8Array(buffer, 0, readLen);
+      const decoder = util.TextDecoder.create('utf-8');
+      const content = decoder.decodeWithStream(uint8Array, { stream: false });
       
-      if (importData2.quotes && Array.isArray(importData2.quotes)) {
+      const importData: ImportData = JSON.parse(content);
+      
+      if (importData.quotes && Array.isArray(importData.quotes)) {
         let importCount = 0;
-        for (const quote of importData2.quotes) {
+        for (const quote of importData.quotes) {
           if (quote.text && quote.text.trim()) {
             const addQuoteData: AddQuoteParams = {
               text: quote.text,
@@ -281,109 +307,127 @@ struct ImportExportPage {
 
       Scroll() {
         Column() {
-
           // 导出功能卡片
-          Column() {
+            Column() {
             Row() {
               Column() {
-                Text('导出数据')
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#333333')
-                
-                Text('将所有语录导出为JSON文件')
-                  .fontSize(14)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
+                Row() {
+                  Text('📤')
+                    .fontSize(28)
+                    .margin({ right: 12 })
+                  
+                  Column() {
+                    Text('导出数据')
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor('#1D1D1F')
+                    
+                    Text('将所有语录导出为JSON文件')
+                      .fontSize(14)
+                      .fontColor('#86868B')
+                      .margin({ top: 4 })
+                  }
+                  .alignItems(HorizontalAlign.Start)
+                  .layoutWeight(1)
+                }
+                .width('100%')
               }
-              .alignItems(HorizontalAlign.Start)
               .layoutWeight(1)
-              
-              Text('📤')
-                .fontSize(24)
             }
             .width('100%')
-            .margin({ bottom: 16 })
+            .margin({ bottom: 12 })
 
             Button('导出数据')
               .width('100%')
-              .height(44)
+              .height(48)
               .fontSize(16)
+              .fontWeight(FontWeight.Medium)
               .fontColor('#FFFFFF')
               .backgroundColor('#007AFF')
-              .borderRadius(8)
+              .borderRadius(12)
               .enabled(!this.isLoading)
               .onClick(() => this.exportData())
           }
           .width('100%')
-          .padding(20)
+          .padding(24)
           .backgroundColor('#FFFFFF')
-          .borderRadius(12)
-          .margin({ bottom: 16 })
+          .borderRadius(16)
+          .margin({ bottom: 12 })
+          .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
 
           // 导入功能卡片
           Column() {
             Row() {
               Column() {
-                Text('导入数据')
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#333333')
-                
-                Text('从JSON文件导入语录数据')
-                  .fontSize(14)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
+                Row() {
+                  Text('📥')
+                    .fontSize(28)
+                    .margin({ right: 12 })
+                  
+                  Column() {
+                    Text('导入数据')
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor('#1D1D1F')
+                    
+                    Text('从JSON文件导入语录数据')
+                      .fontSize(14)
+                      .fontColor('#86868B')
+                      .margin({ top: 4 })
+                  }
+                  .alignItems(HorizontalAlign.Start)
+                  .layoutWeight(1)
+                }
+                .width('100%')
               }
-              .alignItems(HorizontalAlign.Start)
               .layoutWeight(1)
-              
-              Text('📥')
-                .fontSize(24)
             }
             .width('100%')
-            .margin({ bottom: 16 })
+            .margin({ bottom: 20 })
 
             if (this.selectedFile) {
               Column() {
                 Text('已选择文件')
                   .fontSize(12)
-                  .fontColor('#666666')
+                  .fontColor('#86868B')
                   .alignSelf(ItemAlign.Start)
+                  .margin({ bottom: 6 })
                 
                 Text(this.selectedFile.split('/').pop() || '')
                   .fontSize(14)
-                  .fontColor('#333333')
-                  .margin({ top: 4 })
+                  .fontColor('#1D1D1F')
+                  .fontWeight(FontWeight.Medium)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
               }
               .width('100%')
-              .padding(12)
-              .backgroundColor('#F8F9FA')
-              .borderRadius(8)
-              .margin({ bottom: 12 })
+              .padding(16)
+              .backgroundColor('#F2F2F7')
+              .borderRadius(12)
+              .margin({ bottom: 16 })
             }
 
             Row() {
               Button('选择文件')
                 .layoutWeight(1)
-                .height(44)
+                .height(48)
                 .fontSize(16)
+                .fontWeight(FontWeight.Medium)
                 .fontColor('#007AFF')
-                .backgroundColor('#F0F8FF')
-                .borderRadius(8)
+                .backgroundColor('#E3F2FD')
+                .borderRadius(12)
                 .enabled(!this.isLoading)
                 .onClick(() => this.selectImportFile())
               
               if (this.selectedFile) {
                 Button('开始导入')
                   .layoutWeight(1)
-                  .height(44)
+                  .height(48)
                   .fontSize(16)
+                  .fontWeight(FontWeight.Medium)
                   .fontColor('#FFFFFF')
                   .backgroundColor('#34C759')
-                  .borderRadius(8)
+                  .borderRadius(12)
                   .margin({ left: 12 })
                   .enabled(!this.isLoading)
                   .onClick(() => this.confirmImport())
@@ -392,84 +436,96 @@ struct ImportExportPage {
             .width('100%')
           }
           .width('100%')
-          .padding(20)
+          .padding(24)
           .backgroundColor('#FFFFFF')
-          .borderRadius(12)
-          .margin({ bottom: 16 })
+          .borderRadius(16)
+          .margin({ bottom: 20 })
+          .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
 
           // 导入预览
           if (this.showPreview && this.importPreview.length > 0) {
             Column() {
               Row() {
+                Text('📋')
+                  .fontSize(24)
+                  .margin({ right: 8 })
+                
                 Text('导入预览')
-                  .fontSize(16)
+                  .fontSize(18)
                   .fontWeight(FontWeight.Medium)
-                  .fontColor('#333333')
+                  .fontColor('#1D1D1F')
                 
                 Blank()
                 
                 Text(`${this.importPreview.length}条`)
                   .fontSize(14)
-                  .fontColor('#666666')
+                  .fontColor('#86868B')
+                  .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+                  .backgroundColor('#F2F2F7')
+                  .borderRadius(8)
               }
               .width('100%')
-              .margin({ bottom: 12 })
+              .margin({ bottom: 16 })
 
               ForEach(this.importPreview.slice(0, 3), (quote: Quote, index: number) => {
                 Column() {
                   Text(quote.text || '')
                     .fontSize(14)
-                    .fontColor('#333333')
+                    .fontColor('#1D1D1F')
                     .maxLines(2)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  
-
+                    .lineHeight(20)
                 }
                 .width('100%')
-                .padding(12)
-                .backgroundColor('#F8F9FA')
-                .borderRadius(8)
+                .padding(16)
+                .backgroundColor('#F9F9F9')
+                .borderRadius(12)
                 .margin({ bottom: 8 })
               })
 
               if (this.importPreview.length > 3) {
                 Text(`还有${this.importPreview.length - 3}条语录...`)
                   .fontSize(12)
-                  .fontColor('#666666')
+                  .fontColor('#86868B')
+                  .textAlign(TextAlign.Center)
                   .margin({ top: 8 })
               }
             }
             .width('100%')
-            .padding(20)
+            .padding(24)
             .backgroundColor('#FFFFFF')
-            .borderRadius(12)
-            .margin({ bottom: 16 })
+            .borderRadius(16)
+            .margin({ bottom: 20 })
+            .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
           }
 
 
         }
-        .padding(16)
+        .padding({ left: 20, right: 20, top: 0, bottom: 20 })
       }
       .layoutWeight(1)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor('#F8F9FA')
 
       // 加载状态
       if (this.isLoading) {
         Row() {
           LoadingProgress()
-            .width(20)
-            .height(20)
+            .width(24)
+            .height(24)
             .color('#007AFF')
           
           Text('处理中...')
-            .fontSize(14)
-            .fontColor('#666666')
-            .margin({ left: 8 })
+            .fontSize(16)
+            .fontColor('#1D1D1F')
+            .fontWeight(FontWeight.Medium)
+            .margin({ left: 12 })
         }
         .width('100%')
-        .height(50)
+        .height(60)
         .justifyContent(FlexAlign.Center)
-        .backgroundColor('rgba(255, 255, 255, 0.9)')
+        .backgroundColor('rgba(255, 255, 255, 0.95)')
+        .borderRadius({ topLeft: 16, topRight: 16 })
+        .shadow({ radius: 12, color: 'rgba(0, 0, 0, 0.1)', offsetY: -2 })
       }
     }
     .width('100%')
