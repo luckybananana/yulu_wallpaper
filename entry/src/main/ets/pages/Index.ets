@@ -16,10 +16,18 @@ struct Index {
   @State isLoading: boolean = true;
   @State showActionMenu: boolean = false;
   @State currentQuote: Quote | null = null;
+  @State isSearchMode: boolean = false;
+  @State searchKeyword: string = '';
+  @State filteredQuotes: Quote[] = [];
   
   private dataManager: QuoteDataManager = QuoteDataManager.getInstance(getContext(this));
 
   async aboutToAppear() {
+    await this.loadData();
+  }
+
+  // 页面显示时刷新数据
+  async onPageShow() {
     await this.loadData();
   }
 
@@ -86,14 +94,15 @@ struct Index {
 
   // 全选/取消全选
   toggleSelectAll() {
-    const allSelected = this.selectedQuotes.size === this.quotes.length;
+    const currentQuotes = this.getCurrentQuotes();
+    const allSelected = this.selectedQuotes.size === currentQuotes.length;
     
     if (allSelected) {
       this.selectedQuotes.clear();
       this.exitMultiSelectMode();
     } else {
       this.selectedQuotes.clear();
-      this.quotes.forEach(quote => this.selectedQuotes.add(quote.id));
+      currentQuotes.forEach(quote => this.selectedQuotes.add(quote.id));
     }
   }
 
@@ -185,35 +194,100 @@ struct Index {
     });
   }
 
+  // 切换搜索模式
+  toggleSearchMode() {
+    this.isSearchMode = !this.isSearchMode;
+    if (!this.isSearchMode) {
+      this.searchKeyword = '';
+      this.filteredQuotes = [];
+    }
+  }
+
+  // 执行搜索
+  async performSearch() {
+    if (this.searchKeyword.trim() === '') {
+      this.filteredQuotes = [];
+      return;
+    }
+    
+    try {
+      this.filteredQuotes = await this.dataManager.searchQuotes(this.searchKeyword);
+    } catch (error) {
+      console.error('搜索失败:', error);
+      const searchErrorToast: ShowToastOptions = {
+        message: '搜索失败，请重试'
+      };
+      promptAction.showToast(searchErrorToast);
+    }
+  }
+
+  // 获取当前显示的语录列表
+  getCurrentQuotes(): Quote[] {
+    if (this.isSearchMode && this.searchKeyword.trim() !== '') {
+      return this.filteredQuotes;
+    }
+    return this.quotes;
+  }
+
   build() {
     Stack() {
       Column() {
         // 顶部导航栏（正常模式）
         if (!this.isMultiSelectMode) {
-          Row() {
-            Text('语录壁纸')
-              .fontSize(20)
-              .fontWeight(600)
-              .fontColor('#1A1A1A')
-              .layoutWeight(1)
-            
-            Button() {
-              Image($r('app.media.ic_search'))
-                .width(20)
-                .height(20)
-                .fillColor('#666666')
+          Column() {
+            Row() {
+              Text('语录壁纸')
+                .fontSize(20)
+                .fontWeight(600)
+                .fontColor('#1A1A1A')
+                .layoutWeight(1)
+              
+              Button() {
+                Image($r('app.media.ic_search'))
+                  .width(20)
+                  .height(20)
+                  .fillColor('#666666')
+              }
+              .width(40)
+              .height(40)
+              .backgroundColor(Color.Transparent)
+              .borderRadius(20)
+              .onClick(() => {
+                this.toggleSearchMode();
+              })
             }
-            .width(40)
-            .height(40)
-            .backgroundColor(Color.Transparent)
-            .borderRadius(20)
-            .onClick(() => {
-              // 搜索功能
-            })
+            .width('100%')
+            .height(56)
+            .padding({ left: 16, right: 16 })
+            
+            // 搜索输入框
+            if (this.isSearchMode) {
+              Row() {
+                TextInput({ placeholder: '搜索语录内容', text: this.searchKeyword })
+                  .layoutWeight(1)
+                  .height(40)
+                  .borderRadius(20)
+                  .backgroundColor('#F5F5F5')
+                  .padding({ left: 16, right: 16 })
+                  .onChange((value: string) => {
+                    this.searchKeyword = value;
+                    this.performSearch();
+                  })
+                
+                Button('取消')
+                  .fontSize(14)
+                  .fontColor('#4A90E2')
+                  .backgroundColor(Color.Transparent)
+                  .padding({ left: 12, right: 0 })
+                  .onClick(() => {
+                    this.toggleSearchMode();
+                  })
+              }
+              .width('100%')
+              .padding({ left: 16, right: 16, bottom: 12 })
+            }
           }
           .width('100%')
-          .height(56)
-          .padding({ left: 16, right: 16 })
           .backgroundColor('#FFFFFF')
           .border({ width: { bottom: 1 }, color: '#E1E5E9' })
         }
@@ -287,17 +361,17 @@ struct Index {
           .layoutWeight(1)
           .justifyContent(FlexAlign.Center)
           .backgroundColor('#F8F9FA')
-        } else if (this.quotes.length === 0) {
+        } else if (this.getCurrentQuotes().length === 0) {
           // 空状态
           Column() {
             Text('💬')
               .fontSize(48)
               .margin({ bottom: 16 })
-            Text('还没有语录')
+            Text(this.isSearchMode && this.searchKeyword.trim() !== '' ? '未找到相关语录' : '还没有语录')
               .fontSize(18)
               .fontColor('#666666')
               .margin({ bottom: 8 })
-            Text('点击下方的 + 按钮\n添加你的第一条语录吧')
+            Text(this.isSearchMode && this.searchKeyword.trim() !== '' ? '尝试使用其他关键词搜索' : '点击下方的 + 按钮\n添加你的第一条语录吧')
               .fontSize(14)
               .fontColor('#999999')
               .textAlign(TextAlign.Center)
@@ -310,7 +384,7 @@ struct Index {
         } else {
           // 语录列表
           List({ space: 12 }) {
-            ForEach(this.quotes, (quote: Quote) => {
+            ForEach(this.getCurrentQuotes(), (quote: Quote) => {
               ListItem() {
                 Stack() {
                   // 语录卡片
@@ -323,14 +397,7 @@ struct Index {
                       .margin({ bottom: 12 })
                       .width('100%')
                     
-                    if (quote.author) {
-                      Text(`—— ${quote.author}`)
-                        .fontSize(14)
-                        .fontColor('#666666')
-                        .fontStyle(FontStyle.Italic)
-                        .width('100%')
-                        .textAlign(TextAlign.End)
-                    }
+
                   }
                   .width('100%')
                   .padding(20)
@@ -348,6 +415,14 @@ struct Index {
                   })
                   .backgroundColor(this.selectedQuotes.has(quote.id) ? 'rgba(74, 144, 226, 0.05)' : '#FFFFFF')
                   .onClick(() => this.showQuoteActionMenu(quote))
+                  .gesture(
+                    LongPressGesture({ repeat: false })
+                      .onAction(() => {
+                        if (!this.isMultiSelectMode) {
+                          this.toggleQuoteSelection(quote.id);
+                        }
+                      })
+                  )
                   
                   // 多选模式复选框
                   if (this.isMultiSelectMode) {

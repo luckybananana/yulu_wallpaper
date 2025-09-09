@@ -6,7 +6,7 @@ import { QuoteDataManager, Quote, AddQuoteParams, UpdateQuoteParams } from '../c
  */
 interface EditPageParams {
   mode?: string; // 'add' 或 'edit'
-  id?: number;   // 编辑模式下的语录ID
+  quote?: Quote; // 编辑模式下的语录对象
 }
 
 /**
@@ -33,7 +33,7 @@ interface TextStyle {
 @Component
 struct EditPage {
   @State isEditMode: boolean = false;
-  @State editingQuoteId: number | null = null;
+  @State editingQuote: Quote | null = null;
   @State quoteContent: string = '';
   @State charCount: number = 0;
   @State maxLength: number = 200;
@@ -72,14 +72,13 @@ struct EditPage {
       const params = router.getParams() as EditPageParams;
       if (params) {
         const mode = params.mode;
-        const quoteId = params.id;
         
-        if (mode === 'edit' && quoteId !== null && quoteId !== undefined) {
+        if (mode === 'edit' && params.quote) {
           this.isEditMode = true;
-          this.editingQuoteId = Number(quoteId);
-          // 加载本地语录，供回填使用
-          await this.loadQuotesForEdit();
-          await this.loadEditData();
+          this.editingQuote = params.quote;
+          // 回填编辑数据
+          this.quoteContent = this.editingQuote.text;
+          this.charCount = this.quoteContent.length;
         }
       }
       
@@ -105,9 +104,9 @@ struct EditPage {
    * 加载编辑数据（在编辑模式下根据id回填内容）
    */
   async loadEditData() {
-    if (this.isEditMode && this.editingQuoteId !== null) {
+    if (this.isEditMode && this.editingQuote !== null) {
       try {
-        const quote = await this.dataManager.getQuoteById(this.editingQuoteId.toString());
+        const quote = this.editingQuote;
         if (quote) {
           this.quoteContent = quote.text;
           this.updateCharCount();
@@ -269,14 +268,14 @@ struct EditPage {
     try {
       this.isLoading = true;
       
-      if (this.isEditMode && this.editingQuoteId !== null) {
+      if (this.isEditMode && this.editingQuote !== null) {
         // 编辑模式：更新现有语录
         const updateParams: UpdateQuoteParams = {
           text: content,
           updatedAt: new Date().toISOString()
         };
         
-        const updatedQuote = await this.dataManager.updateQuote(this.editingQuoteId.toString(), updateParams);
+        const updatedQuote = await this.dataManager.updateQuote(this.editingQuote.id, updateParams);
         if (updatedQuote) {
           this.showToast('语录更新成功！');
         } else {
@@ -287,8 +286,6 @@ struct EditPage {
         // 新增模式：添加新语录
         const addParams: AddQuoteParams = {
           text: content,
-          author: '未知',
-          category: '默认',
           tags: []
         };
         

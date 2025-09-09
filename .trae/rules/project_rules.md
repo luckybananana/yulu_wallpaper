@@ -3,6 +3,8 @@
 3.本项目的代码注释遵循鸿蒙的代码注释规范
 4.本项目使用HarmonyOS ArkTS语言开发
 5.页面布局要严格参考E:\project\yulu_wallpaper\prototype这个文件夹里的html文件，不得增加按钮和功能。
+6.每次修复完运行run.ps1。
+7.直接使用 hdc install 命令成功完成了应用的安装和部署。
 ---
 alwaysApply: true
 ---

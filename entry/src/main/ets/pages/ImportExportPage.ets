@@ -12,12 +12,7 @@ interface ImportData {
 }
 
 // 添加语录数据接口 - 与QuoteDataManager保持一致
-// interface AddQuoteParams {
-//   text: string;
-//   author: string;
-//   category: string;
-//   tags: string[];
-// }
+
 
 // 对话框按钮接口
 interface DialogButton {
@@ -52,15 +47,10 @@ interface ExportData {
 @Component
 struct ImportExportPage {
   // 页面状态
-  @State quotes: Quote[] = [];
   @State isLoading: boolean = false;
   @State selectedFile: string = '';
   @State importPreview: Quote[] = [];
   @State showPreview: boolean = false;
-  
-  // 统计信息
-  @State totalQuotes: number = 0;
-  @State categoryCounts: Map<string, number> = new Map();
   
   // 服务实例
   private quoteManager = QuoteDataManager.getInstance(getContext(this));
@@ -69,49 +59,31 @@ struct ImportExportPage {
    * 页面初始化
    */
   async aboutToAppear() {
-    await this.loadStatistics();
-  }
-
-  /**
-   * 加载统计信息
-   */
-  async loadStatistics() {
-    try {
-      this.quotes = await this.quoteManager.getAllQuotes();
-      this.totalQuotes = this.quotes.length;
-      
-      // 统计分类数量
-      this.categoryCounts.clear();
-      this.quotes.forEach(quote => {
-        const category = quote.category || '未分类';
-        const count = this.categoryCounts.get(category) || 0;
-        this.categoryCounts.set(category, count + 1);
-      });
-    } catch (error) {
-      console.error('加载统计信息失败:', error);
-    }
+    // 页面初始化完成
   }
 
   /**
    * 导出数据到JSON文件
    */
   async exportData() {
-    if (this.quotes.length === 0) {
-      const noDataToast: ShowToastOptions = {
-      message: '暂无数据可导出'
-    };
-      noDataToast.duration = 2000;
-      promptAction.showToast(noDataToast);
-      return;
-    }
-
     this.isLoading = true;
     try {
+      const quotes = await this.quoteManager.getAllQuotes();
+      
+      if (quotes.length === 0) {
+        const noDataToast: ShowToastOptions = {
+          message: '暂无数据可导出',
+          duration: 2000
+        };
+        promptAction.showToast(noDataToast);
+        return;
+      }
+
       const exportData: ExportData = {
         version: '1.0',
         exportTime: new Date().toISOString(),
-        totalCount: this.quotes.length,
-        quotes: this.quotes
+        totalCount: quotes.length,
+        quotes: quotes
       };
       
       const jsonString = JSON.stringify(exportData, null, 2);
@@ -121,16 +93,16 @@ struct ImportExportPage {
       // 这里需要使用HarmonyOS的文件保存API
       
       const exportSuccessToast: ShowToastOptions = {
-         message: `成功导出${this.quotes.length}条语录`
-       };
-      exportSuccessToast.duration = 2000;
+        message: `成功导出${quotes.length}条语录`,
+        duration: 2000
+      };
       promptAction.showToast(exportSuccessToast);
     } catch (error) {
       console.error('导出数据失败:', error);
       const exportErrorToast: ShowToastOptions = {
-        message: '导出失败，请重试'
+        message: '导出失败，请重试',
+        duration: 2000
       };
-      exportErrorToast.duration = 2000;
       promptAction.showToast(exportErrorToast);
     } finally {
       this.isLoading = false;
@@ -227,8 +199,6 @@ struct ImportExportPage {
           if (quote.text && quote.text.trim()) {
             const addQuoteData: AddQuoteParams = {
               text: quote.text,
-              author: quote.author || '未知',
-              category: quote.category || '默认',
               tags: quote.tags || []
             };
             await this.quoteManager.addQuote(addQuoteData);
@@ -236,7 +206,6 @@ struct ImportExportPage {
           }
         }
         
-        await this.loadStatistics();
         this.showPreview = false;
         this.selectedFile = '';
         
@@ -256,43 +225,7 @@ struct ImportExportPage {
     }
   }
 
-  /**
-   * 清空所有数据
-   */
-  async clearAllData() {
-    promptAction.showDialog({
-      title: '确认清空',
-      message: `确定要清空所有${this.totalQuotes}条语录吗？此操作不可恢复！`,
-      buttons: [
-        {
-          text: '取消',
-          color: '#666666'
-        },
-        {
-          text: '确认清空',
-          color: '#FF3B30'
-        }
-      ]
-    }).then(async (result) => {
-      if (result.index === 1) {
-        try {
-          await this.quoteManager.clearAllQuotes();
-          await this.loadStatistics();
-          
-          const clearSuccessToast: ShowToastOptions = {} as ShowToastOptions;
-          clearSuccessToast.message = '已清空所有数据';
-          clearSuccessToast.duration = 2000;
-          promptAction.showToast(clearSuccessToast);
-        } catch (error) {
-          console.error('清空数据失败:', error);
-          const clearErrorToast: ShowToastOptions = {} as ShowToastOptions;
-          clearErrorToast.message = '清空失败';
-          clearErrorToast.duration = 2000;
-          promptAction.showToast(clearErrorToast);
-        }
-      }
-    });
-  }
+
 
   /**
    * 返回上一页
@@ -332,7 +265,7 @@ struct ImportExportPage {
         .onClick(() => {
           promptAction.showDialog({
             title: '使用说明',
-            message: '• 导出：将当前所有语录保存为JSON文件\n• 导入：从JSON文件中导入语录数据\n• 清空：删除所有本地语录数据\n\n注意：导入会追加数据，不会覆盖现有数据',
+            message: '• 导出：将当前所有语录保存为JSON文件\n• 导入：从JSON文件中导入语录数据\n\n注意：导入会追加数据，不会覆盖现有数据',
             buttons: [{
               text: '知道了',
               color: '#007AFF'
@@ -348,69 +281,6 @@ struct ImportExportPage {
 
       Scroll() {
         Column() {
-          // 数据统计卡片
-          Column() {
-            Row() {
-              Text('数据统计')
-                .fontSize(16)
-                .fontWeight(FontWeight.Medium)
-                .fontColor('#333333')
-              
-              Blank()
-              
-              Text('📊')
-                .fontSize(20)
-            }
-            .width('100%')
-            .margin({ bottom: 16 })
-
-            Row() {
-              Column() {
-                Text(`${this.totalQuotes}`)
-                  .fontSize(24)
-                  .fontWeight(FontWeight.Bold)
-                  .fontColor('#007AFF')
-                
-                Text('总语录数')
-                  .fontSize(12)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
-              }
-              .layoutWeight(1)
-              
-              Column() {
-                Text(`${this.categoryCounts.size}`)
-                  .fontSize(24)
-                  .fontWeight(FontWeight.Bold)
-                  .fontColor('#34C759')
-                
-                Text('分类数')
-                  .fontSize(12)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
-              }
-              .layoutWeight(1)
-              
-              Column() {
-                Text(this.totalQuotes > 0 ? new Date().toLocaleDateString() : '--')
-                  .fontSize(14)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#FF9500')
-                
-                Text('最后更新')
-                  .fontSize(12)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
-              }
-              .layoutWeight(1)
-            }
-            .width('100%')
-          }
-          .width('100%')
-          .padding(20)
-          .backgroundColor('#FFFFFF')
-          .borderRadius(12)
-          .margin({ bottom: 16 })
 
           // 导出功能卡片
           Column() {
@@ -442,7 +312,7 @@ struct ImportExportPage {
               .fontColor('#FFFFFF')
               .backgroundColor('#007AFF')
               .borderRadius(8)
-              .enabled(!this.isLoading && this.totalQuotes > 0)
+              .enabled(!this.isLoading)
               .onClick(() => this.exportData())
           }
           .width('100%')
@@ -553,13 +423,7 @@ struct ImportExportPage {
                     .maxLines(2)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                   
-                  if (quote.author) {
-                    Text(`—— ${quote.author}`)
-                      .fontSize(12)
-                      .fontColor('#666666')
-                      .margin({ top: 4 })
-                      .alignSelf(ItemAlign.End)
-                  }
+
                 }
                 .width('100%')
                 .padding(12)
@@ -582,43 +446,7 @@ struct ImportExportPage {
             .margin({ bottom: 16 })
           }
 
-          // 危险操作区域
-          Column() {
-            Row() {
-              Column() {
-                Text('清空数据')
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#FF3B30')
-                
-                Text('删除所有本地语录数据')
-                  .fontSize(14)
-                  .fontColor('#666666')
-                  .margin({ top: 4 })
-              }
-              .alignItems(HorizontalAlign.Start)
-              .layoutWeight(1)
-              
-              Text('⚠️')
-                .fontSize(24)
-            }
-            .width('100%')
-            .margin({ bottom: 16 })
 
-            Button('清空所有数据')
-              .width('100%')
-              .height(44)
-              .fontSize(16)
-              .fontColor('#FFFFFF')
-              .backgroundColor('#FF3B30')
-              .borderRadius(8)
-              .enabled(!this.isLoading && this.totalQuotes > 0)
-              .onClick(() => this.clearAllData())
-          }
-          .width('100%')
-          .padding(20)
-          .backgroundColor('#FFFFFF')
-          .borderRadius(12)
         }
         .padding(16)
       }

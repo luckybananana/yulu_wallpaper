@@ -66,8 +66,6 @@ struct WallpaperPage {
         const defaultQuote: Quote = {
           id: 'default',
           text: '生活不是等待风暴过去，而是学会在雨中翩翩起舞。',
-          author: '未知',
-          category: '默认',
           tags: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -82,8 +80,6 @@ struct WallpaperPage {
       const defaultQuote: Quote = {
         id: 'default',
         text: '生活不是等待风暴过去，而是学会在雨中翩翩起舞。',
-        author: '未知',
-        category: '默认',
         tags: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()

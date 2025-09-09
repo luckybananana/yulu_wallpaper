@@ -36,23 +36,14 @@ interface ShowToastOptions {
 @Component
 struct SettingsPage {
   // 设置项状态
-  @State isDarkMode: boolean = false;
-  @State fontSize: number = 16;
   @State autoBackup: boolean = true;
   @State notificationEnabled: boolean = true;
-  @State cacheSize: string = '0 MB';
   @State appVersion: string = '1.0.0';
   
   // 页面状态
   @State isLoading: boolean = false;
   
-  // 设置选项
-  private fontSizeOptions: FontSizeOption[] = [
-    { label: '小', value: 14 },
-    { label: '中', value: 16 },
-    { label: '大', value: 18 },
-    { label: '特大', value: 20 }
-  ];
+
 
   /**
    * 页面初始化
@@ -69,13 +60,8 @@ struct SettingsPage {
     try {
       const dataPreferences = await preferences.getPreferences(getContext(), 'app_settings');
       
-      this.isDarkMode = await dataPreferences.get('dark_mode', false) as boolean;
-      this.fontSize = await dataPreferences.get('font_size', 16) as number;
       this.autoBackup = await dataPreferences.get('auto_backup', true) as boolean;
       this.notificationEnabled = await dataPreferences.get('notification_enabled', true) as boolean;
-      
-      // 计算缓存大小
-      await this.calculateCacheSize();
     } catch (error) {
       console.error('加载设置失败:', error);
     }
@@ -93,18 +79,7 @@ struct SettingsPage {
     }
   }
 
-  /**
-   * 计算缓存大小
-   */
-  async calculateCacheSize() {
-    try {
-      // TODO: 实现缓存大小计算
-      this.cacheSize = '2.5 MB';
-    } catch (error) {
-      console.error('计算缓存大小失败:', error);
-      this.cacheSize = '未知';
-    }
-  }
+
 
   /**
    * 保存设置
@@ -124,31 +99,7 @@ struct SettingsPage {
     }
   }
 
-  /**
-   * 切换深色模式
-   */
-  async toggleDarkMode(enabled: boolean) {
-    this.isDarkMode = enabled;
-    await this.saveSetting('dark_mode', enabled);
-    
-    promptAction.showToast({
-      message: enabled ? '已开启深色模式' : '已关闭深色模式',
-      duration: 2000
-    });
-  }
 
-  /**
-   * 设置字体大小
-   */
-  async setFontSize(size: number) {
-    this.fontSize = size;
-    await this.saveSetting('font_size', size);
-    
-    promptAction.showToast({
-      message: `字体大小已设置为${size}px`,
-      duration: 2000
-    });
-  }
 
   /**
    * 切换自动备份
@@ -178,49 +129,7 @@ struct SettingsPage {
     promptAction.showToast(notificationToast);
   }
 
-  /**
-   * 清除缓存
-   */
-  async clearCache() {
-    promptAction.showDialog({
-      title: '清除缓存',
-      message: '确定要清除应用缓存吗？这将删除临时文件和图片缓存。',
-      buttons: [
-        {
-          text: '取消',
-          color: '#666666'
-        },
-        {
-          text: '清除',
-          color: '#FF3B30'
-        }
-      ] as DialogButton[]
-    }).then(async (result) => {
-      if (result.index === 1) {
-        this.isLoading = true;
-        try {
-          // TODO: 实现缓存清除逻辑
-          await new Promise<void>(resolve => setTimeout(resolve, 1000)); // 模拟清除过程
-          
-          this.cacheSize = '0 MB';
-          const clearSuccessToast: ShowToastOptions = {
-            message: '缓存已清除',
-            duration: 2000
-          };
-          promptAction.showToast(clearSuccessToast);
-        } catch (error) {
-          console.error('清除缓存失败:', error);
-          const clearErrorToast: ShowToastOptions = {
-            message: '清除缓存失败',
-            duration: 2000
-          };
-          promptAction.showToast(clearErrorToast);
-        } finally {
-          this.isLoading = false;
-        }
-      }
-    });
-  }
+
 
   /**
    * 检查更新
@@ -311,83 +220,6 @@ struct SettingsPage {
 
       Scroll() {
         Column() {
-          // 外观设置
-          Column() {
-            Text('外观设置')
-              .fontSize(14)
-              .fontColor('#666666')
-              .alignSelf(ItemAlign.Start)
-              .margin({ bottom: 12 })
-
-            // 深色模式
-            Row() {
-              Row() {
-                Text('🌙')
-                  .fontSize(20)
-                  .margin({ right: 12 })
-                
-                Column() {
-                  Text('深色模式')
-                    .fontSize(16)
-                    .fontColor('#333333')
-                  
-                  Text('开启后界面将使用深色主题')
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .margin({ top: 2 })
-                }
-                .alignItems(HorizontalAlign.Start)
-              }
-              .layoutWeight(1)
-              
-              Toggle({ type: ToggleType.Switch, isOn: this.isDarkMode })
-                .onChange((isOn: boolean) => {
-                  this.toggleDarkMode(isOn);
-                })
-            }
-            .width('100%')
-            .padding({ top: 16, bottom: 16 })
-            .border({ width: { bottom: 1 }, color: '#F0F0F0' })
-
-            // 字体大小
-            Row() {
-              Row() {
-                Text('🔤')
-                  .fontSize(20)
-                  .margin({ right: 12 })
-                
-                Column() {
-                  Text('字体大小')
-                    .fontSize(16)
-                    .fontColor('#333333')
-                  
-                  Text(`当前：${this.fontSize}px`)
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .margin({ top: 2 })
-                }
-                .alignItems(HorizontalAlign.Start)
-              }
-              .layoutWeight(1)
-              
-              Text('>')
-                .fontSize(16)
-                .fontColor('#CCCCCC')
-            }
-            .width('100%')
-            .padding({ top: 16, bottom: 16 })
-            .onClick(() => {
-              // 使用简单的循环切换字体大小
-              const currentIndex = this.fontSizeOptions.findIndex(option => option.value === this.fontSize);
-              const nextIndex = (currentIndex + 1) % this.fontSizeOptions.length;
-              this.setFontSize(this.fontSizeOptions[nextIndex].value);
-            })
-          }
-          .width('100%')
-          .padding(16)
-          .backgroundColor('#FFFFFF')
-          .borderRadius(12)
-          .margin({ bottom: 16 })
 
           // 功能设置
           Column() {
@@ -462,52 +294,7 @@ struct SettingsPage {
           .borderRadius(12)
           .margin({ bottom: 16 })
 
-          // 存储管理
-          Column() {
-            Text('存储管理')
-              .fontSize(14)
-              .fontColor('#666666')
-              .alignSelf(ItemAlign.Start)
-              .margin({ bottom: 12 })
 
-            // 缓存大小
-            Row() {
-              Row() {
-                Text('📁')
-                  .fontSize(20)
-                  .margin({ right: 12 })
-                
-                Column() {
-                  Text('缓存大小')
-                    .fontSize(16)
-                    .fontColor('#333333')
-                  
-                  Text(this.cacheSize)
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .margin({ top: 2 })
-                }
-                .alignItems(HorizontalAlign.Start)
-              }
-              .layoutWeight(1)
-              
-              Button('清除')
-                .height(32)
-                .fontSize(14)
-                .fontColor('#FF3B30')
-                .backgroundColor('#FFF0F0')
-                .borderRadius(6)
-                .enabled(!this.isLoading)
-                .onClick(() => this.clearCache())
-            }
-            .width('100%')
-            .padding({ top: 16, bottom: 16 })
-          }
-          .width('100%')
-          .padding(16)
-          .backgroundColor('#FFFFFF')
-          .borderRadius(12)
-          .margin({ bottom: 16 })
 
           // 关于应用
           Column() {

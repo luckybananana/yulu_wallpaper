@@ -7,8 +7,6 @@ import { util } from '@kit.ArkTS';
 export interface Quote {
   id: string;
   text: string;
-  author: string;
-  category: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -26,8 +24,6 @@ interface ImportQuoteItem {
   id?: string;
   text?: string;
   content?: string;
-  author?: string;
-  category?: string;
   tags?: string[];
   createdAt?: string;
   updatedAt?: string;
@@ -36,8 +32,6 @@ interface ImportQuoteItem {
 // 更新语录参数接口
 export interface UpdateQuoteParams {
   text?: string;
-  author?: string;
-  category?: string;
   tags?: string[];
   updatedAt?: string;
 }
@@ -45,8 +39,6 @@ export interface UpdateQuoteParams {
 // 新增语录参数接口
 export interface AddQuoteParams {
   text: string;
-  author: string;
-  category: string;
   tags: string[];
 }
 
@@ -119,15 +111,13 @@ export class QuoteDataManager {
       const resMgr = this.context.resourceManager;
       const quotesBuffer = await resMgr.getRawFileContent('quotes.json');
       const quotesText = util.TextDecoder.create('utf-8').decodeWithStream(quotesBuffer);
-      const initialQuotes: ImportQuoteItem[] = JSON.parse(quotesText);
+      const initialQuotes: string[] = JSON.parse(quotesText);
       
       // 转换为标准格式
-      this.quotes = initialQuotes.map((quote: ImportQuoteItem, index: number): Quote => ({
+      this.quotes = initialQuotes.map((quoteText: string, index: number): Quote => ({
         id: this.generateId(),
-        text: quote.text || quote.content || '',
-        author: quote.author || '未知',
-        category: quote.category || '默认',
-        tags: quote.tags || [],
+        text: quoteText.trim(),
+        tags: [],
         createdAt: new Date(Date.now() - (initialQuotes.length - index) * 1000).toISOString(),
         updatedAt: new Date(Date.now() - (initialQuotes.length - index) * 1000).toISOString()
       }));
@@ -184,8 +174,6 @@ export class QuoteDataManager {
     const newQuote: Quote = {
       id: this.generateId(),
       text: quoteData.text,
-      author: quoteData.author,
-      category: quoteData.category,
       tags: quoteData.tags,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -209,8 +197,6 @@ export class QuoteDataManager {
     const updatedQuote: Quote = {
       id: this.quotes[index].id,
       text: updates.text !== undefined ? updates.text : this.quotes[index].text,
-      author: updates.author !== undefined ? updates.author : this.quotes[index].author,
-      category: updates.category !== undefined ? updates.category : this.quotes[index].category,
       tags: updates.tags !== undefined ? updates.tags : this.quotes[index].tags,
       createdAt: this.quotes[index].createdAt,
       updatedAt: new Date().toISOString()
@@ -268,24 +254,11 @@ export class QuoteDataManager {
     const lowerKeyword = keyword.toLowerCase();
     return this.quotes.filter(quote => 
       quote.text.toLowerCase().includes(lowerKeyword) ||
-      quote.author.toLowerCase().includes(lowerKeyword) ||
-      quote.category.toLowerCase().includes(lowerKeyword) ||
       quote.tags.some(tag => tag.toLowerCase().includes(lowerKeyword))
     );
   }
 
-  // 按分类获取语录
-  public async getQuotesByCategory(category: string): Promise<Quote[]> {
-    await this.initialize();
-    return this.quotes.filter(quote => quote.category === category);
-  }
 
-  // 获取所有分类
-  public async getAllCategories(): Promise<string[]> {
-    await this.initialize();
-    const categories = new Set(this.quotes.map(quote => quote.category));
-    return Array.from(categories);
-  }
 
   // 获取随机语录
   public async getRandomQuote(): Promise<Quote | null> {
@@ -322,8 +295,6 @@ export class QuoteDataManager {
         .map((item: ImportQuoteItem): Quote => ({
           id: item.id || this.generateId(),
           text: item.text || item.content || '',
-          author: item.author || '未知',
-          category: item.category || '默认',
           tags: Array.isArray(item.tags) ? item.tags : [],
           createdAt: item.createdAt || new Date().toISOString(),
           updatedAt: item.updatedAt || new Date().toISOString()
@@ -350,21 +321,10 @@ export class QuoteDataManager {
   public async getStatistics(): Promise<StatisticsInfo> {
     await this.initialize();
     
-    const categories = new Map<string, number>();
-    this.quotes.forEach(quote => {
-      const count = categories.get(quote.category) || 0;
-      categories.set(quote.category, count + 1);
-    });
-    
-    const categoryObj: Record<string, number> = {};
-    categories.forEach((value, key) => {
-      categoryObj[key] = value;
-    });
-    
     return {
       totalCount: this.quotes.length,
-      categoryCount: categories.size,
-      categories: categoryObj
+      categoryCount: 0,
+      categories: {}
     };
   }
 
