@@ -7,6 +7,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        /* 自定义字体 */
+        @font-face {
+            font-family: 'SimHei';
+            src: url('../simhei.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* 自定义CSS变量 */
         :root {
             --primary-color: #4A90E2;
@@ -57,23 +65,7 @@
             pointer-events: none;
         }
 
-        /* 状态栏模拟 */
-        .status-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 44px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
-            z-index: 10;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
-        }
+
 
         /* 语录内容区域 */
         .quote-content-area {
@@ -86,6 +78,7 @@
 
         .quote-text {
             color: white;
+            font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
             font-weight: 400;
             text-shadow: 0 2px 8px rgba(0,0,0,0.3);
             letter-spacing: 0.5px;
@@ -93,8 +86,6 @@
             /* 字体大小和行高将通过JavaScript根据字数动态调整 */
         }
 
-        /* 作者样式已删除 */
-        
 
         .quote-author::before {
             content: "—— ";
@@ -380,15 +371,7 @@
             <!-- Canvas背景 -->
             <canvas class="wallpaper-canvas" id="wallpaperCanvas"></canvas>
             
-            <!-- 状态栏模拟 -->
-            <div class="status-bar">
-                <span>9:41</span>
-                <div class="flex items-center gap-1">
-                    <i class="fas fa-signal text-sm"></i>
-                    <i class="fas fa-wifi text-sm"></i>
-                    <i class="fas fa-battery-three-quarters text-sm"></i>
-                </div>
-            </div>
+
 
             <!-- 返回按钮 -->
             <button class="back-button" onclick="goBack(event)" title="返回">
@@ -398,8 +381,9 @@
             <!-- 语录内容区域 -->
             <div class="quote-content-area">
                 <div class="quote-text" id="quoteText">
-                    生活不是等待风暴过去，而是学会在雨中翩翩起舞。
-                </div>
+                     <div class="quote-text" id="quoteText">
+                        加载中...
+                     </div>
             </div>
 
             <!-- 导航提示 -->
@@ -438,7 +422,7 @@
             <div class="share-preview">
                 <div class="share-preview-content">
                     <div class="share-quote" id="shareQuoteText">
-                        生活不是等待风暴过去，而是学会在雨中翩翩起舞。
+                        加载中...
                     </div>
                 </div>
                 <div class="share-watermark">语录壁纸</div>
@@ -481,34 +465,55 @@
             "#5488BC", "#917C6B", "#AA9F7C", "#A29296", "#515E68"
         ];
 
-        // 语录数据
-        const quotes = [
-            {
-                content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
-                author: "佚名",
-                color: "#4A90E2"
-            },
-            {
-                content: "成功不是终点，失败不是末日，继续前进的勇气才最可贵。",
-                author: "温斯顿·丘吉尔",
-                color: "#E74C3C"
-            },
-            {
-                content: "人生就像骑自行车，想保持平衡就得往前走。",
-                author: "爱因斯坦",
-                color: "#2ECC71"
-            },
-            {
-                content: "世界上只有一种真正的英雄主义，那就是在认清生活的真相后依然热爱生活。",
-                author: "罗曼·罗兰",
-                color: "#F39C12"
-            },
-            {
-                content: "不要因为走得太远，而忘记了为什么出发。",
-                author: "纪伯伦",
-                color: "#9B59B6"
+        // 本地存储键与工具函数
+        const STORAGE_KEY = 'yulu_quotes';
+        function getStoredQuotes() {
+            try {
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+                return Array.isArray(data) ? data : null;
+            } catch (_) {
+                return null;
             }
-        ];
+        }
+
+        // 语录数据（从localStorage优先加载，否则fallback到quotes.json）
+        let quotes = [];
+
+        /**
+         * 加载语录数据（优先localStorage）
+         */
+        async function loadQuotes() {
+            try {
+                const stored = getStoredQuotes();
+                let source = null;
+                if (Array.isArray(stored) && stored.length > 0) {
+                    source = stored;
+                } else {
+                    const response = await fetch('../quotes.json');
+                    const data = await response.json();
+                    source = Array.isArray(data) ? data : [];
+                }
+
+                // 将字符串数组转换为对象数组，并分配颜色
+                quotes = source.map((content, index) => ({
+                    content: String(content).trim(),
+                    color: COLORS[index % COLORS.length]
+                }));
+
+                console.log('语录数据加载完成:', quotes.length, '条');
+                return quotes;
+            } catch (error) {
+                console.error('加载语录失败:', error);
+                // 使用默认语录作为备选
+                quotes = [
+                    {
+                        content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
+                        color: "#4A90E2"
+                    }
+                ];
+                return quotes;
+            }
+        }
 
         /**
          * 十六进制颜色转RGB
@@ -626,7 +631,9 @@
             window.addEventListener('resize', () => {
                 canvas.width = container.offsetWidth;
                 canvas.height = container.offsetHeight;
-                drawLayeredWaves(quotes[currentQuoteIndex].color);
+                if (quotes.length > 0) {
+                    drawLayeredWaves(quotes[currentQuoteIndex].color);
+                }
             });
         }
 
@@ -650,8 +657,7 @@
          */
         function goBack(event) {
             event.stopPropagation();
-            console.log('返回主界面');
-            showToast('返回主界面');
+            window.location.href = 'main.html';
         }
 
         /**
@@ -672,8 +678,8 @@
          * 编辑语录
          */
         function editQuote() {
-            console.log('编辑语录:', quotes[currentQuoteIndex]);
-            showToast('跳转到编辑页面');
+            const idx = currentQuoteIndex;
+            window.location.href = `edit.html?mode=edit&id=${idx}`;
         }
 
         /**
@@ -834,14 +840,26 @@
         }
 
         // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('壁纸预览界面加载完成');
             
             // 初始化Canvas
             initCanvas();
             
-            // 初始化第一条语录
-            switchToQuote(0);
+            // 加载语录数据
+            await loadQuotes();
+            
+            // 解析URL参数决定初始索引
+            let startIndex = 0;
+            const params = new URLSearchParams(window.location.search);
+            const idxParam = parseInt(params.get('index'), 10);
+            if (!isNaN(idxParam) && idxParam >= 0 && idxParam < quotes.length) {
+                startIndex = idxParam;
+            }
+            // 初始化当前语录
+            if (quotes.length > 0) {
+                switchToQuote(startIndex);
+            }
             
             // 添加触摸事件监听
             const wallpaperPreview = document.getElementById('wallpaperPreview');

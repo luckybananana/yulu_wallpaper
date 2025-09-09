@@ -41,19 +41,7 @@
             position: relative;
         }
 
-        /* 状态栏模拟 */
-        .status-bar {
-            height: 44px;
-            background: var(--bg-primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-        }
+
 
         /* 导航栏 */
         .nav-bar {
@@ -457,15 +445,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="phone-container flex flex-col">
-        <!-- 状态栏模拟 -->
-        <div class="status-bar">
-            <span>9:41</span>
-            <div class="flex items-center gap-1">
-                <i class="fas fa-signal text-sm"></i>
-                <i class="fas fa-wifi text-sm"></i>
-                <i class="fas fa-battery-three-quarters text-sm"></i>
-            </div>
-        </div>
+
 
         <!-- 导航栏 -->
         <div class="nav-bar">
@@ -602,24 +582,43 @@
     </div>
 
     <script>
-        // 全局变量
-        let currentQuotes = [
-            {
-                id: 1,
-                content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
-                author: "佚名",
-                theme: 1,
-                createdAt: "2024-01-15T10:30:00Z"
-            },
-            {
-                id: 2,
-                content: "成功不是终点，失败不是末日，继续前进的勇气才最可贵。",
-                author: "温斯顿·丘吉尔",
-                theme: 2,
-                createdAt: "2024-01-15T11:15:00Z"
+        // 全局变量 - 使用与quotes.json一致的格式
+        let currentQuotes = [];
+
+        /**
+         * 加载语录数据
+         */
+        async function loadQuotes() {
+            try {
+                const response = await fetch('../quotes.json');
+                const quotes = await response.json();
+                currentQuotes = quotes;
+                console.log('语录数据加载完成:', currentQuotes.length, '条');
+                updateUI();
+            } catch (error) {
+                console.error('加载语录失败:', error);
+                // 使用默认数据
+                currentQuotes = [
+                    "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
+                    "成功不是终点，失败不是末日，继续前进的勇气才最可贵。"
+                ];
+                updateUI();
             }
-            // ... 更多示例数据
-        ];
+        }
+
+        /**
+         * 更新UI显示
+         */
+        function updateUI() {
+            // 更新导出结果显示的语录数量
+            const exportResult = document.getElementById('exportResult');
+            if (exportResult) {
+                const resultContent = exportResult.querySelector('.result-content');
+                if (resultContent) {
+                    resultContent.textContent = `已生成包含 ${currentQuotes.length} 条语录的JSON文件`;
+                }
+            }
+        }
 
         /**
          * 页面初始化
@@ -718,8 +717,13 @@
                         throw new Error('JSON数据格式错误，应为数组格式');
                     }
                     
-                    // 验证每个语录项
+                    // 验证每个语录项 - 支持字符串数组格式
                     const validQuotes = jsonData.filter(quote => {
+                        // 支持简单字符串格式（与quotes.json一致）
+                        if (typeof quote === 'string' && quote.trim()) {
+                            return true;
+                        }
+                        // 支持对象格式（兼容旧格式）
                         return quote.content && typeof quote.content === 'string';
                     });
                     
@@ -735,12 +739,15 @@
                     setTimeout(() => {
                         progressContainer.style.display = 'none';
                         
-                        // 模拟添加到现有数据
-                        const newQuotes = validQuotes.map(quote => ({
-                            ...quote,
-                            id: Date.now() + Math.random(),
-                            createdAt: new Date().toISOString()
-                        }));
+                        // 模拟添加到现有数据 - 处理字符串数组格式
+                        const newQuotes = validQuotes.map(quote => {
+                            // 如果是字符串格式，直接使用
+                            if (typeof quote === 'string') {
+                                return quote;
+                            }
+                            // 如果是对象格式，提取content
+                            return quote.content;
+                        });
                         
                         currentQuotes.push(...newQuotes);
                         
@@ -797,12 +804,15 @@
          * 导出语录 - 自动导出到Downloads文件夹
          */
         function exportQuotes() {
-            const exportData = currentQuotes.map(quote => ({
-                content: quote.content,
-                author: quote.author,
-                theme: quote.theme,
-                createdAt: quote.createdAt
-            }));
+            // 准备导出数据 - 使用简单字符串数组格式（与quotes.json一致）
+            const exportData = currentQuotes.map(quote => {
+                // 如果已经是字符串格式，直接返回
+                if (typeof quote === 'string') {
+                    return quote;
+                }
+                // 如果是对象格式，提取content
+                return quote.content || quote;
+            });
             
             const jsonString = JSON.stringify(exportData, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
@@ -999,8 +1009,9 @@
         }
 
         // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('导入导出界面加载完成');
+            await loadQuotes();
             initPage();
             
             // 添加键盘事件监听

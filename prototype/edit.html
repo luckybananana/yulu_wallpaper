@@ -7,6 +7,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        /* 自定义字体 */
+        @font-face {
+            font-family: 'SimHei';
+            src: url('../simhei.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* 自定义CSS变量 */
         :root {
             --primary-color: #4A90E2;
@@ -37,19 +45,7 @@
             position: relative;
         }
 
-        /* 状态栏模拟 */
-        .status-bar {
-            height: 44px;
-            background: var(--bg-primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-        }
+
 
         /* 导航栏 */
         .nav-bar {
@@ -256,6 +252,7 @@
 
         .preview-quote {
             color: white;
+            font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
             line-height: 1.5;
             /* 字体大小将通过JavaScript根据字数动态调整 */
@@ -392,15 +389,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="phone-container flex flex-col">
-        <!-- 状态栏模拟 -->
-        <div class="status-bar">
-            <span>9:41</span>
-            <div class="flex items-center gap-1">
-                <i class="fas fa-signal text-sm"></i>
-                <i class="fas fa-wifi text-sm"></i>
-                <i class="fas fa-battery-three-quarters text-sm"></i>
-            </div>
-        </div>
+
 
         <!-- 导航栏 -->
         <div class="nav-bar">
@@ -470,26 +459,54 @@
         let isEditMode = false;
         let editingQuoteId = null;
         
-        // 示例数据（模拟从主页面传递过来的编辑数据）
-        const editData = {
-            id: 1,
-            content: "生活不是等待风暴过去，而是学会在雨中翩翩起舞。",
-            author: "佚名",
-            theme: 1
-        };
+        // 语录数据（从 quotes.json 加载，用于编辑模式回填）
+        let quotes = [];
 
         /**
-         * 页面初始化
+         * 加载语录数据（用于编辑页回填）
+         * 优先从 localStorage 读取，若无则回退到上级目录的 quotes.json
+         * @returns {Promise<string[]>} 返回加载到的语录数组
          */
-        function initPage() {
+        async function loadQuotesForEdit() {
+            try {
+                const storageKey = 'yulu_quotes';
+                const stored = JSON.parse(localStorage.getItem(storageKey) || 'null');
+                if (Array.isArray(stored)) {
+                    quotes = stored.map(s => String(s).trim());
+                    return quotes;
+                }
+            } catch (_) {
+                // 忽略解析错误，继续从文件加载
+            }
+            try {
+                const res = await fetch('../quotes.json');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                quotes = Array.isArray(data) ? data.map(s => String(s).trim()) : [];
+                return quotes;
+            } catch (err) {
+                console.error('加载编辑数据失败:', err);
+                quotes = [];
+                return quotes;
+            }
+        }
+
+        /**
+         * 页面初始化（异步）
+         * 解析 URL 参数决定是否为编辑模式，编辑模式下加载本地语录用于回填
+         */
+        async function initPage() {
             // 检查是否为编辑模式（通过URL参数或其他方式）
             const urlParams = new URLSearchParams(window.location.search);
             const mode = urlParams.get('mode');
             const quoteId = urlParams.get('id');
             
-            if (mode === 'edit' && quoteId) {
+            if (mode === 'edit' && quoteId !== null) {
                 isEditMode = true;
-                editingQuoteId = quoteId;
+                const parsed = Number(quoteId);
+                editingQuoteId = Number.isFinite(parsed) ? parsed : null;
+                // 加载本地语录，供回填使用
+                await loadQuotesForEdit();
                 loadEditData();
             }
             
@@ -499,12 +516,14 @@
         }
 
         /**
-         * 加载编辑数据
+         * 加载编辑数据（在编辑模式下根据 id 回填内容）
          */
         function loadEditData() {
-            if (isEditMode && editData) {
-                document.getElementById('quoteContent').value = editData.content;
-                
+            if (isEditMode && Array.isArray(quotes) && quotes.length > 0 && editingQuoteId !== null) {
+                const content = quotes[editingQuoteId];
+                if (typeof content === 'string' && content.trim().length > 0) {
+                    document.getElementById('quoteContent').value = content.trim();
+                }
                 updateCharCount('quoteContent', 'quoteCharCount', 200);
                 validateForm();
             }
@@ -754,7 +773,8 @@
          */
         function goBack() {
             console.log('返回主界面');
-            showToast('返回主界面');
+            // 跳转回主页
+            window.location.href = 'main.html';
         }
 
         /**
@@ -773,17 +793,31 @@
                 return;
             }
             
-            // 模拟保存操作
+            const storageKey = 'yulu_quotes';
+            let data;
             try {
-                // 这里可以添加实际的保存逻辑，比如发送到服务器
-                // 目前只是模拟保存成功
+                data = JSON.parse(localStorage.getItem(storageKey) || 'null');
+            } catch (_) {
+                data = null;
+            }
+            // 若本地无数据，使用已加载的 quotes 作为初始数组
+            let arr = Array.isArray(data) ? data.slice() : (Array.isArray(quotes) ? quotes.slice() : []);
+            
+            try {
+                if (isEditMode && Number.isFinite(editingQuoteId) && editingQuoteId >= 0 && editingQuoteId < arr.length) {
+                    arr[editingQuoteId] = content;
+                } else {
+                    arr.push(content);
+                }
+                localStorage.setItem(storageKey, JSON.stringify(arr));
                 showToast('语录保存成功！', 'success');
                 
-                // 可选：保存后返回上一页
-                // setTimeout(() => {
-                //     goBack();
-                // }, 1500);
+                // 保存成功后返回主页，让主页自动读取最新数据
+                setTimeout(() => {
+                    window.location.href = 'main.html';
+                }, 600);
             } catch (error) {
+                console.error('保存失败:', error);
                 showToast('保存失败，请重试', 'error');
             }
         }
@@ -829,9 +863,9 @@
         }
 
         // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('语录编辑界面加载完成');
-            initPage();
+            await initPage();
             handleInputFocus();
             
             // 为保存按钮绑定点击事件

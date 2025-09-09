@@ -2,1278 +2,745 @@
 2.本项目的代码规范遵循鸿蒙的代码规范
 3.本项目的代码注释遵循鸿蒙的代码注释规范
 4.本项目使用HarmonyOS ArkTS语言开发
-# HarmonyOS ArkTS 开发规范与最佳实践
-
-本文档面向所有HarmonyOS ArkTS应用开发者，提供完整的编码规范、项目结构、模块使用和最佳实践指导。适用于任何新建或现有的ArkTS项目。
-
-## 目录
-
-- [1. 项目结构规范](#1-项目结构规范)
-- [2. 模块导入规范](#2-模块导入规范)
-- [3. 类型定义规范](#3-类型定义规范)
-- [4. 组件开发规范](#4-组件开发规范)
-- [5. UI布局与样式规范](#5-ui布局与样式规范)
-- [6. 代码格式化规范](#6-代码格式化规范)
-- [7. 异步编程规范](#7-异步编程规范)
-- [8. 资源管理规范](#8-资源管理规范)
-- [9. 错误处理规范](#9-错误处理规范)
-- [10. 性能优化指南](#10-性能优化指南)
-- [11. 安全开发规范](#11-安全开发规范)
-- [12. 测试规范](#12-测试规范)
-
+5.页面布局要严格参考E:\project\yulu_wallpaper\prototype这个文件夹里的html文件，不得增加按钮和功能。
 ---
-
-## 1. 项目结构规范
-
-### 1.1 标准目录结构
-```
-entry/src/main/ets/
-├── common/              # 公共工具类、常量、枚举
-│   ├── constants/       # 常量定义
-│   ├── utils/          # 工具函数
-│   ├── types/          # 通用类型定义
-│   └── managers/       # 业务管理器
-├── components/         # 可复用UI组件
-│   ├── base/          # 基础组件
-│   └── business/      # 业务组件
-├── pages/             # 页面级组件
-│   ├── main/          # 主要页面
-│   └── settings/      # 设置相关页面
-├── services/          # 业务逻辑服务
-│   ├── api/           # API接口服务
-│   ├── data/          # 数据服务
-│   └── storage/       # 存储服务
-├── models/            # 数据模型定义
-└── entryability/      # 应用入口能力
-```
-
-### 1.2 文件命名规范
-- **文件名**: 使用PascalCase，如：`UserProfile.ets`、`HttpService.ets`
-- **页面文件**: 使用PascalCase + "Page"后缀，如：`HomePage.ets`、`SettingsPage.ets`
-- **组件文件**: 使用PascalCase，如：`CustomButton.ets`、`LoadingSpinner.ets`
-- **服务文件**: 使用PascalCase + "Service"后缀，如：`ApiService.ets`
-- **工具文件**: 使用PascalCase + "Utils"后缀，如：`DateUtils.ets`
-
-### 1.3 模块职责划分
-- `common/`: 项目通用代码，不依赖具体业务
-- `components/`: 可复用UI组件，支持props传递
-- `pages/`: 页面级组件，包含完整的页面逻辑
-- `services/`: 业务逻辑层，处理数据和业务规则
-- `models/`: 数据模型，定义应用使用的数据结构
-
+alwaysApply: true
 ---
+# 项目目录说明
 
-## 2. 模块导入规范
-
-### 2.1 Kit模块 vs API模块详解
-
-#### 2.1.1 @kit模块（推荐使用）
-- **定义**: HarmonyOS为提升开发效率而推出的高级别API封装方式
-- **特点**: 面向特定领域或功能的开发工具包，API设计更加独立和高级
-- **版本**: 从API 12开始推荐使用，替代传统@ohos模块
-- **优势**: 更易使用，功能更完整，开发效率更高
-
-#### 2.1.2 @ohos模块（兼容保留）
-- **定义**: HarmonyOS核心系统级API，提供底层系统功能
-- **特点**: 更接近操作系统底层，提供基础运行环境和服务
-- **兼容性**: 仍然保持兼容，但官方推荐迁移到@kit
-- **关系**: 被@kit模块内部依赖和调用
-
-### 2.2 完整Kit模块参考
-
-#### 2.2.1 核心框架Kit
-```typescript
-// 应用框架服务
-import { AbilityConstant, UIAbility, Want, common } from '@kit.AbilityKit';
-// UI开发框架
-import { window, promptAction } from '@kit.ArkUI';
+## 项目目录（单层HarmonyOS架构）
+```
+├── AppScope/                # 应用全局配置与资源目录
+│   ├── app.json5            # 应用全局配置文件
+│   └── resources/           # 全局资源（如图片、字符串等）
+│       └── base/            # 默认主题资源
+│           ├── element/     # 字符串等元素资源
+│           └── media/       # 图片、图层等多媒体资源
+├── build-profile.json5      # 项目构建配置文件
+├── code-linter.json5        # 代码规范/检查配置
+├── entry/                   # 主应用入口模块
+│   ├── build-profile.json5  # entry 模块构建配置
+│   ├── hvigorfile.ts        # entry 模块构建脚本
+│   ├── obfuscation-rules.txt# 混淆规则
+│   ├── oh-package.json5     # entry 模块包配置
+│   └── src/                 # 主模块源码
+│       ├── main/            # 主入口源码
+│       │   ├── ets/         # 业务逻辑代码（ets 脚本）
+│       │   │   ├── entryability/        # 主 Ability 入口
+│       │   │   │   └── EntryAbility.ets # 主 Ability 实现
+│       │   │   ├── entrybackupability/  # 备份相关 Ability
+│       │   │   │   └── EntryBackupAbility.ets
+│       │   │   └── pages/               # 页面代码
+│       │   │       └── Index.ets        # 首页实现
+│       │   ├── module.json5             # 模块配置
+│       │   └── resources/               # 资源文件
+│       │       ├── base/                # 默认主题资源
+│       │       │   ├── element/         # 颜色、字符串等
+│       │       │   ├── media/           # 图片等
+│       │       │   └── profile/         # 页面、备份等配置
+│       │       ├── dark/                # 暗色主题资源
+│       │       │   └── element/         # 暗色主题颜色
+│       │       └── rawfile/             # 原始文件资源
+│       ├── mock/                        # mock 配置
+│       │   └── mock-config.json5        # mock 配置文件
+│       ├── ohosTest/                    # 集成测试代码
+│       │   ├── ets/                     # 测试脚本
+│       │   │   └── test/                # 测试用例
+│       │   │       ├── Ability.test.ets # Ability 测试
+│       │   │       └── List.test.ets    # 列表测试
+│       │   └── module.json5             # 测试模块配置
+│       └── test/                        # 单元测试代码
+│           ├── List.test.ets            # 列表单元测试
+│           └── LocalUnit.test.ets       # 本地单元测试
+├── hvigor/                  # 构建工具相关配置
+│   └── hvigor-config.json5  # hvigor 配置
+├── hvigorfile.ts            # 根构建脚本
+├── local.properties         # 本地配置文件
+├── oh-package-lock.json5    # 包依赖锁定文件
+├── oh-package.json5         # 根包配置
+├── oh_modules/              # 依赖模块目录
+│   ├── .ohpm/               # OHPM 包管理器缓存
+│   └── @ohos/               # 官方模块
+└── run.sh                   # 一键构建部署脚本(macOs)
+└── run.ps1                  # 一键构建部署脚本(windows)
 ```
 
-#### 2.2.2 文件和媒体Kit
-```typescript
-// 文件管理服务
-import { File, fileIo } from '@kit.CoreFileKit';
-// 媒体库访问服务
-import { photoAccessHelper } from '@kit.MediaLibraryKit';
-// 图像处理服务
-import { image } from '@kit.ImageKit';
-// 媒体处理服务
-import { media } from '@kit.MediaKit';
-```
+## 目录说明（单层HarmonyOS架构）
+1. **AppScope 目录**：存放应用全局配置和资源，包含应用级别的配置文件和全局资源。
+2. **entry 目录**：主应用入口模块，负责应用的启动、路由配置和主要页面入口。
+3. **resources 目录**：分为 base（默认主题）、dark（暗色主题）、rawfile（原始文件）等，便于多主题和多资源管理。
+4. **hvigor 相关文件**：鸿蒙项目的构建工具配置，run.sh/run.ps1 脚本可一键完成依赖安装、构建、部署和启动。
+5. **测试目录**：mock、ohosTest、test 目录分别用于模拟数据、集成测试和单元测试。
+6. **oh_modules 目录**：存放项目依赖的第三方模块和官方模块。
+7. **配置文件**：包括构建配置、代码规范配置、本地配置等。
 
-#### 2.2.3 网络和通信Kit
-```typescript
-// 网络通信服务
-import { http } from '@kit.NetworkKit';
-```
+**单层HarmonyOS架构特点**：
+- **单模块结构**：以 entry 模块为核心，包含所有业务逻辑和页面
+- **资源管理**：支持多主题资源管理，便于适配不同场景
+- **测试完备**：包含单元测试和集成测试，保证代码质量
+- **构建工具**：使用 hvigor 构建工具，支持模块化构建和部署
 
-#### 2.2.4 系统服务Kit
-```typescript
-// 基础服务
-import { BusinessError, pasteboard } from '@kit.BasicServicesKit';
-// 性能分析工具
-import { hilog } from '@kit.PerformanceAnalysisKit';
-```
-
-#### 2.2.5 智能功能Kit
-```typescript
-// 扫码服务
-import { detectBarcode, scanBarcode } from '@kit.ScanKit';
-// 语音服务
-import { speechKit } from '@kit.SpeechKit';
-// 视觉服务
-import { interactiveLiveness } from '@kit.VisionKit';
-import { textRecognition } from '@kit.CoreVisionKit';
-```
-
-### 2.3 常用ohos API模块参考
-
-#### 2.3.1 路由和导航
-```typescript
-// 页面路由
-import router from '@ohos.router';
-```
-
-#### 2.3.2 多媒体模块
-```typescript
-// 相机功能
-import camera from '@ohos.multimedia.camera';
-// 图像处理
-import image from '@ohos.multimedia.image';
-// 音视频媒体
-import media from '@ohos.multimedia.media';
-```
-
-#### 2.3.3 文件系统
-```typescript
-// 文件I/O操作
-import fileio from '@ohos.fileio';
-// 照片访问助手
-import photoAccessHelper from '@ohos.file.photoAccessHelper';
-```
-
-#### 2.3.4 系统服务
-```typescript
-// 日志服务
-import hilog from '@ohos.hilog';
-// 窗口管理
-import window from '@ohos.window';
-// 权限访问控制
-import abilityAccessCtrl from '@ohos.abilityAccessCtrl';
-// 应用包管理
-import bundleManager from '@ohos.bundle.bundleManager';
-```
-
-### 2.4 导入顺序规范
-1. **HarmonyOS Kit模块**（@kit.xxx）- 优先使用
-2. **HarmonyOS API模块**（@ohos.xxx）- 兼容使用
-3. **项目内部模块**（相对路径）
-
-### 2.5 导入示例模板
-```typescript
-// 1. Kit模块 (优先推荐)
-import { common } from '@kit.AbilityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { http } from '@kit.NetworkKit';
-
-// 2. API模块 (兼容使用)
-import router from '@ohos.router';
-import { BusinessError } from '@ohos.base';
-
-// 3. 项目内部模块
-import { ApiService } from '../services/ApiService';
-import { UserModel } from '../models/UserModel';
-import { CustomButton } from '../components/CustomButton';
-```
-
-### 2.6 版本兼容策略
-- **API 12+**: 优先使用@kit模块，@ohos模块作为补充
-- **API 9-11**: 主要使用@ohos模块，部分功能可用@kit
-- **迁移建议**: 逐步将@ohos导入替换为对应的@kit导入
-
----
-
-## 3. 类型定义规范
-
-### 3.1 接口定义
-```typescript
-// 基础数据接口
-export interface UserInfo {
-  id: string;
-  name: string;
-  email?: string;
-  avatar?: string;
-}
-
-// API响应接口
-export interface ApiResponse<T = any> {
-  code: number;
-  message: string;
-  data?: T;
-  timestamp: number;
-}
-
-// 组件属性接口
-export interface ButtonProps {
-  text: string;
-  type?: 'primary' | 'secondary' | 'danger';
-  disabled?: boolean;
-  onClick?: () => void;
-}
-```
-
-### 3.2 类型安全原则
-- **禁用any**: 使用具体类型，避免使用`any`类型
-- **未知类型**: 使用`object`或`Record<string, Function>`代替`any`
-- **可选属性**: 合理使用`?`标记可选属性
-- **联合类型**: 使用联合类型限制值的范围
-
-### 3.3 类型转换
-```typescript
-// 正确的类型转换
-const context = getContext(this) as common.UIAbilityContext;
-const windowObj = mainWindow as Record<string, Function>;
-
-// 错误处理类型转换
-const businessError = error as BusinessError;
-```
-
----
-
-## 4. 组件开发规范
-
-### 4.1 组件结构模板
-```typescript
-@Entry  // 页面组件使用
-@Component
-export struct ComponentName {
-  // 1. 状态变量（按重要性排序）
-  @State private isLoading: boolean = false;
-  @State selectedItem: string = '';
+**代码组织说明**：
+- **页面管理**：所有页面组件放在 `entry/src/main/ets/pages/` 目录下
+- **组件管理**：可在 `entry/src/main/ets/` 下创建 `components/`、`views/`、`utils/` 等目录组织代码
+- **资源引用**：使用 `$r('app.type.name')` 语法引用本模块资源
+  ```typescript
+  // 引用颜色资源
+  Text('标题').fontColor($r('app.color.text_primary'))
   
-  // 2. 属性参数
-  title: string = '默认标题';
-  onConfirm?: (data: any) => void;
+  // 引用字符串资源
+  Text($r('app.string.welcome_message'))
   
-  // 3. 私有属性
-  private dataService: DataService = DataService.getInstance();
-  
-  // 4. 生命周期方法
-  aboutToAppear(): void {
-    this.initializeData();
+  // 引用图片资源
+  Image($r('app.media.icon_home'))
+  ```
+- **常量管理**：建议在 `entry/src/main/ets/constants/` 目录下管理常量
+  ```typescript
+  // constants/PagePath.ets
+  export class PagePath {
+    static readonly HOME = 'pages/Index'
+    static readonly DETAIL = 'pages/Detail'
   }
+  ```
+- **工具类管理**：在 `entry/src/main/ets/utils/` 目录下放置工具类和公共方法
+
+## 资源管理规则
+
+**规则说明：** 在单模块项目中，所有资源统一放在 `entry/src/main/resources/` 目录下管理。
+
+**资源类型与引用方式：**
+
+### 1. 颜色资源引用
+- **资源位置**：`entry/src/main/resources/base/element/color.json`
+- **引用语法**：`$r('app.color.资源名称')`
+- **使用示例**：
+  ```typescript
+  Column()
+    .backgroundColor($r('app.color.white'))
+    .borderColor($r('app.color.brand_primary'))
   
-  aboutToDisappear(): void {
-    this.cleanup();
+  Text('标题')
+    .fontColor($r('app.color.text_primary'))
+  ```
+
+### 2. 字符串资源引用
+- **资源位置**：`entry/src/main/resources/base/element/string.json`
+- **引用语法**：`$r('app.string.资源名称')`
+- **使用示例**：
+  ```typescript
+  Text($r('app.string.welcome_message'))
+    .fontSize(16)
+  ```
+
+### 3. 图片资源引用
+- **资源位置**：`entry/src/main/resources/base/media/`
+- **引用语法**：`$r('app.media.资源名称')`
+- **使用示例**：
+  ```typescript
+  // 图片引用
+  Image($r('app.media.icon_home'))
+    .width(40)
+    .height(40)
+  
+  // SVG 图标可以动态改变颜色
+  Image($r('app.media.ic_arrow_right'))
+    .fillColor($r('app.color.brand_primary'))
+  ```
+
+### 4. 浮点数资源引用
+- **资源位置**：`entry/src/main/resources/base/element/float.json`
+- **引用语法**：`$r('app.float.资源名称')`
+- **使用示例**：
+  ```typescript
+  Text('内容')
+    .fontSize($r('app.float.font_size_large'))
+    .borderRadius($r('app.float.border_radius_medium'))
+  ```
+
+**注意事项：**
+- 资源名称必须与 JSON 文件中定义的 `name` 字段完全匹配
+- 支持暗色主题资源，放在 `dark/element/` 目录下
+- SVG 图标可以使用 `fillColor` 属性动态改变颜色
+- 建议统一管理颜色、字体大小等设计规范，保持应用视觉一致性
+
+# 路由方案
+
+## HMRouter 路由框架正确用法
+- 安装依赖
+  ```bash
+  ohpm install @hadss/hmrouter @hadss/hmrouter-transitions
+  ```
+- **依赖配置**：在 oh-package.json5 中添加依赖，注意安装时的版本好
+  ```json
+  "@hadss/hmrouter": "^1.2.0-beta.1",
+  "@hadss/hmrouter-transitions": "^1.2.0-beta.1"
+  ```
+- **构建插件配置**：在 hvigorfile.ts 中引入插件
+  ```typescript
+  import { hapPlugin } from "@hadss/hmrouter-plugin"; // entry模块
+  import { hspPlugin } from "@hadss/hmrouter-plugin"; // hsp模块
+  ```
+- **初始化**：在 EntryAbility.ets 的 onCreate 方法中初始化
+  ```typescript
+  import { HMRouterMgr } from '@hadss/hmrouter';
+  
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    HMRouterMgr.init({
+      context: this.context,
+    });
   }
+  ```
+- **页面注册**：使用 @HMRouter 装饰器注册页面
+  ```typescript
+  import { HMRouter } from '@hadss/hmrouter'
   
-  // 5. 私有方法
-  private async initializeData(): Promise<void> {
-    // 初始化逻辑
+  @HMRouter({ pageUrl: PAGE_PATH.MEMBER_FORM_VIEW })
+  @ComponentV2
+  export struct MemberFormView {
+    // 页面内容
   }
-  
-  private cleanup(): void {
-    // 清理逻辑
-  }
-  
-  // 6. 事件处理方法
-  private handleClick(): void {
-    this.onConfirm?.(this.selectedItem);
-  }
-  
-  // 7. Builder方法
-  @Builder
-  private buildHeader() {
-    Row() {
-      Text(this.title)
-        .fontSize(18)
-        .fontWeight(FontWeight.Bold)
+  ```
+- **导航管理**：使用 HMRouterMgr 进行页面跳转
+  ```typescript
+  // 页面跳转
+  HMRouterMgr.push({
+    pageUrl: PAGE_PATH.MEMBER_FORM_VIEW,
+    param: {
+      relationship: relationship,
+      parentId: this.selectedMemberId
     }
-  }
+  })
   
-  // 8. build方法
+  // 返回上一页
+  HMRouterMgr.pop()
+  ```
+- **导航容器**：使用 HMNavigation 作为根导航容器
+  ```typescript
+  import { HMDefaultGlobalAnimator, HMNavigation } from '@hadss/hmrouter'
+  
+  HMNavigation({
+    navigationId: 'MainNavigation',
+    homePageUrl: 'MainPage',
+    options: {
+      standardAnimator: HMDefaultGlobalAnimator.STANDARD_ANIMATOR,
+      dialogAnimator: HMDefaultGlobalAnimator.DIALOG_ANIMATOR,
+      modifier: this.modifier
+    }
+  }) {
+    // 页面内容
+  }
+  ```
+- **页面路径管理**：统一管理页面路径常量
+  ```typescript
+  export class PAGE_PATH {
+    static readonly MEMBER_FORM_VIEW: string = "MemberFormView"
+  }
+  ```
+- **注意事项**：
+  - 页面组件必须使用 @HMRouter 装饰器注册
+  - pageUrl 应使用统一的常量管理
+  - 在 EntryAbility 中必须先初始化 HMRouterMgr
+  - 使用 HMNavigation 替代原生 Navigation 组件
+  - 支持页面间参数传递和动画配置
+
+# 状态管理
+
+## 状态管理类型规范（V2版本）
+
+**规则说明：** @Local、@Param、@ObservedV2、@Trace 装饰的变量必须有明确的类型声明，且必须在@ComponentV2装饰的组件中使用。
+
+**重要约束：**
+- @Local、@Param、@Event等V2状态管理装饰器只能在@ComponentV2装饰的struct中使用
+- @State、@Prop、@Link等V1状态管理装饰器只能在@Component装饰的struct中使用
+- 不能在同一个组件中混用V1和V2状态管理装饰器
+- **@ObservedV2装饰过的类在使用时无需添加@Local装饰器**，直接声明即可实现响应式更新
+
+**正确示例：**
+```typescript
+// ✅ 正确 - V2状态管理组件
+@ComponentV2
+struct MyPageV2 {
+  @Local localSearchResults: SearchResult[] = []
+  @Param paramTitle: string = ''
+  
   build() {
     Column() {
-      this.buildHeader()
-      // 其他UI内容
+      // 组件内容
     }
-    .width('100%')
-    .height('100%')
   }
 }
-```
 
-### 4.2 状态管理规范
-- 使用`@State`装饰器声明响应式状态
-- 布尔值状态使用`is`、`has`、`show`、`can`等前缀
-- 私有状态变量使用`private`关键字
-- 避免在状态中存储复杂对象，优先使用基本类型
-
-### 4.3 组件通信规范
-```typescript
-// 父传子：属性传递
+// ✅ 正确 - V1状态管理组件
 @Component
-export struct ChildComponent {
-  data: string = '';
-  callback?: (value: string) => void;
-}
-
-// 子传父：回调函数
-@Component
-export struct ParentComponent {
-  @State childData: string = '';
-  
-  private handleChildCallback = (value: string): void => {
-    this.childData = value;
-  }
+struct MyPageV1 {
+  @State searchResults: SearchResult[] = []
+  @Prop title: string = ''
   
   build() {
-    ChildComponent({
-      data: this.childData,
-      callback: this.handleChildCallback
-    })
+    Column() {
+      // 组件内容
+    }
   }
 }
-```
 
----
-
-## 5. UI布局与样式规范
-
-### 5.1 布局组件选择
-- **Column**: 垂直线性布局
-- **Row**: 水平线性布局  
-- **Stack**: 层叠布局，组件重叠
-- **Flex**: 弹性布局，复杂排列
-- **Grid**: 网格布局，规则排列
-- **List**: 列表布局，大量数据
-
-### 5.2 样式属性顺序
-```typescript
-Component()
-  // 1. 尺寸属性
-  .width('100%')
-  .height(200)
-  
-  // 2. 定位属性  
-  .margin({ top: 10, bottom: 10 })
-  .padding(16)
-  .position({ x: 0, y: 0 })
-  
-  // 3. 背景属性
-  .backgroundColor('#FFFFFF')
-  .backgroundImage('/path/to/image')
-  
-  // 4. 边框属性
-  .border({ width: 1, color: '#E0E0E0', radius: 8 })
-  
-  // 5. 阴影属性
-  .shadow({ radius: 4, color: 'rgba(0,0,0,0.1)', offsetY: 2 })
-  
-  // 6. 文本属性
-  .fontSize(16)
-  .fontColor('#333333')
-  .fontWeight(FontWeight.Medium)
-  
-  // 7. 变换属性
-  .opacity(0.9)
-  .scale({ x: 1.1, y: 1.1 })
-  .rotate({ angle: 45 })
-  
-  // 8. 交互属性
-  .enabled(true)
-  .focusable(true)
-  .onClick(() => {})
-```
-
-### 5.3 颜色值规范
-```typescript
-// 推荐：使用十六进制颜色
-.backgroundColor('#FF6B35')
-.fontColor('#333333')
-
-// 推荐：使用RGBA透明度
-.backgroundColor('rgba(255, 107, 53, 0.8)')
-.shadow({ color: 'rgba(0, 0, 0, 0.15)' })
-
-// 推荐：使用系统颜色
-.fontColor(Color.White)
-.backgroundColor(Color.Transparent)
-
-// 避免：使用颜色名称
-.backgroundColor('red')  // 不推荐
-```
-
-### 5.4 响应式布局
-```typescript
-// 使用百分比布局
-.width('100%')
-.height('50%')
-
-// 使用layoutWeight实现弹性布局
-Column() {
-  Text('固定高度').height(50)
-  Text('弹性高度').layoutWeight(1)
-  Text('固定高度').height(50)
+// ✅ 正确 - V2数据模型
+@ObservedV2
+class UserModel {
+  name: string = ''
+  @Trace age: number = 0
 }
 
-// 使用媒体查询适配不同屏幕
-@Styles
-function responsiveWidth() {
-  .width('90%')
-  // 可以根据屏幕尺寸调整
+// ✅ 正确 - 使用@ObservedV2装饰过的类（无需@Local装饰器）
+@ComponentV2
+struct UserProfile {
+  memberData: UserModel = new UserModel() // 直接声明，自动响应式
+  
+  build() {
+    Column() {
+      Text(this.memberData.name)
+      Text(this.memberData.age.toString())
+    }
+  }
+}
+
+// ✅ 正确 - 计算属性
+@Computed
+get fullName(): string {
+  return `${this.firstName} ${this.lastName}`
 }
 ```
 
----
-
-## 6. 代码格式化规范
-
-### 6.1 缩进和空格
-- 使用2个空格缩进，不使用Tab
-- 运算符前后添加空格
-- 逗号、分号后添加空格
-
-### 6.2 换行规则
+**错误示例：**
 ```typescript
-// 方法链式调用每个方法独占一行
-Button('确定')
-  .fontSize(16)
-  .fontColor(Color.White)
-  .backgroundColor('#007AFF')
-  .borderRadius(8)
-  .padding({ left: 20, right: 20, top: 10, bottom: 10 })
-  .onClick(() => {
-    this.handleConfirm();
+// ❌ 错误：在@Component中使用@Local
+@Component
+struct WrongPage {
+  @Local localData: string = '' // 编译错误
+}
+
+// ❌ 错误：在@ComponentV2中使用@State
+@ComponentV2
+struct AnotherWrongPage {
+  @State stateData: string = '' // 编译错误
+}
+
+// ❌ 错误：@ObservedV2装饰过的类使用@Local装饰器
+@ComponentV2
+struct WrongUserProfile {
+  @Local memberData: UserModel = new UserModel() // 不需要@Local
+}
+```
+
+# 每次代码生成后需编译检查
+
+**重要性：** 这是最高优先级规则，每次代码生成后必须执行编译检查。
+
+**编译检查命令：**
+```bash
+hvigorw assembleApp
+```
+
+**规则说明：**
+- 代码生成完成后，必须立即运行 `hvigorw assembleApp` 进行全项目编译检查
+- 该命令会编译所有模块（entry、basic、member等），确保代码无语法错误
+- 只有编译成功（BUILD SUCCESSFUL）才能认为代码生成任务完成
+- 如果编译失败，必须修复所有错误后重新编译验证
+
+**适用场景：**
+- 新增页面、组件或功能模块后
+- 修改现有代码逻辑后
+- 更新依赖或配置文件后
+- 任何可能影响项目编译的代码变更
+
+**注意事项：**
+- 优先使用 `hvigorw assembleApp` 而不是 `hvigorw assembleHap` 或 `hvigorw build`
+- 编译过程中出现的 ArkTS 错误必须根据项目规则进行修复
+- 编译成功是代码交付的基本要求
+
+# 每次代码生成后需构建部署应用
+
+**重要性：** 这是最高优先级规则，每次代码生成后必须构建部署应用以便测试效果。
+
+**构建部署流程：**
+```bash
+# 1. 编译检查 （App 包含了 hap、hsp、har）
+hvigorw assembleApp  
+
+# 2. 构建部署应用（使用项目脚本）
+./run.sh # macOs
+./run.ps1 # windows
+```
+
+**规则说明：**
+- 代码生成完成并编译成功后，必须立即运行 `run.sh/run.ps1` 脚本进行构建部署
+- 该脚本会自动完成依赖安装、构建、部署和启动应用的完整流程
+- 只有应用成功启动并可以测试效果后，才能认为代码生成任务完全完成
+- 如果部署失败，必须修复问题后重新部署验证
+
+**适用场景：**
+- 新增页面、组件或功能模块后
+- 修改现有UI界面或交互逻辑后
+- 更新路由配置或页面跳转后
+- 任何需要验证用户界面效果的代码变更
+
+**测试验证要求：**
+- 验证新功能是否正常工作
+- 检查UI界面是否符合预期
+- 测试页面跳转和交互是否正常
+- 确认没有运行时错误或异常
+
+**注意事项：**
+- 必须在编译成功后才能进行构建部署
+- 使用项目根目录的 `run.sh/run.ps1` 脚本进行一键部署
+- 部署成功后需要实际测试应用功能
+- 构建部署成功是代码交付的最终要求
+
+# ArkTS 常见错误与修正记录
+
+## $$this 双向绑定语法规则
+- **重要说明**：$$this 是 ArkTS 中正确的双向绑定语法，编辑器可能会报错但这是误报
+- **使用场景**：在需要双向数据绑定的组件中使用，如 bindSheet、bindPopup 等
+- **语法格式**：$$this.propertyName 或 $$variableName
+- **编辑器报错处理**：忽略所有 $$this 相关的编辑器报错，这些都是编辑器的误判
+- **正确示例**：
+  ```typescript
+  @ComponentV2
+  struct MyComponent {
+    @Local showSheet: boolean = false
+    
+    build() {
+      Column() {
+        Button('显示弹窗')
+          .onClick(() => {
+            this.showSheet = true
+          })
+      }
+      .bindSheet($$this.showSheet, this.sheetBuilder, {
+        height: 300
+      })
+    }
+    
+    @Builder
+    sheetBuilder() {
+      Text('弹窗内容')
+    }
+  }
+  ```
+- **注意事项**：
+  - $$this 语法是 HarmonyOS 6 的标准双向绑定语法
+  - 编译时不会报错，只是编辑器的静态检查误报
+  - 可以正常使用，不影响应用运行
+  - 在 code-linter.json5 中已配置忽略相关 TypeScript 报错
+
+
+## 常见错误与修正记录
+
+1. StoreConfig类型
+- 错误：StoreConfig 不能加 stageMode 字段，正确写法只需 { name: string }，如需加密可加 securityLevel。
+- 正确示例：const STORE_CONFIG: relationalStore.StoreConfig = { name: 'bills.db', securityLevel: relationalStore.SecurityLevel.S3 };
+
+2. getRdbStore参数
+- 错误：getRdbStore 只传 StoreConfig 会报类型错误，需传 getContext() 作为第一个参数。
+- 正确示例：relationalStore.getRdbStore(getContext(), STORE_CONFIG, ...)
+
+3. TextInput用法
+- 错误：TextInput().placeholderText() 不存在，正确用法为 TextInput({ placeholder: 'xxx', text: this.xxx })
+
+4. Blank只能在Row/Column/Flex内
+- 遮罩建议用 Column().backgroundColor() 实现。
+
+5. ArkTS对象字面量类型
+- 错误：对象字面量必须显式声明类型，不能用any。
+
+6. RdbStore.insert无需await
+- insert为异步回调，不要await，否则类型报错。
+
+7. 组件链式写法
+- ArkTS推荐每个属性单独一行，便于维护和排查。
+
+8. sys.symbol 系统图标资源正确用法
+- **重要**：sys.symbol 资源必须使用 SymbolGlyph 组件，不能使用 Image 组件
+- **SymbolGlyph组件**：专门用于显示系统符号图标，使用 `SymbolGlyph($r('sys.symbol.icon_name'))`
+  - 正确示例：`SymbolGlyph($r('sys.symbol.chevron_right')).width(16).height(16).fontColor(['#CCCCCC', '#FFFFFF'])`
+  - 错误示例：`Image($r('sys.symbol.chevron_right'))` ❌ 不要这样使用
+- **注意事项**：
+  - SymbolGlyph 使用 fontColor 属性设置颜色，接受数组格式：`fontColor(['#color'])`
+  - Image 组件无法正确渲染 sys.symbol 资源，必须使用 SymbolGlyph
+  - 系统图标名称遵循 Apple SF Symbols 命名规范
+  - 常用图标：chevron_right（右箭头）、camera_fill（相机）、house（房子）、house_fill（实心房子）等
+
+9. bindSheet 半模态弹窗正确用法
+- **状态变量声明**：使用 @Local 装饰器声明控制显示状态的布尔变量
+  ```typescript
+  @Local showDatePicker: boolean = false
+  @Local showAddMemberSheet: boolean = false
+  ```
+- **@Builder 方法定义**：创建弹窗内容的构建方法
+  ```typescript
+  @Builder
+  DatePickerDialog() {
+    Column() {
+      Text('选择出生日期')
+        .fontSize(18)
+        .fontWeight(FontWeight.Medium)
+        .margin({ bottom: 20 })
+      
+      DatePicker({
+        start: new Date('1900-1-1'),
+        end: new Date(),
+        selected: this.selectedDate
+      })
+        .onChange((value: DatePickerResult) => {
+          this.selectedDate = new Date(value.year!, value.month!, value.day!)
+        })
+      
+      // 按钮操作区域
+      Row() {
+        Button('取消')
+          .onClick(() => {
+            this.showDatePicker = false
+          })
+        Button('确定')
+          .onClick(() => {
+            // 处理确定逻辑
+            this.showDatePicker = false
+          })
+      }
+    }
+    .padding(20)
+  }
+  ```
+- **bindSheet 绑定**：在组件上使用 bindSheet 方法绑定半模态
+  ```typescript
+  Column() {
+    // 页面内容
+  }
+  .bindSheet($$this.showDatePicker, this.DatePickerDialog(), {
+    height: 400,
+    dragBar: true,
+    backgroundColor: $r('[basic].color.white'),
+    onAppear: () => {
+      console.info('日期选择器出现')
+    },
+    onDisappear: () => {
+      console.info('日期选择器消失')
+    }
   })
+  ```
+- **常用配置选项**：
+  - `height`: 设置弹窗高度
+  - `dragBar`: 是否显示拖拽条
+  - `backgroundColor`: 背景颜色
+  - `title`: 弹窗标题配置 `{ title: '标题文本' }`
+  - `showClose`: 是否显示关闭按钮
+  - `detents`: 弹窗高度档位，优先使用 `[SheetSize.FIT_CONTENT]` 自适应内容高度
+  - `onAppear`: 弹窗出现回调
+  - `onDisappear`: 弹窗消失回调
+- **触发显示**：通过修改状态变量来控制弹窗显示
+  ```typescript
+  Button('选择日期')
+    .onClick(() => {
+      this.showDatePicker = true
+    })
+  ```
+- **注意事项**：
+  - 状态变量必须使用双向绑定 `$$this.variableName`
+  - @Builder 方法返回的组件作为弹窗内容
+  - 可以在同一个组件上绑定多个 bindSheet
+  - 弹窗内容应包含关闭弹窗的操作逻辑
+  - 建议在回调中添加日志便于调试
 
-// 长参数列表适当换行
-function createUser(
-  name: string,
-  email: string,
-  phone: string,
-  address: string
-): UserInfo {
+10. ArkTS对象更新规则
+- **直接属性修改**：推荐使用直接属性赋值方式更新对象
+  ```typescript
+  // ✅ 正确：直接属性修改
+  this.memberData.name = newName
+  this.memberData.gender = 'male'
+  this.memberData.isAlive = true
+  ```
+- **禁用方式**：以下方式在ArkTS中不被支持
+  ```typescript
+  // ❌ 错误：对象展开语法（arkts-no-spread）
+  this.memberData = { ...this.memberData, name: newName }
+  
+  // ❌ 错误：Object.assign（arkts-no-untyped-obj-literals）
+  this.memberData = Object.assign({}, this.memberData, { name: newName })
+  ```
+- **原因说明**：ArkTS对对象字面量和展开语法有严格限制，直接属性修改是最安全和推荐的方式
+- **适用场景**：所有需要更新对象属性的场景，特别是状态管理中的数据更新
+
+## 常见类型安全规则
+
+### 对象字面量类型声明 (arkts-no-untyped-obj-literals)
+
+**规则说明：** 所有对象字面量必须对应明确声明的类或接口类型。
+
+**错误示例：**
+```typescript
+// ❌ 错误：未明确指定返回类型的对象字面量
+return items.map(item => ({
+  id: item.id,
+  name: item.name,
+  type: 'example'
+}))
+
+// ❌ 错误：缺少显式返回类型
+function processItems(items: Item[]) {
+  return items.map(item => ({
+    id: item.id,
+    name: item.name.toUpperCase()
+  }));
+}
+
+// ❌ 错误：推断类型可能不准确
+function transformData(data: any[]) {
+  return data.map(item => {
+    return {
+      processed: true,
+      value: item
+    };
+  });
+}
+```
+
+**正确示例：**
+```typescript
+// ✅ 正确：明确指定返回类型
+return items.map((item): ResultInterface => {
+  return {
+    id: item.id,
+    name: item.name,
+    type: 'example'
+  }
+})
+
+// 或者使用临时变量
+return items.map(item => {
+  const result: ResultInterface = {
+    id: item.id,
+    name: item.name,
+    type: 'example'
+  }
+  return result
+})
+
+// ✅ 正确：显式声明返回类型
+function processItems(items: Item[]): ResultInterface[] {
+  return items.map((item: Item): ResultInterface => {
+    return {
+      id: item.id,
+      name: item.name.toUpperCase()
+    };
+  });
+}
+
+// ✅ 正确：明确类型声明
+function transformData(data: any[]): TransformedData[] {
+  return data.map((item: any): TransformedData => {
+    return {
+      processed: true,
+      value: item
+    };
+  });
+}
+```
+
+**适用场景：**
+- map、filter、reduce 等数组方法的回调函数
+- 函数返回值
+- 变量赋值
+- 参数传递
+
+**修复方法：**
+1. 为箭头函数添加明确的返回类型注解
+2. 使用临时变量并声明类型
+3. 确保接口或类型定义存在且可访问
+
+### 对象字面量类型声明禁止 (arkts-no-obj-literals-as-types)
+
+**规则说明：** ArkTS禁止在函数参数、变量声明等位置直接使用对象字面量作为类型声明，必须先定义接口或类型别名。
+
+**错误示例：**
+```typescript
+// ❌ 错误：函数参数使用对象字面量类型
+@Builder
+buildStatItem(item: { number: string, label: string }) {
+  // 编译错误：Object literals cannot be used as type declarations
+}
+
+// ❌ 错误：变量声明使用对象字面量类型
+let config: { host: string, port: number } = {
+  host: 'localhost',
+  port: 3000
+}
+
+// ❌ 错误：函数返回类型使用对象字面量
+function getData(): { id: number, name: string } {
+  return { id: 1, name: 'test' }
+}
+```
+
+**正确示例：**
+```typescript
+// ✅ 正确：先定义接口
+interface StatItem {
+  number: string;
+  label: string;
+}
+
+@Builder
+buildStatItem(item: StatItem) {
+  // 正确使用
+}
+
+// ✅ 正确：定义配置接口
+interface ServerConfig {
+  host: string;
+  port: number;
+}
+
+let config: ServerConfig = {
+  host: 'localhost',
+  port: 3000
+}
+
+// ✅ 正确：定义返回类型接口
+interface DataResult {
+  id: number;
+  name: string;
+}
+
+function getData(): DataResult {
+  return { id: 1, name: 'test' }
+}
+```
+
+**修复方法：**
+1. 在文件顶部或适当位置定义接口
+2. 将对象字面量类型提取为独立的接口声明
+3. 使用定义好的接口替换对象字面量类型
+4. 确保接口命名清晰且符合业务语义
+
+**最佳实践：**
+- 接口命名使用大驼峰命名法
+- 将相关接口组织在一起
+- 考虑接口的复用性，避免重复定义相似结构
+
+### 组件属性类型检查
+
+**规则说明：** 组件的所有属性和方法参数必须有明确的类型定义。
+
+**示例：**
+```typescript
+// ✅ 正确
+private performSearch(keyword: string): Promise<SearchResult[]> {
   // 实现
 }
 
-// 对象字面量适当换行
-const userInfo = {
-  id: '123',
-  name: '张三',
-  email: 'zhangsan@example.com',
-  createTime: Date.now()
-};
-```
-
-### 6.3 大括号规范
-```typescript
-// 控制语句大括号与语句同行
-if (condition) {
-  // 代码
-}
-
-// 函数大括号另起一行（可选）
-function methodName(): void {
-  // 代码
-}
-
-// 或与函数名同行
-function methodName(): void {
-  // 代码
+private onItemClick(item: SearchResult): void {
+  // 实现
 }
 ```
 
----
-
-## 7. 异步编程规范
-
-### 7.1 Promise处理模式
-```typescript
-// 标准async/await模式
-async function fetchUserData(userId: string): Promise<UserInfo | null> {
-  try {
-    const response = await apiService.getUser(userId);
-    if (response.code === 200) {
-      return response.data;
-    } else {
-      console.error('获取用户信息失败:', response.message);
-      return null;
-    }
-  } catch (error) {
-    const businessError = error as BusinessError;
-    console.error('请求异常:', businessError.message);
-    return null;
-  }
-}
-
-// 组件中使用异步方法
-@Component
-export struct UserProfile {
-  @State userInfo: UserInfo | null = null;
-  @State isLoading: boolean = false;
-  
-  async aboutToAppear(): Promise<void> {
-    await this.loadUserData();
-  }
-  
-  private async loadUserData(): Promise<void> {
-    this.isLoading = true;
-    try {
-      this.userInfo = await fetchUserData('123');
-    } finally {
-      this.isLoading = false;
-    }
-  }
-}
-```
-
-### 7.2 错误处理策略
-```typescript
-// 统一错误处理函数
-function handleError(error: unknown, context: string): void {
-  const businessError = error as BusinessError;
-  console.error(`${context}发生错误:`, {
-    code: businessError.code,
-    message: businessError.message,
-    stack: businessError.stack
-  });
-  
-  // 可以添加用户提示逻辑
-  promptAction.showToast({
-    message: '操作失败，请稍后重试',
-    duration: 2000
-  });
-}
-
-// 在业务代码中使用
-async function saveUserInfo(userInfo: UserInfo): Promise<boolean> {
-  try {
-    await apiService.updateUser(userInfo);
-    return true;
-  } catch (error) {
-    handleError(error, '保存用户信息');
-    return false;
-  }
-}
-```
-
-### 7.3 并发处理
-```typescript
-// 并发请求处理
-async function loadPageData(): Promise<void> {
-  const [userInfo, notifications, settings] = await Promise.all([
-    fetchUserInfo(),
-    fetchNotifications(),
-    fetchSettings()
-  ]);
-  
-  // 处理结果
-  this.userInfo = userInfo;
-  this.notifications = notifications;
-  this.settings = settings;
-}
-
-// 串行请求处理
-async function processUserFlow(): Promise<void> {
-  const userInfo = await fetchUserInfo();
-  if (userInfo) {
-    const preferences = await fetchUserPreferences(userInfo.id);
-    await applyPreferences(preferences);
-  }
-}
-```
-
----
-
-## 8. 资源管理规范
-
-### 8.1 单例模式实现
-```typescript
-export class DataManager {
-  private static instance: DataManager;
-  private cache: Map<string, any> = new Map();
-  
-  private constructor() {}
-  
-  public static getInstance(): DataManager {
-    if (!DataManager.instance) {
-      DataManager.instance = new DataManager();
-    }
-    return DataManager.instance;
-  }
-  
-  public setCache(key: string, value: any): void {
-    this.cache.set(key, value);
-  }
-  
-  public getCache(key: string): any {
-    return this.cache.get(key);
-  }
-  
-  public clearCache(): void {
-    this.cache.clear();
-  }
-}
-```
-
-### 8.2 资源生命周期管理
-```typescript
-@Component
-export struct ResourceComponent {
-  private resourceManager?: ResourceManager;
-  
-  aboutToAppear(): void {
-    this.initializeResources();
-  }
-  
-  aboutToDisappear(): void {
-    this.releaseResources();
-  }
-  
-  private initializeResources(): void {
-    this.resourceManager = new ResourceManager();
-    this.resourceManager.initialize();
-  }
-  
-  private async releaseResources(): Promise<void> {
-    if (this.resourceManager) {
-      await this.resourceManager.release();
-      this.resourceManager = undefined;
-    }
-  }
-}
-```
-
-### 8.3 内存管理
-```typescript
-// 大对象及时释放
-class DataProcessor {
-  private largeData?: ArrayBuffer;
-  
-  process(data: ArrayBuffer): void {
-    this.largeData = data;
-    // 处理数据
-    this.processInternal();
-    // 处理完成后立即释放
-    this.largeData = undefined;
-  }
-  
-  private processInternal(): void {
-    // 具体处理逻辑
-  }
-}
-
-// 避免内存泄漏
-class EventManager {
-  private listeners: Set<Function> = new Set();
-  
-  addListener(listener: Function): void {
-    this.listeners.add(listener);
-  }
-  
-  removeListener(listener: Function): void {
-    this.listeners.delete(listener);
-  }
-  
-  destroy(): void {
-    this.listeners.clear();
-  }
-}
-```
-
----
-
-## 9. 错误处理规范
-
-### 9.1 错误类型定义
-```typescript
-export enum ErrorCode {
-  NETWORK_ERROR = 1001,
-  PERMISSION_DENIED = 1002,
-  DATA_NOT_FOUND = 1003,
-  INVALID_PARAMETER = 1004,
-  SYSTEM_ERROR = 1005
-}
-
-export interface AppError {
-  code: ErrorCode;
-  message: string;
-  details?: any;
-  timestamp: number;
-}
-
-export class AppException extends Error {
-  public readonly code: ErrorCode;
-  public readonly details?: any;
-  public readonly timestamp: number;
-  
-  constructor(code: ErrorCode, message: string, details?: any) {
-    super(message);
-    this.code = code;
-    this.details = details;
-    this.timestamp = Date.now();
-    this.name = 'AppException';
-  }
-}
-```
-
-### 9.2 全局错误处理
-```typescript
-export class GlobalErrorHandler {
-  public static handle(error: Error | AppException): void {
-    if (error instanceof AppException) {
-      this.handleAppException(error);
-    } else if (error instanceof Error) {
-      this.handleGenericError(error);
-    }
-  }
-  
-  private static handleAppException(error: AppException): void {
-    console.error('应用错误:', {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      timestamp: error.timestamp
-    });
-    
-    // 根据错误类型显示相应提示
-    switch (error.code) {
-      case ErrorCode.NETWORK_ERROR:
-        this.showNetworkErrorToast();
-        break;
-      case ErrorCode.PERMISSION_DENIED:
-        this.showPermissionErrorDialog();
-        break;
-      default:
-        this.showGenericErrorToast(error.message);
-    }
-  }
-  
-  private static handleGenericError(error: Error): void {
-    console.error('系统错误:', error.message, error.stack);
-    this.showGenericErrorToast('系统错误，请稍后重试');
-  }
-}
-```
-
-### 9.3 组件错误边界
-```typescript
-@Component
-export struct ErrorBoundary {
-  @State hasError: boolean = false;
-  @State errorMessage: string = '';
-  
-  @BuilderParam content: () => void;
-  
-  private handleError = (error: Error): void => {
-    this.hasError = true;
-    this.errorMessage = error.message;
-    GlobalErrorHandler.handle(error);
-  }
-  
-  build() {
-    if (this.hasError) {
-      Column() {
-        Text('页面加载失败')
-          .fontSize(16)
-          .fontColor('#FF6B6B')
-        
-        Text(this.errorMessage)
-          .fontSize(12)
-          .fontColor('#999999')
-          .margin({ top: 8 })
-        
-        Button('重试')
-          .margin({ top: 16 })
-          .onClick(() => {
-            this.hasError = false;
-            this.errorMessage = '';
-          })
-      }
-      .width('100%')
-      .height('100%')
-      .justifyContent(FlexAlign.Center)
-    } else {
-      try {
-        this.content()
-      } catch (error) {
-        this.handleError(error as Error);
-      }
-    }
-  }
-}
-```
-
----
-
-## 10. 性能优化指南
-
-### 10.1 渲染优化
-```typescript
-// 使用@Builder减少重复构建
-@Component
-export struct OptimizedList {
-  @State items: ListItem[] = [];
-  
-  // 将复杂的列表项抽取为Builder
-  @Builder
-  private buildListItem(item: ListItem, index: number) {
-    Row() {
-      Image(item.avatar)
-        .width(40)
-        .height(40)
-        .borderRadius(20)
-      
-      Column() {
-        Text(item.name).fontSize(16)
-        Text(item.description).fontSize(12).fontColor('#999999')
-      }
-      .margin({ left: 12 })
-      .alignItems(HorizontalAlign.Start)
-    }
-    .width('100%')
-    .padding(16)
-  }
-  
-  build() {
-    List() {
-      ForEach(this.items, (item: ListItem, index: number) => {
-        ListItem() {
-          this.buildListItem(item, index)
-        }
-      }, (item: ListItem) => item.id) // 提供稳定的key
-    }
-  }
-}
-```
-
-### 10.2 状态优化
-```typescript
-// 避免不必要的状态更新
-@Component
-export struct OptimizedComponent {
-  @State private dataVersion: number = 0;
-  private cachedData: ComplexData | null = null;
-  
-  // 使用计算属性避免重复计算
-  private get processedData(): ProcessedData | null {
-    if (!this.cachedData) {
-      return null;
-    }
-    
-    // 只有数据版本变化时才重新计算
-    if (this.lastProcessedVersion !== this.dataVersion) {
-      this.processedResult = this.processData(this.cachedData);
-      this.lastProcessedVersion = this.dataVersion;
-    }
-    
-    return this.processedResult;
-  }
-  
-  private lastProcessedVersion: number = -1;
-  private processedResult: ProcessedData | null = null;
-  
-  private updateData(newData: ComplexData): void {
-    if (this.isDataChanged(this.cachedData, newData)) {
-      this.cachedData = newData;
-      this.dataVersion++; // 触发重新计算
-    }
-  }
-}
-```
-
-### 10.3 内存优化
-```typescript
-// 图片资源优化
-@Component
-export struct ImageGallery {
-  @State images: string[] = [];
-  private imageCache: Map<string, PixelMap> = new Map();
-  
-  private async loadImage(url: string): Promise<PixelMap | null> {
-    // 检查缓存
-    if (this.imageCache.has(url)) {
-      return this.imageCache.get(url) || null;
-    }
-    
-    try {
-      const pixelMap = await image.createImageSource(url).createPixelMap();
-      
-      // 控制缓存大小
-      if (this.imageCache.size >= 50) {
-        const firstKey = this.imageCache.keys().next().value;
-        this.imageCache.delete(firstKey);
-      }
-      
-      this.imageCache.set(url, pixelMap);
-      return pixelMap;
-    } catch (error) {
-      console.error('图片加载失败:', error);
-      return null;
-    }
-  }
-  
-  aboutToDisappear(): void {
-    // 释放图片缓存
-    this.imageCache.clear();
-  }
-}
-```
-
----
-
-## 11. 安全开发规范
-
-### 11.1 数据验证
-```typescript
-export class DataValidator {
-  public static validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-  
-  public static validatePhone(phone: string): boolean {
-    const phoneRegex = /^1[3-9]\d{9}$/;
-    return phoneRegex.test(phone);
-  }
-  
-  public static sanitizeInput(input: string): string {
-    return input
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/[<>&"']/g, (match) => {
-        const escapeMap: Record<string, string> = {
-          '<': '&lt;',
-          '>': '&gt;',
-          '&': '&amp;',
-          '"': '&quot;',
-          "'": '&#x27;'
-        };
-        return escapeMap[match];
-      });
-  }
-  
-  public static validateUserInput(data: any): ValidationResult {
-    const errors: string[] = [];
-    
-    if (!data.email || !this.validateEmail(data.email)) {
-      errors.push('邮箱格式不正确');
-    }
-    
-    if (!data.phone || !this.validatePhone(data.phone)) {
-      errors.push('手机号格式不正确');
-    }
-    
-    return {
-      isValid: errors.length === 0,
-      errors
-    };
-  }
-}
-```
-
-### 11.2 权限管理
-```typescript
-export class PermissionManager {
-  public static async checkPermission(permission: Permissions): Promise<boolean> {
-    try {
-      const atManager = abilityAccessCtrl.createAtManager();
-      const bundleInfo = await bundleManager.getBundleInfoForSelf(
-        bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION
-      );
-      const tokenId = bundleInfo.appInfo.accessTokenId;
-      
-      const result = await atManager.checkAccessToken(tokenId, permission);
-      return result === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
-    } catch (error) {
-      console.error('权限检查失败:', error);
-      return false;
-    }
-  }
-  
-  public static async requestPermission(
-    context: common.UIAbilityContext,
-    permissions: Permissions[]
-  ): Promise<boolean> {
-    try {
-      const atManager = abilityAccessCtrl.createAtManager();
-      const result = await atManager.requestPermissionsFromUser(context, permissions);
-      
-      return result.authResults.every(
-        result => result === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED
-      );
-    } catch (error) {
-      console.error('权限请求失败:', error);
-      return false;
-    }
-  }
-}
-```
-
-### 11.3 数据加密
-```typescript
-export class SecurityUtils {
-  // 敏感信息不要硬编码
-  private static readonly STORAGE_KEY_PREFIX = 'app_secure_';
-  
-  public static encodeBase64(data: string): string {
-    try {
-      return util.Base64Helper.encodeSync(data);
-    } catch (error) {
-      console.error('Base64编码失败:', error);
-      return '';
-    }
-  }
-  
-  public static decodeBase64(encodedData: string): string {
-    try {
-      return util.Base64Helper.decodeSync(encodedData);
-    } catch (error) {
-      console.error('Base64解码失败:', error);
-      return '';
-    }
-  }
-  
-  // 安全存储敏感数据
-  public static async storeSecureData(key: string, value: string): Promise<boolean> {
-    try {
-      const secureKey = this.STORAGE_KEY_PREFIX + key;
-      const encodedValue = this.encodeBase64(value);
-      
-      const preferences = await dataPreferences.getPreferences(getContext(), 'secure_storage');
-      await preferences.put(secureKey, encodedValue);
-      await preferences.flush();
-      
-      return true;
-    } catch (error) {
-      console.error('安全存储失败:', error);
-      return false;
-    }
-  }
-  
-  public static async getSecureData(key: string): Promise<string | null> {
-    try {
-      const secureKey = this.STORAGE_KEY_PREFIX + key;
-      const preferences = await dataPreferences.getPreferences(getContext(), 'secure_storage');
-      const encodedValue = await preferences.get(secureKey, '') as string;
-      
-      if (encodedValue) {
-        return this.decodeBase64(encodedValue);
-      }
-      return null;
-    } catch (error) {
-      console.error('安全读取失败:', error);
-      return null;
-    }
-  }
-}
-```
-
----
-
-## 12. 测试规范
-
-### 12.1 单元测试结构
-```typescript
-// 测试用例组织结构
-import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from '@ohos/hypium';
-import { BusinessLogic } from '../src/main/ets/services/BusinessLogic';
-
-export default function businessLogicTest() {
-  describe('BusinessLogic', () => {
-    let businessLogic: BusinessLogic;
-    
-    beforeAll(() => {
-      // 全局设置
-    });
-    
-    beforeEach(() => {
-      // 每个测试前的设置
-      businessLogic = new BusinessLogic();
-    });
-    
-    afterEach(() => {
-      // 每个测试后的清理
-      businessLogic = null;
-    });
-    
-    afterAll(() => {
-      // 全局清理
-    });
-    
-    it('should calculate correctly', () => {
-      // 准备
-      const input = { a: 1, b: 2 };
-      const expected = 3;
-      
-      // 执行
-      const result = businessLogic.calculate(input.a, input.b);
-      
-      // 验证
-      expect(result).assertEqual(expected);
-    });
-    
-    it('should handle error cases', () => {
-      // 测试异常情况
-      expect(() => {
-        businessLogic.calculate(null, null);
-      }).assertThrow();
-    });
-  });
-}
-```
-
-### 12.2 组件测试
-```typescript
-import { describe, it, expect } from '@ohos/hypium';
-import { Driver, ON } from '@ohos.UiTest';
-
-export default function componentTest() {
-  describe('CustomButton Component', () => {
-    it('should render correctly', async () => {
-      const driver = Driver.create();
-      
-      // 查找组件
-      const button = await driver.findComponent(ON.text('确定'));
-      expect(await button.isEnabled()).assertTrue();
-      
-      // 模拟点击
-      await button.click();
-      
-      // 验证结果
-      const result = await driver.findComponent(ON.text('已点击'));
-      expect(await result.isExist()).assertTrue();
-    });
-  });
-}
-```
-
-### 12.3 API测试
-```typescript
-export default function apiTest() {
-  describe('API Service', () => {
-    it('should fetch user data successfully', async () => {
-      const apiService = new ApiService();
-      const mockUserId = '123';
-      
-      const result = await apiService.getUserInfo(mockUserId);
-      
-      expect(result).not.assertNull();
-      expect(result.id).assertEqual(mockUserId);
-      expect(result.name).not.assertNull();
-    });
-    
-    it('should handle network errors', async () => {
-      const apiService = new ApiService();
-      
-      // 模拟网络错误
-      try {
-        await apiService.getUserInfo('invalid_id');
-        expect().assertFail('应该抛出异常');
-      } catch (error) {
-        expect(error.code).assertEqual(ErrorCode.NETWORK_ERROR);
-      }
-    });
-  });
-}
-```
-
----
-
-## 13. Kit vs ohos模块迁移指南
-
-### 13.1 选择原则
-- **新项目**: 优先使用@kit模块，减少@ohos依赖
-- **现有项目**: 逐步迁移，优先迁移核心功能
-- **兼容性考虑**: 两种方式可共存，但建议统一风格
-
-### 13.2 迁移路径
-```typescript
-// 第一步：识别可替换的ohos导入
-import hilog from '@ohos.hilog';
-import fileio from '@ohos.fileio';
-import image from '@ohos.multimedia.image';
-
-// 第二步：替换为对应Kit导入
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { fileIo } from '@kit.CoreFileKit';
-import { image } from '@kit.ImageKit';
-
-// 第三步：更新使用方式（如果需要）
-// 某些API调用方式可能略有不同，需要查阅文档确认
-
-// 第四步：测试验证功能正常
-```
-
-### 13.3 混合使用策略
-```typescript
-// 项目中Kit和ohos可以共存，逐步迁移
-import { common } from '@kit.AbilityKit';          // 优先使用Kit
-import { hilog } from '@kit.PerformanceAnalysisKit'; // 已迁移到Kit
-import router from '@ohos.router';                   // 暂时保留ohos版本
-import { BusinessError } from '@ohos.base';         // 基础类型继续使用ohos
-```
-
----
-
-## 附录：常用工具和资源
-
-### A.1 开发工具配置
-- **DevEco Studio**: 官方IDE，支持代码提示、调试、打包
-- **代码格式化**: 配置Prettier或EditorConfig统一代码风格
-- **ESLint**: 配置代码质量检查规则
-- **版本控制**: 使用Git管理代码版本
-
-### A.2 调试技巧
-```typescript
-// 使用hilog进行调试
-import { hilog } from '@kit.PerformanceAnalysisKit';
-
-const TAG = 'MyApp';
-const DOMAIN = 0x0001;
-
-// 不同级别的日志
-hilog.debug(DOMAIN, TAG, '调试信息: %{public}s', debugInfo);
-hilog.info(DOMAIN, TAG, '一般信息: %{public}s', info);
-hilog.warn(DOMAIN, TAG, '警告信息: %{public}s', warning);
-hilog.error(DOMAIN, TAG, '错误信息: %{public}s', error);
-```
-
-### A.3 性能监控
-```typescript
-// 性能监控工具类
-export class PerformanceMonitor {
-  private static timers: Map<string, number> = new Map();
-  
-  public static startTimer(name: string): void {
-    this.timers.set(name, Date.now());
-  }
-  
-  public static endTimer(name: string): number {
-    const startTime = this.timers.get(name);
-    if (startTime) {
-      const duration = Date.now() - startTime;
-      hilog.info(0x0001, 'Performance', `${name} 耗时: ${duration}ms`);
-      this.timers.delete(name);
-      return duration;
-    }
-    return 0;
-  }
-}
-```
-
----
-
-## 结语
-
-本规范文档提供了HarmonyOS ArkTS开发的完整指导，涵盖了从项目结构到具体编码实践的各个方面。建议开发团队根据项目具体需求灵活应用这些规范，并结合团队经验不断完善。
-
-良好的编码规范不仅能提高代码质量，还能提升团队协作效率，为项目的长期维护奠定坚实基础。
-
-**建议使用方式:**
-1. 新项目开始时参考项目结构规范
-2. 日常开发时遵循编码和样式规范  
-3. 代码审查时对照质量和安全规范
-4. 项目迭代时考虑性能优化建议
-
+# 以后遇到类似问题，优先查阅本md文件记录，避免重复犯错。
 ---

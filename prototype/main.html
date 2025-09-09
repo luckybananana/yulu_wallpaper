@@ -37,18 +37,7 @@
             position: relative;
         }
 
-        /* 状态栏样式 */
-        .status-bar {
-            height: 44px;
-            background: var(--bg-primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
+
 
         /* 顶部导航栏 */
         .top-bar {
@@ -421,15 +410,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="phone-container flex flex-col">
-        <!-- 状态栏 -->
-        <div class="status-bar">
-            <span>9:41</span>
-            <div class="flex items-center gap-1">
-                <i class="fas fa-signal text-sm"></i>
-                <i class="fas fa-wifi text-sm"></i>
-                <i class="fas fa-battery-three-quarters text-sm"></i>
-            </div>
-        </div>
+
 
         <!-- 顶部导航栏 -->
         <div class="top-bar">
@@ -461,58 +442,12 @@
 
         <!-- 语录列表容器 -->
         <div class="quotes-container" id="quotesContainer">
-            <!-- 示例语录卡片 -->
-            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
-                <div class="checkbox">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="quote-content">
-                    生活不是等待风暴过去，而是学会在雨中翩翩起舞。
-                </div>
-            </div>
-
-            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
-                <div class="checkbox">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="quote-content">
-                    成功不是终点，失败不是末日，继续前进的勇气才最可贵。
-                </div>
-            </div>
-
-            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
-                <div class="checkbox">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="quote-content">
-                    你的时间有限，不要浪费在重复别人的生活上。不要被教条束缚，那意味着你和别人思考的结果一起生活。
-                </div>
-            </div>
-
-            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
-                <div class="checkbox">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="quote-content">
-                    世界上只有一种真正的英雄主义，那就是在认清生活的真相后依然热爱生活。
-                </div>
-            </div>
-
-            <div class="quote-card" onclick="showActionMenu(this)" oncontextmenu="toggleSelect(this, event)">
-                <div class="checkbox">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="quote-content">
-                    不要因为走得太远，而忘记了为什么出发。
-                </div>
-            </div>
-
-            <!-- 空状态示例（当无语录时显示） -->
-            <!-- <div class="empty-state">
+            <!-- 语录将通过JavaScript动态加载 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
                 <i class="fas fa-quote-left"></i>
                 <h3>还没有语录</h3>
                 <p>点击下方的 + 按钮<br>添加你的第一条语录吧</p>
-            </div> -->
+            </div>
         </div>
 
         <!-- 底部操作栏 -->
@@ -564,6 +499,22 @@
         let selectedQuotes = new Set();
         let currentQuote = null;
 
+        // 本地存储键
+        const STORAGE_KEY = 'yulu_quotes';
+
+        function getStoredQuotes() {
+            try {
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+                return Array.isArray(data) ? data : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function setStoredQuotes(arr) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+        }
+
         /**
          * 显示操作菜单
          * @param {Element} quoteCard - 被点击的语录卡片
@@ -604,7 +555,9 @@
             }
 
             const checkbox = quoteCard.querySelector('.checkbox');
-            const quoteId = Array.from(quoteCard.parentNode.children).indexOf(quoteCard);
+            // 使用所有 .quote-card 的顺序计算索引，避免包含其它子元素
+            const list = Array.from(document.querySelectorAll('.quote-card'));
+            const quoteId = list.indexOf(quoteCard);
 
             if (selectedQuotes.has(quoteId)) {
                 selectedQuotes.delete(quoteId);
@@ -691,16 +644,17 @@
 
             const confirmDelete = confirm(`确定要删除选中的 ${selectedQuotes.size} 条语录吗？`);
             if (confirmDelete) {
-                // 这里应该调用实际的删除逻辑
-                console.log('删除语录:', Array.from(selectedQuotes));
-                
-                // 模拟删除操作
-                const quoteCards = document.querySelectorAll('.quote-card');
+                const stored = getStoredQuotes();
+                const list = Array.isArray(stored) ? stored.slice() : [];
+                // 从大到小删除，保证索引不偏移
                 Array.from(selectedQuotes).sort((a, b) => b - a).forEach(index => {
-                    quoteCards[index].remove();
+                    if (index >= 0 && index < list.length) {
+                        list.splice(index, 1);
+                    }
                 });
-                
+                setStoredQuotes(list);
                 exitMultiSelect();
+                renderQuotes(list);
                 showToast('删除成功');
             }
         }
@@ -710,8 +664,8 @@
          */
         function addQuote() {
             hideActionMenu();
-            console.log('跳转到新增语录页面');
-            showToast('跳转到新增语录页面');
+            // 跳转到新增语录页面
+            window.location.href = 'edit.html';
         }
 
         /**
@@ -720,8 +674,11 @@
         function editQuote() {
             hideActionMenu();
             if (currentQuote) {
-                console.log('编辑语录:', currentQuote);
-                showToast('跳转到编辑语录页面');
+                const list = Array.from(document.querySelectorAll('.quote-card'));
+                const index = list.indexOf(currentQuote);
+                if (index >= 0) {
+                    window.location.href = `edit.html?mode=edit&id=${index}`;
+                }
             }
         }
 
@@ -733,8 +690,20 @@
             if (currentQuote) {
                 const confirmDelete = confirm('确定要删除这条语录吗？');
                 if (confirmDelete) {
-                    currentQuote.remove();
-                    showToast('删除成功');
+                    const listCards = Array.from(document.querySelectorAll('.quote-card'));
+                    const index = listCards.indexOf(currentQuote);
+                    const stored = getStoredQuotes();
+                    const arr = Array.isArray(stored) ? stored.slice() : [];
+                    if (index >= 0 && index < arr.length) {
+                        arr.splice(index, 1);
+                        setStoredQuotes(arr);
+                        renderQuotes(arr);
+                        showToast('删除成功');
+                    } else {
+                        // 回退：只移除DOM
+                        currentQuote.remove();
+                        showToast('删除成功');
+                    }
                 }
             }
         }
@@ -745,8 +714,11 @@
         function previewWallpaper() {
             hideActionMenu();
             if (currentQuote) {
-                console.log('预览壁纸:', currentQuote);
-                showToast('跳转到壁纸预览页面');
+                const list = Array.from(document.querySelectorAll('.quote-card'));
+                const index = list.indexOf(currentQuote);
+                if (index >= 0) {
+                    window.location.href = `wallpaper.html?index=${index}`;
+                }
             }
         }
 
@@ -790,9 +762,72 @@
             }, 3000);
         }
 
+        /**
+         * 加载语录数据
+         */
+        async function loadQuotes() {
+            try {
+                const stored = getStoredQuotes();
+                if (Array.isArray(stored)) {
+                    renderQuotes(stored);
+                    return;
+                }
+                const response = await fetch('../quotes.json');
+                const data = await response.json();
+                const arr = Array.isArray(data) ? data.map(s => String(s)) : [];
+                renderQuotes(arr);
+            } catch (error) {
+                console.error('加载语录失败:', error);
+                showToast('加载语录失败，请检查网络连接');
+                document.getElementById('emptyState').style.display = 'block';
+            }
+        }
+
+        /**
+         * 渲染语录列表
+         * @param {Array} quotes - 语录数组
+         */
+        function renderQuotes(quotes) {
+            const container = document.getElementById('quotesContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (quotes.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // 清空现有内容（保留空状态元素）
+            const existingCards = container.querySelectorAll('.quote-card');
+            existingCards.forEach(card => card.remove());
+            
+            // 渲染语录卡片
+            quotes.forEach((quote, index) => {
+                const quoteCard = document.createElement('div');
+                quoteCard.className = 'quote-card';
+                quoteCard.onclick = () => showActionMenu(quoteCard);
+                quoteCard.oncontextmenu = (e) => toggleSelect(quoteCard, e);
+                
+                quoteCard.innerHTML = `
+                    <div class="checkbox">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="quote-content">
+                        ${quote.trim()}
+                    </div>
+                `;
+                
+                container.appendChild(quoteCard);
+            });
+        }
+
         // 页面加载完成后的初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('语录壁纸主界面加载完成');
+            
+            // 加载语录数据
+            loadQuotes();
             
             // 模拟下拉刷新
             let startY = 0;
@@ -814,8 +849,9 @@
                         isRefreshing = true;
                         showToast('正在刷新...');
                         
-                        // 模拟刷新延迟
+                        // 重新加载语录数据
                         setTimeout(() => {
+                            loadQuotes();
                             isRefreshing = false;
                             showToast('刷新完成');
                         }, 1500);
