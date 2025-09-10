@@ -11,6 +11,10 @@
     {
       "name": "EntryAbility_label",
       "value": "label"
+    },
+    {
+      "name": "permission_set_wallpaper_reason",
+      "value": "应用需要设置壁纸权限以将生成的语录壁纸设置为系统壁纸"
     }
   ]
 }

@@ -9,49 +9,69 @@ $BUNDLE_NAME = "com.wss.myapplication"
 # ================== 固定的变量 ==================
 # 临时目录名（使用随机字符串避免冲突）
 $TMP_DIR = "hm_deploy_tmp_" + [System.Guid]::NewGuid().ToString("N").Substring(0, 16)
-# HAP 包路径
-$ENTRY_HAP = "entry\build\default\outputs\default\entry-default-unsigned.hap"
+# HAP 包路径（构建后将自动探测最新的 .hap 文件）
+$ENTRY_HAP = ""
 # ================== 固定的变量 ==================
 
 # 设置错误时停止执行
 $ErrorActionPreference = "Stop"
 
+function Find-HapFile {
+  <#
+    .SYNOPSIS
+    Auto find the latest generated .hap file under entry\build directory.
+    .DESCRIPTION
+    Different OpenHarmony/DevEco versions may output .hap to different paths (e.g., outputs\default\app\entry-default.hap or outputs\default\entry-default-unsigned.hap).
+    This function recursively searches all .hap files under entry\build and returns the most recently modified one.
+    .OUTPUTS
+    string - the full path to the latest .hap file; throws if none found.
+  #>
+  $buildDir = Join-Path $PSScriptRoot "entry\build"
+  if (-not (Test-Path $buildDir)) {
+    throw "Build directory not found: $buildDir"
+  }
+  $haps = Get-ChildItem -Path $buildDir -Recurse -Filter *.hap -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+  if (-not $haps -or $haps.Count -eq 0) {
+    throw "No .hap artifact found under: $buildDir. Make sure build succeeded."
+  }
+  return $haps[0].FullName
+}
+
 try {
-    Write-Host "1. 安装依赖..." -ForegroundColor Green
+    Write-Host '1) Install dependencies...' -ForegroundColor Green
     ohpm install --all --registry https://ohpm.openharmony.cn/ohpm/ --strict_ssl true
+    Write-Host '   Note: Ensure all dependencies are installed to avoid build failures.' -ForegroundColor DarkGray
 
-    Write-Host "2. 构建项目..." -ForegroundColor Green
+    Write-Host '2) Build project...' -ForegroundColor Green
     hvigorw assembleApp
+    Write-Host '   Note: Run standard assemble task to generate .hap artifacts.' -ForegroundColor DarkGray
 
-    Write-Host "3. 停止正在运行的应用..." -ForegroundColor Green
+    # Locate .hap in case .app packaging requires Java which may be missing in PATH
+    Write-Host '3) Locate HAP artifact...' -ForegroundColor Green
+    $ENTRY_HAP = Find-HapFile
+    Write-Host ("   Found HAP: {0}" -f $ENTRY_HAP) -ForegroundColor Cyan
+    Write-Host '   Note: Compatible with different output directory structures.' -ForegroundColor DarkGray
+
+    Write-Host '4) Stop running app...' -ForegroundColor Green
     try {
         hdc shell aa force-stop "$BUNDLE_NAME"
     } catch {
-        Write-Host "应用未运行或停止失败，继续执行..." -ForegroundColor Yellow
+        Write-Host '   App not running or stop failed, continue...' -ForegroundColor Yellow
     }
+    Write-Host '   Note: Avoid install conflicts by stopping the app.' -ForegroundColor DarkGray
 
-    Write-Host "4. 创建设备临时目录..." -ForegroundColor Green
-    Write-Host "  执行命令: hdc shell mkdir -p data/local/tmp/$TMP_DIR" -ForegroundColor Gray
-    hdc shell mkdir -p "data/local/tmp/$TMP_DIR"
+    Write-Host '5) Install HAP...' -ForegroundColor Green
+    hdc install -r "$ENTRY_HAP"
+    Write-Host '   Note: Install via hdc directly to bypass .app packaging.' -ForegroundColor DarkGray
 
-    Write-Host "5. 传输 HAP 包到设备..." -ForegroundColor Green
-    Write-Host "  - 传输 entry.hap..." -ForegroundColor Cyan
-    Write-Host "  执行命令: hdc file send $ENTRY_HAP data/local/tmp/$TMP_DIR/" -ForegroundColor Gray
-    hdc file send "$ENTRY_HAP" "data/local/tmp/$TMP_DIR/"
-
-    Write-Host "6. 安装应用包..." -ForegroundColor Green
-    hdc shell bm install -p "data/local/tmp/$TMP_DIR"
-
-    Write-Host "7. 清理设备临时文件..." -ForegroundColor Green
-    hdc shell rm -rf "data/local/tmp/$TMP_DIR"
-
-    Write-Host "8. 启动应用..." -ForegroundColor Green
+    Write-Host '6) Launch app...' -ForegroundColor Green
     hdc shell aa start -a EntryAbility -b "$BUNDLE_NAME" -m entry
+    Write-Host '   Note: Verify installation and preview changes immediately.' -ForegroundColor DarkGray
 
-    Write-Host "✅ 构建部署完成！应用已成功启动" -ForegroundColor Green
+    Write-Host 'Build & Deploy finished. App started.' -ForegroundColor Green
 
 } catch {
-    Write-Host "❌ 构建部署失败: $($_.Exception.Message)" -ForegroundColor Red
-    Write-Host "请检查错误信息并重试" -ForegroundColor Red
+    Write-Host ("Build & Deploy failed: {0}" -f $_.Exception.Message) -ForegroundColor Red
+    Write-Host 'Please check error details and retry.' -ForegroundColor Red
     exit 1
 }

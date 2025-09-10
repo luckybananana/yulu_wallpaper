@@ -137,30 +137,44 @@ struct Index {
     });
   }
 
-  // 编辑语录
+  // 编辑语录 (修复此方法)
   editQuote() {
-    this.hideQuoteActionMenu();
+    // 不要在这里立即隐藏菜单
+    // this.hideQuoteActionMenu(); 
     if (this.currentQuote) {
+      // 先执行跳转逻辑
       router.pushUrl({
         url: 'pages/EditPage',
         params: { quote: JSON.stringify(this.currentQuote), mode: 'edit' }
+      }).then(() => {
+        // 跳转成功后再隐藏菜单
+        this.hideQuoteActionMenu();
       }).catch((error: Error) => {
+        // 跳转失败也隐藏菜单
+        this.hideQuoteActionMenu();
         console.error('跳转编辑页面失败:', error);
         const errorToast: ShowToastOptions = {
           message: '跳转失败，请重试'
         };
         promptAction.showToast(errorToast);
       });
+    } else {
+      // 理论上不会发生，但为了健壮性
+      this.hideQuoteActionMenu();
     }
   }
 
-  // 删除单个语录
+  // 删除单个语录 (修复此方法)
   async deleteSingleQuote() {
-    this.hideQuoteActionMenu();
-    if (this.currentQuote) {
+    // 关键修改 1: 在函数一开始就获取 currentQuote 的引用
+    const quoteToDelete = this.currentQuote;
+    // 注意：这里先不立即调用 this.hideQuoteActionMenu();
+
+    if (quoteToDelete) { // 使用局部变量进行检查
       try {
         // 显示确认对话框
-        promptAction.showDialog({
+        // 关键修改 2: 在 showDialog 的回调中处理后续逻辑
+        const result = await promptAction.showDialog({
           title: '确认删除',
           message: '确定要删除这条语录吗？此操作不可撤销。',
           buttons: [
@@ -170,53 +184,80 @@ struct Index {
             },
             {
               text: '删除',
-              color: '#FF3B30'
+              color: '#FF3B30' // 通常用红色表示危险操作
             }
           ]
-        }).then(async (result) => {
-          if (result.index === 1) { // 用户点击了删除
-            try {
-              await this.dataManager.deleteQuotes([this.currentQuote!.id]);
-              const deleteSuccessToast: ShowToastOptions = {
-                message: '删除成功'
-              };
-              promptAction.showToast(deleteSuccessToast);
-              await this.loadData();
-            } catch (error) {
-              console.error('删除语录失败:', error);
-              const deleteErrorToast: ShowToastOptions = {
-                message: '删除失败，请重试'
-              };
-              promptAction.showToast(deleteErrorToast);
-            }
-          }
-        }).catch((error: Error) => {
-          console.error('显示删除确认对话框失败:', error);
         });
+
+        // 用户做出了选择
+        if (result.index === 1) { // 用户点击了“删除”按钮 (索引为1)
+          // 关键修改 3: 在用户确认后再隐藏菜单
+          this.hideQuoteActionMenu();
+          try {
+            // 使用函数开始时捕获的 quoteToDelete 引用
+            await this.dataManager.deleteQuotes([quoteToDelete.id]);
+            const deleteSuccessToast: ShowToastOptions = {
+              message: '删除成功'
+            };
+            promptAction.showToast(deleteSuccessToast);
+            await this.loadData(); // 重新加载数据以反映删除
+          } catch (error) {
+            console.error('删除语录失败:', error);
+            const deleteErrorToast: ShowToastOptions = {
+              message: '删除失败，请重试'
+            };
+            promptAction.showToast(deleteErrorToast);
+          }
+        } else {
+            // 用户点击了“取消”或其他按钮，也应该隐藏菜单
+            // 可以选择在这里加，或者依赖点击遮罩也能关闭
+            // this.hideQuoteActionMenu();
+            // 通常点击取消不需要特别处理，因为菜单还在，用户可能想选别的
+            // 但如果希望点击取消也关闭菜单，则取消下面注释
+            // this.hideQuoteActionMenu();
+        }
       } catch (error) {
-        console.error('删除操作失败:', error);
-        const deleteErrorToast: ShowToastOptions = {
-          message: '删除失败，请重试'
-        };
-        promptAction.showToast(deleteErrorToast);
+        // 捕获 showDialog 本身可能抛出的错误
+        console.error('显示删除确认对话框失败:', error);
+        // 即使显示对话框失败，也应隐藏菜单（可选，看交互需求）
+        this.hideQuoteActionMenu();
+        // 可以选择提示用户
+        // const errorToast: ShowToastOptions = {
+        //   message: '无法显示确认框，请重试'
+        // };
+        // promptAction.showToast(errorToast);
       }
+    } else {
+        // 理论上不太可能，因为菜单是基于 currentQuote 显示的
+        console.warn('尝试删除语录，但 currentQuote 为空');
+        this.hideQuoteActionMenu(); // 确保菜单关闭
     }
   }
 
-  // 预览壁纸
+   // 预览壁纸 (修复此方法)
   previewWallpaper() {
-    this.hideQuoteActionMenu();
+    // 不要在这里立即隐藏菜单
+    // this.hideQuoteActionMenu();
     if (this.currentQuote) {
+      // 先执行跳转逻辑
       router.pushUrl({
         url: 'pages/WallpaperPage',
         params: { quote: JSON.stringify(this.currentQuote) }
+      }).then(() => {
+         // 跳转成功后再隐藏菜单
+         this.hideQuoteActionMenu();
       }).catch((error: Error) => {
+        // 跳转失败也隐藏菜单
+        this.hideQuoteActionMenu();
         console.error('跳转壁纸预览页面失败:', error);
         const errorToast: ShowToastOptions = {
           message: '跳转失败，请重试'
         };
         promptAction.showToast(errorToast);
       });
+    } else {
+      // 理论上不会发生，但为了健壮性
+      this.hideQuoteActionMenu();
     }
   }
 
@@ -563,11 +604,11 @@ struct Index {
           // 遮罩层
           Row()
             .width('100%')
-            .layoutWeight(1)
+            .height('100%')
             .backgroundColor('rgba(0,0,0,0.5)')
             .onClick(() => this.hideQuoteActionMenu())
           
-          // 菜单内容
+          // 菜单内容 - 居中显示
           Column() {
             Row() {
               Text('选择操作')
@@ -658,14 +699,17 @@ struct Index {
             }
             .width('100%')
           }
-          .width('100%')
+          .width(280)
           .padding(20)
           .backgroundColor('#FFFFFF')
-          .borderRadius({ topLeft: 16, topRight: 16 })
+          .borderRadius(16)
+          .position({ x: '50%', y: '50%' })
+          .translate({ x: '-50%', y: '-50%' })
         }
         .width('100%')
         .height('100%')
-        .justifyContent(FlexAlign.End)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
       }
     }
     .width('100%')

@@ -3,10 +3,11 @@ import { QuoteDataManager, Quote, AddQuoteParams, UpdateQuoteParams } from '../c
 
 /**
  * 编辑页面参数接口
+ * 修复：quote 应该是序列化后的字符串，而不是 Quote 对象
  */
 interface EditPageParams {
   mode?: string; // 'add' 或 'edit'
-  quote?: Quote; // 编辑模式下的语录对象
+  quote?: string; // 修复：编辑模式下传递的语录对象 JSON 字符串
 }
 
 /**
@@ -62,29 +63,48 @@ struct EditPage {
     await this.initPage();
   }
 
-  /**
+    /**
    * 页面初始化（异步）
    * 解析URL参数决定是否为编辑模式，编辑模式下加载本地语录用于回填
+   * 修复：正确处理从 Index 传递的 JSON 字符串参数
    */
   async initPage() {
     try {
       // 检查是否为编辑模式（通过路由参数）
-      const params = router.getParams() as EditPageParams;
+      // 获取路由参数，根据修正后的 EditPageParams 接口，quote 是 string 类型
+      const params = router.getParams() as EditPageParams | undefined;
+
+      // 检查 params 是否存在且为对象（router.getParams 通常返回对象或 undefined）
       if (params) {
-        const mode = params.mode;
-        
-        if (mode === 'edit' && params.quote) {
+        // 现在可以安全地访问 params.mode 和 params.quote (因为接口定义已修正)
+        if (params.mode === 'edit' && params.quote) {
           this.isEditMode = true;
-          this.editingQuote = params.quote;
-          // 回填编辑数据
-          this.quoteContent = this.editingQuote.text;
-          this.charCount = this.quoteContent.length;
+          try {
+            // 关键修复：将接收到的 JSON 字符串解析回 Quote 对象
+            const parsedQuote: Quote = JSON.parse(params.quote);
+            console.log('Parsed Quote for editing:', parsedQuote); // 调试用
+            this.editingQuote = parsedQuote; // 正确赋值解析后的对象
+            // 回填编辑数据
+            // 关键修复：确保 parsedQuote.text 存在，否则使用空字符串
+            this.quoteContent = parsedQuote.text ?? '';
+            this.charCount = this.quoteContent.length;
+          } catch (parseError) {
+             console.error('解析传递的 quote 参数失败:', parseError, params.quote);
+             // 解析失败时，可以设置为默认状态或显示错误
+             this.isEditMode = false; // 回退到新增模式或显示错误提示
+             this.showToast('数据加载失败');
+             // 可选：返回上一页
+             // router.back();
+          }
         }
+        // 如果是新增模式 (params.mode !== 'edit' 或 params.quote 不存在)，则保持默认状态 (isEditMode = false, quoteContent = '')
       }
-      
+      // 即使在编辑模式下，validateForm 也应该在 quoteContent 设置后调用
       this.validateForm();
     } catch (error) {
       console.error('页面初始化失败:', error);
+      // 可选：显示通用错误提示
+      this.showToast('页面初始化失败');
     }
   }
 
