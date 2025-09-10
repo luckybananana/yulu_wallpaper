@@ -579,22 +579,18 @@ struct WallpaperPage {
           Column() {
             Text(this.quotes[this.currentQuoteIndex]?.text || '')
               .fontSize(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').fontSize)
-              .fontColor('#FFFFFF')
+              .fontColor('#181818')
               .textAlign(TextAlign.Center)
               .lineHeight(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').lineHeight)
               .fontWeight(FontWeight.Medium)
-              .padding({ left: 32, right: 32 }) // 增加左右内边距
-              .shadow({
-                radius: 8, // 调整阴影模糊度
-                color: 'rgba(0, 0, 0, 0.5)', // 调整阴影颜色和不透明度
-                offsetX: 0,
-                offsetY: 2
-              })
-              .decoration({ type: TextDecorationType.None }) // 修复：移除可能的下划线
+              .padding({ left: 32, right: 32 })
+              // 移除了 shadow 属性
+              .decoration({ type: TextDecorationType.None })
+              .fontFamily('simhei') // 添加这一行，指定字体族名为文件名（不含扩展名）
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)
-          .position({ x: 0, y: '35%' }) // 修复：将文字位置向上调整，从45%改为35%
+          .position({ x: 0, y: '25%' }) // 修复：将文字位置向上调整，从45%改为35%
         }
 
         // 返回按钮
