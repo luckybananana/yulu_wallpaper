@@ -4,6 +4,7 @@ import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
 import wallpaper from '@ohos.wallpaper'; // 导入壁纸设置API
 import image from '@ohos.multimedia.image'; // 导入图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
+
 /**
  * 路由参数接口
  */
@@ -11,6 +12,7 @@ interface RouterParams {
   index?: number;
   quote?: Quote;
 }
+
 /**
  * 文字样式接口
  */
@@ -18,12 +20,14 @@ interface TextStyle {
   fontSize: number;
   lineHeight: number;
 }
+
 // 添加颜色候选数组，与 web 版本的 COLORS 保持一致
 const WALLPAPER_COLORS: string[] = [
   "#E57373", "#F06292", "#BA68C8", "#9575CD", "#7986CB",
   "#64B5F6", "#4DB6AC", "#81C784", "#DCE775", "#FFD54F",
   "#5488BC", "#917C6B", "#AA9F7C", "#A29296", "#515E68"
 ];
+
 /**
  * 壁纸预览页面
  * 基于wallpaper.html实现壁纸预览、Canvas绘制分层波浪背景、触摸滑动切换语录等功能
@@ -43,16 +47,17 @@ struct WallpaperPage {
   @State touchStartX: number = 0;
   @State touchStartY: number = 0;
   // Canvas相关
-  private canvasContext?: CanvasRenderingContext2D;
-  // 修改：将 canvasWidth 和 canvasHeight 声明为 @State
-
+  // 保留此行，用于接收 Canvas 上下文。类型必须是 CanvasRenderingContext2D | undefined
+  // 不要加 @State，除非你明确知道其行为。
+  private canvasContext: CanvasRenderingContext2D | undefined = undefined; // <-- 确保此行存在且正确
   @State private canvasWidth: number = 0;
   @State private canvasHeight: number = 0;
+  // 主要使用 canvasElement 来存储和访问 Canvas 上下文
   private canvasElement: CanvasRenderingContext2D | null = null;
-  // 新增：用于存储当前语录对应的颜色
   @State currentQuoteColor: string = '#4A90E2'; // 默认颜色
   // 服务实例
   private quoteManager = QuoteDataManager.getInstance(getContext(this));
+
   /**
    * 页面初始化
    */
@@ -61,6 +66,7 @@ struct WallpaperPage {
     await this.loadQuotes();
     this.initializeIndex();
   }
+
   /**
    * 加载语录数据
    */
@@ -94,6 +100,7 @@ struct WallpaperPage {
       this.isLoading = false;
     }
   }
+
   /**
    * 新增：根据当前语录索引更新颜色
    */
@@ -108,6 +115,7 @@ struct WallpaperPage {
       this.currentQuoteColor = '#4A90E2';
     }
   }
+
   /**
    * 初始化索引
    * 修改：在设置索引后，计算并设置当前语录的颜色
@@ -133,6 +141,7 @@ struct WallpaperPage {
     // 新增：根据当前索引设置颜色
     this.updateCurrentQuoteColor();
   }
+
   /**
    * 十六进制颜色转RGB
    */
@@ -144,6 +153,7 @@ struct WallpaperPage {
       parseInt(result[3], 16)
     ] : [0, 0, 0];
   }
+
   /**
    * 调整颜色亮度（与wallpaper.html的adjustColor函数保持一致）
    */
@@ -157,21 +167,28 @@ struct WallpaperPage {
       Math.max(0, Math.min(255, Math.floor(b * factor)))
     ];
   }
+
   /**
    * 绘制分层波浪背景（与wallpaper.html的drawLayeredWaves函数保持一致）
-   * 修改：接受颜色参数，并确保其行为与web版本完全一致
+   * 修改：使用 this.canvasElement 并确保其行为与web版本完全一致
    */
-  private drawLayeredWaves(baseColor: string) { // 修改参数
-    if (!this.canvasElement || this.canvasWidth === 0 || this.canvasHeight === 0) return;
-    const ctx = this.canvasElement;
+  private drawLayeredWaves(baseColor: string) {
+    // 修复：使用 this.canvasElement 并进行空值检查
+    if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+      console.warn(`Canvas not ready for drawing in drawLayeredWaves. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
+      return;
+    }
+    const ctx = this.canvasElement; // 类型已收窄
     const width = this.canvasWidth;
     const height = this.canvasHeight;
-    const baseRgb = this.hexToRgb(baseColor); // 使用传入的颜色
+    const baseRgb = this.hexToRgb(baseColor);
+
     // 清空画布
     ctx.clearRect(0, 0, width, height);
     // 关键修改：先填充背景色 #E6E6E6，与web版本一致
     ctx.fillStyle = '#E6E6E6';
     ctx.fillRect(0, 0, width, height);
+
     // 参数设置（与wallpaper.html保持一致）
     const numLayers = 6;
     const baseFromBottom = Math.floor(height * 0.32);
@@ -179,6 +196,7 @@ struct WallpaperPage {
     const baseWavelength = 420;
     const baseAmplitude = 52;
     const step = 6;
+
     // 绘制6层波浪（从上到下，颜色逐渐加深）
     for (let i = 0; i < numLayers; i++) {
       // 颜色调整（与wallpaper.html的adjust_color逻辑一致）
@@ -187,12 +205,15 @@ struct WallpaperPage {
       // 透明度计算（与wallpaper.html一致：25 + i*38，转换为0-1范围）
       const alpha = Math.min(255, 25 + i * 38) / 255;
       ctx.fillStyle = `rgba(${adjustedRgb[0]}, ${adjustedRgb[1]}, ${adjustedRgb[2]}, ${alpha})`;
+
       // 波浪参数（与wallpaper.html一致）
       const wavelength = baseWavelength * (1.0 + i * 0.03);
       const amplitude = baseAmplitude * (1.0 + i * 0.05);
       const phase = Math.random() * Math.PI * 2; // 随机相位
+
       // 层偏移计算（与wallpaper.html一致）
       const layerOffset = height - (baseFromBottom - i * gapPerLayer);
+
       // 创建波浪路径
       ctx.beginPath();
       // 绘制正弦波（与wallpaper.html逻辑一致）
@@ -201,6 +222,7 @@ struct WallpaperPage {
         const y = layerOffset - amplitude * Math.sin(2 * Math.PI * x / wavelength + phase);
         points.push([x, y]);
       }
+
       // 开始绘制路径
       if (points.length > 0) {
         ctx.moveTo(points[0][0], points[0][1]);
@@ -208,35 +230,34 @@ struct WallpaperPage {
           ctx.lineTo(points[j][0], points[j][1]);
         }
       }
+
       // 封闭路径到底部（与wallpaper.html一致）
       ctx.lineTo(width, height);
       ctx.lineTo(0, height);
       ctx.closePath();
       ctx.fill();
     }
+    console.log('Canvas drawing completed successfully.');
   }
+
   /**
-   * 根据字数自动调整文字样式
+   * 根据字数自动调整文字样式 (更接近web版本)
    */
   private getTextStyle(content: string): TextStyle {
     const length = content.length;
     if (length <= 15) {
-      const style: TextStyle = { fontSize: 32, lineHeight: 1.5 };
-      return style;
+      // 增大字体，调整行高，更符合web效果
+      return { fontSize: 28, lineHeight: 1.4 };
     } else if (length <= 30) {
-      const style: TextStyle = { fontSize: 28, lineHeight: 1.5 };
-      return style;
-    } else if (length <= 60) {
-      const style: TextStyle = { fontSize: 24, lineHeight: 1.6 };
-      return style;
-    } else if (length <= 100) {
-      const style: TextStyle = { fontSize: 20, lineHeight: 1.6 };
-      return style;
+      return { fontSize: 24, lineHeight: 1.5 };
+    } else if (length <= 50) {
+      return { fontSize: 20, lineHeight: 1.6 };
     } else {
-      const style: TextStyle = { fontSize: 18, lineHeight: 1.7 };
-      return style;
+      // 对于长文本，进一步减小字体和增加行高
+      return { fontSize: 18, lineHeight: 1.7 };
     }
   }
+
   /**
    * 切换到指定语录
    * 修改：在切换后更新颜色并重绘
@@ -252,8 +273,9 @@ struct WallpaperPage {
       if (this.quotes[index]) {
         this.drawLayeredWaves(this.currentQuoteColor); // 使用动态颜色
       }
-    }, 50);
+    }, 50); // 稍微延迟确保状态更新
   }
+
   /**
    * 上一条语录
    */
@@ -261,6 +283,7 @@ struct WallpaperPage {
     const newIndex = this.currentQuoteIndex > 0 ? this.currentQuoteIndex - 1 : this.quotes.length - 1;
     this.switchToQuote(newIndex);
   }
+
   /**
    * 下一条语录
    */
@@ -268,27 +291,29 @@ struct WallpaperPage {
     const newIndex = this.currentQuoteIndex < this.quotes.length - 1 ? this.currentQuoteIndex + 1 : 0;
     this.switchToQuote(newIndex);
   }
+
   /**
    * 切换控制栏显示/隐藏
    */
   private toggleControls() {
     this.isControlsVisible = !this.isControlsVisible;
   }
+
   /**
    * 返回上一页
    */
   private goBack() {
     router.back();
   }
+
   /**
    * 设置壁纸 - 实现真正的系统壁纸设置功能
    */
   private async setWallpaper() {
     try {
       console.log('开始设置壁纸:', this.quotes[this.currentQuoteIndex]);
-      
       // 等待画布就绪（必要时回退到屏幕尺寸）
-      const ready = await this.ensureCanvasReady(1500);
+      const ready = await this.ensureCanvasReady(2000); // 增加超时时间
       if (!ready) {
         promptAction.showToast({
           message: '壁纸预览未准备就绪，请稍后重试',
@@ -296,50 +321,51 @@ struct WallpaperPage {
         });
         return;
       }
-      
       promptAction.showToast({
         message: '正在生成壁纸...',
         duration: 2000
       });
-      
 
+      // 确保绘制的是当前状态
       this.drawLayeredWaves(this.currentQuoteColor);
-      
       // 等待绘制完成
-      await new Promise<void>((resolve) => setTimeout(resolve, 500));
-      
-      // 将Canvas内容转换为ImageData
-      const ctx = this.canvasElement; // 通过局部常量收窄类型，避免空指针
-      if (!ctx) {
-        console.error('Canvas上下文未就绪，无法导出图像数据');
+      await new Promise<void>((resolve) => setTimeout(resolve, 300));
+
+      // 修复：通过局部常量收窄类型，避免空指针，并进行最终检查
+      const validCanvasContext = this.canvasElement;
+      if (!validCanvasContext) {
+        console.error('Canvas上下文未就绪，无法导出图像数据 (在setWallpaper中)');
         promptAction.showToast({
           message: '生成壁纸失败，请稍后重试',
           duration: 2000
         });
-        return; // 安全返回，避免空引用
+        return;
       }
-      const imageData = ctx.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
-      
+
+      // 将Canvas内容转换为ImageData
+      const imageData = validCanvasContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
       // 创建PixelMap
       const pixelMap = await this.createPixelMapFromImageData(imageData);
-      
       // 设置为系统壁纸
       await wallpaper.setWallpaper(pixelMap, wallpaper.WallpaperType.WALLPAPER_SYSTEM);
-      
       console.log('壁纸设置成功');
       promptAction.showToast({
         message: '壁纸设置成功！',
         duration: 2000
       });
-      
     } catch (err) {
-       console.error('设置壁纸失败:', err);
-       promptAction.showToast({
-         message: '壁纸设置失败，请重试',
-         duration: 2000
-       });
-     }
+      console.error('设置壁纸失败:', err);
+      let errMsg = '壁纸设置失败，请重试';
+      if (err instanceof Error) {
+        errMsg = err.message || errMsg;
+      }
+      promptAction.showToast({
+        message: errMsg,
+        duration: 2000
+      });
+    }
   }
+
   /**
    * 等待Canvas就绪，确保已获取上下文且尺寸有效；如尺寸无效则回退为屏幕分辨率
    * @param timeoutMs 最大等待时长
@@ -347,24 +373,32 @@ struct WallpaperPage {
    */
   private async ensureCanvasReady(timeoutMs: number = 1000): Promise<boolean> {
     const start = Date.now();
-    // 若还未初始化上下文，尝试从 this.canvasContext 获取
-    if (!this.canvasElement && this.canvasContext) {
-      this.canvasElement = this.canvasContext as CanvasRenderingContext2D;
-    }
-    while ((!this.canvasElement || this.canvasWidth === 0 || this.canvasHeight === 0) && Date.now() - start < timeoutMs) {
-      await new Promise<void>((resolve) => setTimeout(resolve, 50));
-    }
-    // 若尺寸仍为0，使用屏幕尺寸作为回退，避免“未就绪”
-    if ((this.canvasWidth === 0 || this.canvasHeight === 0) && this.canvasElement) {
-      try {
-        const d = await display.getDefaultDisplay();
-        this.canvasWidth = d.width;
-        this.canvasHeight = d.height;
-      } catch (e) {
-        console.warn('获取屏幕尺寸失败，保持原尺寸。');
+    // --- 修改：循环检查 this.canvasElement ---
+    while ((!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) && Date.now() - start < timeoutMs) {
+      // 如果尺寸为0但上下文有效，尝试获取屏幕尺寸
+      if ((this.canvasWidth <= 0 || this.canvasHeight <= 0) && this.canvasElement) {
+        try {
+          const d = await display.getDefaultDisplay();
+          this.canvasWidth = d.width;
+          this.canvasHeight = d.height;
+          console.log(`Canvas尺寸回退为屏幕尺寸: ${this.canvasWidth}x${this.canvasHeight}`);
+          // 尺寸变更后重新绘制
+          if (this.canvasElement) {
+            this.drawLayeredWaves(this.currentQuoteColor);
+          }
+        } catch (e) {
+          console.warn('获取屏幕尺寸失败，保持原尺寸。');
+        }
+      }
+      // 如果仍未就绪，等待一小段时间再检查
+      if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 50));
       }
     }
-    return !!this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0;
+    // 最终检查
+    const isReady = !!this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0;
+    console.log(`Canvas就绪检查最终结果: ${isReady}. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
+    return isReady;
   }
 
   /**
@@ -383,16 +417,21 @@ struct WallpaperPage {
           width: this.canvasWidth
         }
       };
-      
       // 从ImageData创建PixelMap
-      const pixelMap = await image.createPixelMap(imageData.data.buffer as ArrayBuffer, opts);
+      // 修复：确保传递的是 ArrayBuffer
+      const pixelMap = await image.createPixelMap(imageData.data.buffer.slice(0) as ArrayBuffer, opts);
       return pixelMap;
-      
     } catch (err) {
       console.error('创建PixelMap失败:', err);
-      throw new Error('创建PixelMap失败');
+      // 提供更具体的错误信息
+      let errMsg = '创建壁纸数据失败';
+      if (err instanceof Error) {
+        errMsg = err.message || errMsg;
+      }
+      throw new Error(errMsg);
     }
   }
+
   /**
    * 编辑语录
    * 修复：确保传递序列化后的 JSON 字符串给 EditPage，与 Index.ets 和 EditPage.ets 的实现保持一致
@@ -436,18 +475,15 @@ struct WallpaperPage {
       });
     }
   }
+
   /**
    * 分享壁纸
    */
   private shareWallpaper() {
-    // 确保Canvas已经绘制完成
-    if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-      // 重新绘制确保最新状态
-      this.drawLayeredWaves(this.currentQuoteColor);
-    }
     this.isShareVisible = true;
     this.shareState = 'confirm';
   }
+
   /**
    * 关闭分享遮罩
    */
@@ -455,6 +491,7 @@ struct WallpaperPage {
     this.isShareVisible = false;
     this.shareState = 'confirm';
   }
+
   /**
    * 确认分享
    */
@@ -465,6 +502,7 @@ struct WallpaperPage {
       this.shareState = 'success';
     }, 2000);
   }
+
   /**
    * 调用系统分享
    */
@@ -476,50 +514,95 @@ struct WallpaperPage {
     });
     this.closeShareOverlay();
   }
+
   /**
    * 构建页面UI
    */
   build() {
     Stack() {
-      // 主预览容器
-      Stack() {
+      Stack() { // 主预览容器
         // Canvas背景
-        Canvas(this.canvasContext)
+        // 传递 this.canvasContext 给 Canvas 组件，让框架在准备好时自动赋值
+        Canvas(this.canvasContext) // <-- 保留 this.canvasContext 参数
           .width('100%')
           .height('100%')
-          .onReady(() => {
-            console.log('Canvas onReady called');
-            // 在onReady中获取Canvas上下文（与EditPage一致的用法）
+          .onReady(() => { // <-- onReady 回调不接收参数
+            console.log('Canvas onReady called.');
+
+            // --- 核心修复逻辑 ---
+            // 1. 检查框架是否已经（或即将）赋值 this.canvasContext
+            //    如果尚未赋值，记录日志并等待 onAreaChange 或稍后重试。
+            // 2. 如果已赋值，则将其存储到 this.canvasElement 供使用。
+
             if (this.canvasContext) {
-              this.canvasElement = this.canvasContext as CanvasRenderingContext2D;
+              // 框架已赋值，直接使用
+              this.canvasElement = this.canvasContext; // 类型通常兼容，无需强制断言
+              console.log('Canvas context successfully assigned from framework to canvasElement (via canvasContext).', !!this.canvasElement);
+
+              // 如果此时尺寸也已知，可以尝试立即绘制
+              // 注意：onReady 时尺寸可能还未知，主要依赖 onAreaChange
+              if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
+                console.log('Canvas onReady: Context and size ready, drawing initial background.');
+                setTimeout(() => { // 使用 setTimeout 确保尺寸状态已更新到 UI 线程
+                  this.drawLayeredWaves(this.currentQuoteColor);
+                }, 150); // 稍微延迟确保一切就绪
+              } else {
+                console.log('Canvas onReady: Context ready, waiting for size (onAreaChange) to draw. Element:', !!this.canvasElement, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
+              }
+
             } else {
-              console.error('Canvas上下文为空，无法初始化绘制');
-              this.canvasElement = null;
-            }
-            console.log('Canvas context initialized:', !!this.canvasElement);
-            // 立即尝试绘制初始背景
-            if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-              setTimeout(() => {
-                this.drawLayeredWaves(this.currentQuoteColor);
-              }, 200);
+              // 框架尚未赋值 this.canvasContext
+              // 这可能是因为 onReady 回调执行得非常早，早于框架的赋值操作
+              // 或者框架赋值机制有延迟。
+              console.warn('Canvas onReady: Framework has not assigned context to this.canvasContext yet. Will retry/check in onAreaChange or after a short delay.');
+              // 不再报错，而是作为一种可能的临时状态处理
+              // this.canvasElement = null; // 保持 null 或当前状态
+
+              // 可选：添加一个微小的延迟后再次检查
+              // setTimeout(() => {
+              //   if (this.canvasContext && !this.canvasElement) {
+              //     this.canvasElement = this.canvasContext;
+              //     console.log('Canvas context assigned to canvasElement after short delay in onReady.', !!this.canvasElement);
+              //     // 可以在这里也尝试绘制
+              //   }
+              // }, 10);
             }
           })
           .onAreaChange((oldValue: Area, newValue: Area) => {
-            // 关键修改：当Canvas尺寸改变时更新 @State 尺寸，这会触发 UI 更新和可能的副作用
             const newWidth = Number(newValue.width);
             const newHeight = Number(newValue.height);
             console.log(`Canvas尺寸变化: ${this.canvasWidth}x${this.canvasHeight} -> ${newWidth}x${newHeight}`);
             this.canvasWidth = newWidth;
             this.canvasHeight = newHeight;
-            // 关键修改：尺寸更新后，立即尝试重绘
+
+            // --- 关键修复点：在尺寸变化时进行后备赋值和绘制 ---
+            // 1. 再次检查 this.canvasContext 是否被赋值（可能在 onReady 之后，在 onAreaChange 之前）
+            // 2. 如果 this.canvasElement 仍未赋值，但 this.canvasContext 有效，则赋值。
+            // 3. 如果 this.canvasElement 有效且尺寸有效，则绘制。
+
+            // 后备赋值逻辑
+            if (!this.canvasElement && this.canvasContext) {
+              this.canvasElement = this.canvasContext; // this.canvasContext as CanvasRenderingContext2D;
+              console.log('Canvas onAreaChange: Fallback/context assigned to canvasElement (via canvasContext):', !!this.canvasElement);
+            }
+
+            // 绘制逻辑
             if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
               setTimeout(() => {
-                console.log('Canvas尺寸已更新，开始绘制波浪背景，使用颜色:', this.currentQuoteColor);
-                this.drawLayeredWaves(this.currentQuoteColor); // 使用动态颜色
-              }, 100); // 增加延迟确保Canvas完全初始化
+                console.log('Canvas尺寸已更新或确认，开始绘制波浪背景，使用颜色:', this.currentQuoteColor);
+                this.drawLayeredWaves(this.currentQuoteColor);
+              }, 100); // 增加延迟确保Canvas完全初始化并与新尺寸同步
+            } else {
+              // 如果仍未就绪，记录详细信息
+              if (!this.canvasElement) {
+                console.log('Canvas onAreaChange: canvasElement is still null/unassigned. Waiting for framework assignment. Context (canvasContext):', !!this.canvasContext);
+              } else if (this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+                console.log('Canvas onAreaChange: Drawing conditions not met yet (size is zero or invalid). Element:', !!this.canvasElement, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
+              }
             }
           })
-        // 语录内容区域
+
+        // 语录内容区域 (修正：移除 maxLines 和 textOverflow 以防止文字被截断，除非需要)
         if (!this.isLoading && this.quotes.length > 0) {
           Column() {
             Text(this.quotes[this.currentQuoteIndex]?.text || '')
@@ -528,25 +611,21 @@ struct WallpaperPage {
               .textAlign(TextAlign.Center)
               .lineHeight(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').lineHeight)
               .fontWeight(FontWeight.Medium)
-              .padding({ left: 40, right: 40, top: 20, bottom: 20 })
+              .padding({ left: 32, right: 32 }) // 增加左右内边距
               .shadow({
-                radius: 12,
-                color: 'rgba(0, 0, 0, 0.6)',
+                radius: 8, // 调整阴影模糊度
+                color: 'rgba(0, 0, 0, 0.5)', // 调整阴影颜色和不透明度
                 offsetX: 0,
-                offsetY: 3
+                offsetY: 2
               })
-              .maxLines(8) // 限制最大行数
-              .textOverflow({ overflow: TextOverflow.Ellipsis }) // 文字溢出处理
-              .wordBreak(WordBreak.BREAK_ALL) // 允许单词内换行
+            // .maxLines(4) // 可选：如果需要限制行数
+            // .textOverflow({ overflow: TextOverflow.Ellipsis }) // 可选：如果需要溢出处理
           }
-          .width('90%') // 减少宽度留出更多边距
-          .height('35%') // 限制高度避免重叠
+          .width('100%')
           .justifyContent(FlexAlign.Center)
-          .alignItems(HorizontalAlign.Center)
-          .position({ x: '5%', y: '32%' }) // 居中显示，避免与底部按钮重叠
-          .backgroundColor('rgba(0, 0, 0, 0.1)') // 添加半透明背景提高可读性
-          .borderRadius(16) // 圆角背景
+          .position({ x: 0, y: '45%' }) // 调整垂直位置使其居中
         }
+
         // 返回按钮
         Button() {
           Text('←')
@@ -559,6 +638,7 @@ struct WallpaperPage {
         .borderRadius(20)
         .position({ x: 16, y: 48 })
         .onClick(() => this.goBack())
+
         // 导航提示
         if (this.quotes.length > 1) {
           Row() {
@@ -573,6 +653,7 @@ struct WallpaperPage {
           .position({ x: '50%', y: '85%' })
           .translate({ x: '-50%', y: 0 })
         }
+
         // 底部操作栏
         if (this.isControlsVisible) {
           Row() {
@@ -594,7 +675,7 @@ struct WallpaperPage {
             .backgroundColor('rgba(255, 255, 255, 0.2)')
             .borderRadius(36)
             .padding(12)
-            .onClick(() => this.setWallpaper())
+            .onClick(() => this.setWallpaper()) // 确保此 onClick 有效
             Blank()
             // 编辑按钮
             Button() {
@@ -614,7 +695,7 @@ struct WallpaperPage {
             .backgroundColor('#4A90E2')
             .borderRadius(36)
             .padding(12)
-            .onClick(() => this.editQuote())
+            .onClick(() => this.editQuote()) // 确保此 onClick 有效
             Blank()
             // 分享按钮
             Button() {
@@ -634,13 +715,14 @@ struct WallpaperPage {
             .backgroundColor('rgba(255, 255, 255, 0.2)')
             .borderRadius(36)
             .padding(12)
-            .onClick(() => this.shareWallpaper())
+            .onClick(() => this.shareWallpaper()) // 确保此 onClick 有效
           }
           .width('100%')
           .padding({ left: 24, right: 24, bottom: 32 })
           .position({ x: 0, y: '100%' })
           .translate({ x: 0, y: '-100%' })
         }
+
         // 分享生成遮罩
         if (this.isShareVisible) {
           Column() {
@@ -664,6 +746,8 @@ struct WallpaperPage {
                   .fontColor('#333333')
                   .textAlign(TextAlign.Center)
                   .lineHeight(24)
+                // .maxLines(4) // 可选：如果希望分享预览也限制行数
+                // .textOverflow({ overflow: TextOverflow.Ellipsis }) // 可选
               }
               .width('100%')
               .padding(16)
@@ -735,6 +819,7 @@ struct WallpaperPage {
           .height('100%')
           .position({ x: 0, y: 0 })
         }
+
         // 加载状态
         if (this.isLoading) {
           Column() {
