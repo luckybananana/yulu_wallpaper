@@ -47,12 +47,12 @@ struct WallpaperPage {
   @State touchStartX: number = 0;
   @State touchStartY: number = 0;
   // Canvas相关
-  // 保留此行，用于接收 Canvas 上下文。类型必须是 CanvasRenderingContext2D | undefined
-  // 不要加 @State，除非你明确知道其行为。
-  private canvasContext: CanvasRenderingContext2D | undefined = undefined; // <-- 确保此行存在且正确
+  // 根据HarmonyOS标准：预先创建CanvasRenderingContext2D对象
+  private settings: RenderingContextSettings = new RenderingContextSettings(true);
+  private canvasContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
   @State private canvasWidth: number = 0;
   @State private canvasHeight: number = 0;
-  // 主要使用 canvasElement 来存储和访问 Canvas 上下文
+  // 保留 canvasElement 作为实际绘图使用的上下文引用
   private canvasElement: CanvasRenderingContext2D | null = null;
   @State currentQuoteColor: string = '#4A90E2'; // 默认颜色
   // 服务实例
@@ -173,9 +173,9 @@ struct WallpaperPage {
    * 修改：使用 this.canvasElement 并确保其行为与web版本完全一致
    */
   private drawLayeredWaves(baseColor: string) {
-    // 修复：使用 this.canvasElement 并进行空值检查
+    // 检查Canvas是否就绪
     if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
-      console.warn(`Canvas not ready for drawing in drawLayeredWaves. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
+      console.warn(`Canvas未就绪，无法绘制. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
       return;
     }
     const ctx = this.canvasElement; // 类型已收窄
@@ -242,19 +242,20 @@ struct WallpaperPage {
 
   /**
    * 根据字数自动调整文字样式 (更接近web版本)
+   * 修复：返回正确的行高数值，避免文字重叠
    */
   private getTextStyle(content: string): TextStyle {
     const length = content.length;
     if (length <= 15) {
       // 增大字体，调整行高，更符合web效果
-      return { fontSize: 28, lineHeight: 1.4 };
+      return { fontSize: 28, lineHeight: 39 }; // 28 * 1.4 = 39.2
     } else if (length <= 30) {
-      return { fontSize: 24, lineHeight: 1.5 };
+      return { fontSize: 24, lineHeight: 36 }; // 24 * 1.5 = 36
     } else if (length <= 50) {
-      return { fontSize: 20, lineHeight: 1.6 };
+      return { fontSize: 20, lineHeight: 32 }; // 20 * 1.6 = 32
     } else {
       // 对于长文本，进一步减小字体和增加行高
-      return { fontSize: 18, lineHeight: 1.7 };
+      return { fontSize: 18, lineHeight: 31 }; // 18 * 1.7 = 30.6
     }
   }
 
@@ -373,8 +374,15 @@ struct WallpaperPage {
    */
   private async ensureCanvasReady(timeoutMs: number = 1000): Promise<boolean> {
     const start = Date.now();
-    // --- 修改：循环检查 this.canvasElement ---
+    // 若还未初始化上下文，尝试从 this.canvasContext (@State) 获取
+    // 主要逻辑依赖 onReady 和 onAreaChange，这里作为后备和等待
     while ((!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) && Date.now() - start < timeoutMs) {
+      // 修复：在等待期间也尝试从 canvasContext 获取
+      // 处理框架赋值可能存在的极短延迟
+      if (!this.canvasElement && this.canvasContext) {
+        this.canvasElement = this.canvasContext; // 类型兼容
+        console.log('ensureCanvasReady: Assigned canvasElement from canvasContext during wait loop.');
+      }
       // 如果尺寸为0但上下文有效，尝试获取屏幕尺寸
       if ((this.canvasWidth <= 0 || this.canvasHeight <= 0) && this.canvasElement) {
         try {
@@ -520,52 +528,26 @@ struct WallpaperPage {
    */
   build() {
     Stack() {
-      Stack() { // 主预览容器
+      // 主预览容器
+      Stack() {
         // Canvas背景
-        // 传递 this.canvasContext 给 Canvas 组件，让框架在准备好时自动赋值
-        Canvas(this.canvasContext) // <-- 保留 this.canvasContext 参数
+        // 使用HarmonyOS标准Canvas组件：传递预创建的CanvasRenderingContext2D对象
+        Canvas(this.canvasContext)
           .width('100%')
           .height('100%')
-          .onReady(() => { // <-- onReady 回调不接收参数
+          .onReady(() => {
             console.log('Canvas onReady called.');
-
-            // --- 核心修复逻辑 ---
-            // 1. 检查框架是否已经（或即将）赋值 this.canvasContext
-            //    如果尚未赋值，记录日志并等待 onAreaChange 或稍后重试。
-            // 2. 如果已赋值，则将其存储到 this.canvasElement 供使用。
-
-            if (this.canvasContext) {
-              // 框架已赋值，直接使用
-              this.canvasElement = this.canvasContext; // 类型通常兼容，无需强制断言
-              console.log('Canvas context successfully assigned from framework to canvasElement (via canvasContext).', !!this.canvasElement);
-
-              // 如果此时尺寸也已知，可以尝试立即绘制
-              // 注意：onReady 时尺寸可能还未知，主要依赖 onAreaChange
-              if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-                console.log('Canvas onReady: Context and size ready, drawing initial background.');
-                setTimeout(() => { // 使用 setTimeout 确保尺寸状态已更新到 UI 线程
-                  this.drawLayeredWaves(this.currentQuoteColor);
-                }, 150); // 稍微延迟确保一切就绪
-              } else {
-                console.log('Canvas onReady: Context ready, waiting for size (onAreaChange) to draw. Element:', !!this.canvasElement, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
-              }
-
+            
+            // 直接使用预创建的canvasContext对象
+            this.canvasElement = this.canvasContext;
+            console.log('Canvas context ready. Element:', !!this.canvasElement);
+            
+            // 如果尺寸已知，立即绘制；否则等待onAreaChange
+            if (this.canvasWidth > 0 && this.canvasHeight > 0) {
+              console.log('Canvas onReady: Context and size ready, drawing initial background.');
+              this.drawLayeredWaves(this.currentQuoteColor);
             } else {
-              // 框架尚未赋值 this.canvasContext
-              // 这可能是因为 onReady 回调执行得非常早，早于框架的赋值操作
-              // 或者框架赋值机制有延迟。
-              console.warn('Canvas onReady: Framework has not assigned context to this.canvasContext yet. Will retry/check in onAreaChange or after a short delay.');
-              // 不再报错，而是作为一种可能的临时状态处理
-              // this.canvasElement = null; // 保持 null 或当前状态
-
-              // 可选：添加一个微小的延迟后再次检查
-              // setTimeout(() => {
-              //   if (this.canvasContext && !this.canvasElement) {
-              //     this.canvasElement = this.canvasContext;
-              //     console.log('Canvas context assigned to canvasElement after short delay in onReady.', !!this.canvasElement);
-              //     // 可以在这里也尝试绘制
-              //   }
-              // }, 10);
+              console.log('Canvas onReady: Context ready, waiting for size (onAreaChange) to draw. W:', this.canvasWidth, ', H:', this.canvasHeight);
             }
           })
           .onAreaChange((oldValue: Area, newValue: Area) => {
@@ -575,34 +557,24 @@ struct WallpaperPage {
             this.canvasWidth = newWidth;
             this.canvasHeight = newHeight;
 
-            // --- 关键修复点：在尺寸变化时进行后备赋值和绘制 ---
-            // 1. 再次检查 this.canvasContext 是否被赋值（可能在 onReady 之后，在 onAreaChange 之前）
-            // 2. 如果 this.canvasElement 仍未赋值，但 this.canvasContext 有效，则赋值。
-            // 3. 如果 this.canvasElement 有效且尺寸有效，则绘制。
-
-            // 后备赋值逻辑
-            if (!this.canvasElement && this.canvasContext) {
-              this.canvasElement = this.canvasContext; // this.canvasContext as CanvasRenderingContext2D;
-              console.log('Canvas onAreaChange: Fallback/context assigned to canvasElement (via canvasContext):', !!this.canvasElement);
+            // 确保Canvas元素已就绪
+            if (!this.canvasElement) {
+              this.canvasElement = this.canvasContext;
+              console.log('Canvas onAreaChange: Canvas元素已就绪. Element:', !!this.canvasElement);
             }
-
-            // 绘制逻辑
+            
+            // 尺寸变化后，如果Canvas上下文已就绪且尺寸有效，则重新绘制
             if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
               setTimeout(() => {
-                console.log('Canvas尺寸已更新或确认，开始绘制波浪背景，使用颜色:', this.currentQuoteColor);
+                console.log('Canvas尺寸已更新，开始绘制波浪背景，使用颜色:', this.currentQuoteColor);
                 this.drawLayeredWaves(this.currentQuoteColor);
-              }, 100); // 增加延迟确保Canvas完全初始化并与新尺寸同步
+              }, 50); // 减少延迟，提高响应速度
             } else {
-              // 如果仍未就绪，记录详细信息
-              if (!this.canvasElement) {
-                console.log('Canvas onAreaChange: canvasElement is still null/unassigned. Waiting for framework assignment. Context (canvasContext):', !!this.canvasContext);
-              } else if (this.canvasWidth <= 0 || this.canvasHeight <= 0) {
-                console.log('Canvas onAreaChange: Drawing conditions not met yet (size is zero or invalid). Element:', !!this.canvasElement, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
-              }
+              console.log('Canvas onAreaChange: 等待Canvas上下文就绪. Element:', !!this.canvasElement, ', Context:', !!this.canvasContext, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
             }
           })
 
-        // 语录内容区域 (修正：移除 maxLines 和 textOverflow 以防止文字被截断，除非需要)
+        // 语录内容区域 (修复文字重叠和位置问题)
         if (!this.isLoading && this.quotes.length > 0) {
           Column() {
             Text(this.quotes[this.currentQuoteIndex]?.text || '')
@@ -618,12 +590,11 @@ struct WallpaperPage {
                 offsetX: 0,
                 offsetY: 2
               })
-            // .maxLines(4) // 可选：如果需要限制行数
-            // .textOverflow({ overflow: TextOverflow.Ellipsis }) // 可选：如果需要溢出处理
+              .decoration({ type: TextDecorationType.None }) // 修复：移除可能的下划线
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)
-          .position({ x: 0, y: '45%' }) // 调整垂直位置使其居中
+          .position({ x: 0, y: '35%' }) // 修复：将文字位置向上调整，从45%改为35%
         }
 
         // 返回按钮
