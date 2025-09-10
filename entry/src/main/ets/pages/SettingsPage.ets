@@ -194,9 +194,10 @@ struct SettingsPage {
       // 顶部导航栏
       Row() {
         Button() {
-          Text('←')
-            .fontSize(20)
-            .fontColor('#1D1D1F')
+          Image($r('app.media.ic_back'))
+            .width(20)
+            .height(20)
+            .fillColor('#1D1D1F')
         }
         .backgroundColor(Color.Transparent)
         .onClick(() => this.goBack())
@@ -223,9 +224,11 @@ struct SettingsPage {
             // 功能设置
             Column() {
             Row() {
-              Text('⚙️')
-                .fontSize(24)
-                .margin({ right: 8 })
+              Image($r('app.media.ic_settings2'))
+                 .width(24)
+                 .height(24)
+                 .fillColor('#007AFF')
+                 .margin({ right: 8 })
               
               Text('功能设置')
                 .fontSize(18)
@@ -238,9 +241,11 @@ struct SettingsPage {
             // 自动备份
             Row() {
               Row() {
-                Text('💾')
-                  .fontSize(24)
-                  .margin({ right: 16 })
+                Image($r('app.media.ic_import_export2'))
+                   .width(24)
+                   .height(24)
+                   .fillColor('#34C759')
+                   .margin({ right: 16 })
                 
                 Column() {
                   Text('自动备份')
@@ -269,9 +274,11 @@ struct SettingsPage {
             // 通知设置
             Row() {
               Row() {
-                Text('🔔')
-                  .fontSize(24)
-                  .margin({ right: 16 })
+                Image($r('app.media.ic_notifications'))
+                   .width(24)
+                   .height(24)
+                   .fillColor('#FF9500')
+                   .margin({ right: 16 })
                 
                 Column() {
                   Text('推送通知')
@@ -308,9 +315,11 @@ struct SettingsPage {
           // 关于应用
           Column() {
             Row() {
-              Text('📱')
-                .fontSize(24)
-                .margin({ right: 8 })
+              Image($r('app.media.ic_about'))
+                 .width(24)
+                 .height(24)
+                 .fillColor('#007AFF')
+                 .margin({ right: 8 })
               
               Text('关于应用')
                 .fontSize(18)
@@ -323,9 +332,11 @@ struct SettingsPage {
             // 版本信息
             Row() {
               Row() {
-                Text('ℹ️')
-                  .fontSize(24)
-                  .margin({ right: 16 })
+                Image($r('app.media.ic_Version'))
+                   .width(24)
+                   .height(24)
+                   .fillColor('#5856D6')
+                   .margin({ right: 16 })
                 
                 Column() {
                   Text('版本信息')
@@ -354,9 +365,11 @@ struct SettingsPage {
             // 检查更新
             Row() {
               Row() {
-                Text('🔄')
-                  .fontSize(24)
-                  .margin({ right: 16 })
+                Image($r('app.media.ic_information'))
+                   .width(24)
+                   .height(24)
+                   .fillColor('#30D158')
+                   .margin({ right: 16 })
                 
                 Text('检查更新')
                   .fontSize(16)
@@ -388,9 +401,11 @@ struct SettingsPage {
             // 隐私政策
             Row() {
               Row() {
-                Text('🔒')
-                  .fontSize(24)
-                  .margin({ right: 16 })
+                Image($r('app.media.ic_privacy'))
+                   .width(24)
+                   .height(24)
+                   .fillColor('#FF3B30')
+                   .margin({ right: 16 })
                 
                 Text('隐私政策')
                   .fontSize(16)

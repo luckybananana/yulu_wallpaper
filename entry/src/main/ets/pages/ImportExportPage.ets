@@ -5,6 +5,7 @@ import { QuoteDataManager, Quote, AddQuoteParams } from '../common/QuoteDataMana
 import { fileIo } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
 
+
 /**
  * 导入数据接口
  */
@@ -29,15 +30,7 @@ interface ShowToastOptions {
 
 
 
-/**
- * 导出数据接口
- */
-interface ExportData {
-  version: string;
-  exportTime: string;
-  totalCount: number;
-  quotes: Quote[];
-}
+
 
 /**
  * 导入导出页面
@@ -50,8 +43,6 @@ struct ImportExportPage {
   // 页面状态
   @State isLoading: boolean = false;
   @State selectedFile: string = '';
-  @State importPreview: Quote[] = [];
-  @State showPreview: boolean = false;
   
   // 服务实例
   private quoteManager = QuoteDataManager.getInstance(getContext(this));
@@ -80,12 +71,8 @@ struct ImportExportPage {
         return;
       }
 
-      const exportData: ExportData = {
-        version: '1.0',
-        exportTime: new Date().toISOString(),
-        totalCount: quotes.length,
-        quotes: quotes
-      };
+      // 导出为简单字符串数组格式，与quotes.json保持一致
+      const exportData: string[] = quotes.map(quote => quote.text);
       
       const jsonString = JSON.stringify(exportData, null, 2);
       const fileName = `语录备份_${new Date().toISOString().split('T')[0]}.json`;
@@ -101,14 +88,11 @@ struct ImportExportPage {
       if (saveResult && saveResult.length > 0) {
         const filePath = saveResult[0];
         
-        // 写入文件内容
+        // 写入文件内容 - 使用正确的UTF-8编码
         const file = fileIo.openSync(filePath, fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE);
-        const buffer = new ArrayBuffer(jsonString.length);
-        const uint8Array = new Uint8Array(buffer);
-        for (let i = 0; i < jsonString.length; i++) {
-          uint8Array[i] = jsonString.charCodeAt(i);
-        }
-        fileIo.writeSync(file.fd, buffer);
+        const encoder = util.TextEncoder.create();
+        const uint8Array = encoder.encodeInto(jsonString);
+        fileIo.writeSync(file.fd, uint8Array.buffer);
         fileIo.closeSync(file.fd);
         
         const exportSuccessToast: ShowToastOptions = {
@@ -149,7 +133,6 @@ struct ImportExportPage {
       
       if (result && result.length > 0) {
         this.selectedFile = result[0];
-        await this.previewImportData();
       }
     } catch (error) {
       console.error('选择文件失败:', error);
@@ -161,43 +144,45 @@ struct ImportExportPage {
     }
   }
 
-  /**
-   * 预览导入数据
-   */
-  async previewImportData() {
-    if (!this.selectedFile) return;
 
-    this.isLoading = true;
+
+  /**
+   * 分享语录到微信
+   */
+  async shareToWeChat() {
     try {
-      const file = fileIo.openSync(this.selectedFile, fileIo.OpenMode.READ_ONLY);
-      const buffer = new ArrayBuffer(1024 * 1024); // 1MB buffer
-      const readLen = fileIo.readSync(file.fd, buffer);
-      fileIo.closeSync(file.fd);
+      const quotes = await this.quoteManager.getAllQuotes();
+      const shareText = `我在语录壁纸App中收藏了 ${quotes.length} 条精美语录，推荐给你！`;
       
-      // 使用util.TextDecoder正确解码UTF-8文件内容
-      const uint8Array = new Uint8Array(buffer, 0, readLen);
-      const decoder = util.TextDecoder.create('utf-8');
-      const content = decoder.decodeWithStream(uint8Array, { stream: false });
-      
-      const importData: ImportData = JSON.parse(content);
-      
-      if (importData.quotes && Array.isArray(importData.quotes)) {
-        this.importPreview = importData.quotes.slice(0, 10); // 预览前10条
-        this.showPreview = true;
-      } else {
-        throw new Error('文件格式不正确');
-      }
+      const toast: ShowToastOptions = {
+        message: '微信分享功能开发中',
+        duration: 2000
+      };
+      promptAction.showToast(toast);
     } catch (error) {
-      console.error('预览导入数据失败:', error);
-      const previewErrorToast: ShowToastOptions = {
-          message: '文件格式错误，请选择有效的JSON文件'
-        };
-      previewErrorToast.duration = 2000;
-      promptAction.showToast(previewErrorToast);
-    } finally {
-      this.isLoading = false;
+      console.error('微信分享失败:', error);
     }
   }
+
+  /**
+   * 分享语录到QQ
+   */
+  async shareToQQ() {
+    try {
+      const quotes = await this.quoteManager.getAllQuotes();
+      const shareText = `我在语录壁纸App中收藏了 ${quotes.length} 条精美语录，推荐给你！`;
+      
+      const toast: ShowToastOptions = {
+        message: 'QQ分享功能开发中',
+        duration: 2000
+      };
+      promptAction.showToast(toast);
+    } catch (error) {
+      console.error('QQ分享失败:', error);
+    }
+  }
+
+
 
   /**
    * 确认导入数据
@@ -217,29 +202,47 @@ struct ImportExportPage {
       const decoder = util.TextDecoder.create('utf-8');
       const content = decoder.decodeWithStream(uint8Array, { stream: false });
       
-      const importData: ImportData = JSON.parse(content);
+      const jsonData: string[] | ImportData = JSON.parse(content);
       
-      if (importData.quotes && Array.isArray(importData.quotes)) {
-        let importCount = 0;
-        for (const quote of importData.quotes) {
-          if (quote.text && quote.text.trim()) {
-            const addQuoteData: AddQuoteParams = {
-              text: quote.text,
-              tags: quote.tags || []
-            };
-            await this.quoteManager.addQuote(addQuoteData);
-            importCount++;
-          }
-        }
-        
-        this.showPreview = false;
-        this.selectedFile = '';
-        
-        const successToast: ShowToastOptions = {
-          message: `成功导入${importCount}条语录`
-        };
-        promptAction.showToast(successToast);
+      let quotes: Quote[] = [];
+      
+      // 支持两种格式：1. 直接的字符串数组 2. 包含quotes属性的对象
+      if (Array.isArray(jsonData)) {
+        // 直接的字符串数组格式
+         quotes = jsonData.map((text: string): Quote => {
+           return {
+             id: (Date.now() + Math.random()).toString(),
+             text: text.trim(),
+             tags: [],
+             createdAt: new Date().toISOString(),
+             updatedAt: new Date().toISOString()
+           } as Quote;
+         });
+      } else if (jsonData.quotes && Array.isArray(jsonData.quotes)) {
+        // 标准的导出格式
+        quotes = jsonData.quotes;
+      } else {
+        throw new Error('文件格式不正确');
       }
+      
+      let importCount = 0;
+      for (const quote of quotes) {
+        if (quote.text && quote.text.trim()) {
+          const addQuoteData: AddQuoteParams = {
+            text: quote.text,
+            tags: quote.tags || []
+          };
+          await this.quoteManager.addQuote(addQuoteData);
+          importCount++;
+        }
+      }
+         
+       this.selectedFile = '';
+       
+       const successToast: ShowToastOptions = {
+         message: `成功导入${importCount}条语录`
+       };
+       promptAction.showToast(successToast);
     } catch (error) {
       console.error('导入数据失败:', error);
       const errorToast: ShowToastOptions = {} as ShowToastOptions;
@@ -442,62 +445,111 @@ struct ImportExportPage {
           .margin({ bottom: 20 })
           .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
 
-          // 导入预览
-          if (this.showPreview && this.importPreview.length > 0) {
-            Column() {
-              Row() {
-                Text('📋')
-                  .fontSize(24)
-                  .margin({ right: 8 })
-                
-                Text('导入预览')
-                  .fontSize(18)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#1D1D1F')
-                
-                Blank()
-                
-                Text(`${this.importPreview.length}条`)
-                  .fontSize(14)
-                  .fontColor('#86868B')
-                  .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-                  .backgroundColor('#F2F2F7')
-                  .borderRadius(8)
-              }
-              .width('100%')
-              .margin({ bottom: 16 })
 
-              ForEach(this.importPreview.slice(0, 3), (quote: Quote, index: number) => {
-                Column() {
-                  Text(quote.text || '')
-                    .fontSize(14)
-                    .fontColor('#1D1D1F')
-                    .maxLines(2)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    .lineHeight(20)
+
+          // 分享功能卡片
+          Column() {
+            Row() {
+              Column() {
+                Row() {
+                 Image($r('app.media.ic_share'))
+                   .width(36)
+                   .height(36)
+                   .fillColor('#FF7473')
+                   .margin({ right: 12 })
+                  
+                  Column() {
+                    Text('分享语录')
+                      .fontSize(18)
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor('#1D1D1F')
+                    
+                    Text('通过多种方式分享您的语录收藏')
+                      .fontSize(14)
+                      .fontColor('#86868B')
+                      .margin({ top: 4 })
+                  }
+                  .alignItems(HorizontalAlign.Start)
+                  .layoutWeight(1)
                 }
                 .width('100%')
-                .padding(16)
-                .backgroundColor('#F9F9F9')
-                .borderRadius(12)
-                .margin({ bottom: 8 })
-              })
-
-              if (this.importPreview.length > 3) {
-                Text(`还有${this.importPreview.length - 3}条语录...`)
-                  .fontSize(12)
-                  .fontColor('#86868B')
-                  .textAlign(TextAlign.Center)
-                  .margin({ top: 8 })
               }
+              .layoutWeight(1)
             }
             .width('100%')
-            .padding(24)
-            .backgroundColor('#FFFFFF')
-            .borderRadius(16)
             .margin({ bottom: 20 })
-            .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
+
+            // 分享选项网格
+            Column() {
+              Row() {
+                Row() {
+                  // 微信分享
+                  Column() {
+                    Image($r('app.media.ic_weixin'))
+                   .width(30)
+                   .height(30)
+                   .fillColor('#03D86C')
+                    
+                    Text('微信分享')
+                      .fontSize(12)
+                      .fontColor('#86868B')
+                  }
+                  .width('48%')
+                  .height(80)
+                  .justifyContent(FlexAlign.Center)
+                  .backgroundColor('#F9F9F9')
+                  .borderRadius(12)
+                  .onClick(() => this.shareToWeChat())
+                  
+                  Blank()
+                  
+                  // QQ分享
+                  Column() {
+                    Image($r('app.media.ic_qq'))
+                   .width(24)
+                   .height(24)
+                   .fillColor('#4CAFE9')
+                    
+                    Text('QQ分享')
+                      .fontSize(12)
+                      .fontColor('#86868B')
+                  }
+                  .width('48%')
+                  .height(80)
+                  .justifyContent(FlexAlign.Center)
+                  .backgroundColor('#F9F9F9')
+                  .borderRadius(12)
+                  .onClick(() => this.shareToQQ())
+                }
+                .width('100%')
+                .justifyContent(FlexAlign.SpaceBetween)
+              }
+              .width('100%')
+              .justifyContent(FlexAlign.SpaceBetween)
+              .margin({ bottom: 12 })
+              
+
+            }
+            .width('100%')
+            .margin({ bottom: 16 })
+
+            Button('立即分享')
+              .width('100%')
+              .height(48)
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .fontColor('#FFFFFF')
+              .backgroundColor('#FF9500')
+              .borderRadius(12)
+              .enabled(!this.isLoading)
+              .onClick(() => this.shareToWeChat())
           }
+          .width('100%')
+          .padding(24)
+          .backgroundColor('#FFFFFF')
+          .borderRadius(16)
+          .margin({ bottom: 20 })
+          .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.04)', offsetY: 2 })
 
 
         }
