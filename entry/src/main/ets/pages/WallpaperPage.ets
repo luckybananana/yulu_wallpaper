@@ -1,5 +1,6 @@
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
+import { font } from '@kit.ArkUI';
 import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
 import wallpaper from '@ohos.wallpaper'; // 导入壁纸设置API
 import image from '@ohos.multimedia.image'; // 导入图像处理API
@@ -63,6 +64,11 @@ struct WallpaperPage {
    */
   async aboutToAppear() {
     console.log('壁纸预览界面加载完成');
+    // 注册自定义字体
+    font.registerFont({
+      familyName: 'SimHei',
+      familySrc: $rawfile('simhei.ttf')
+    });
     await this.loadQuotes();
     this.initializeIndex();
   }
@@ -488,8 +494,7 @@ struct WallpaperPage {
    * 分享壁纸
    */
   private shareWallpaper() {
-    this.isShareVisible = true;
-    this.shareState = 'confirm';
+    this.callSystemShare();
   }
 
   /**
@@ -586,7 +591,7 @@ struct WallpaperPage {
               .padding({ left: 32, right: 32 })
               // 移除了 shadow 属性
               .decoration({ type: TextDecorationType.None })
-              .fontFamily('simhei') // 添加这一行，指定字体族名为文件名（不含扩展名）
+              .fontFamily('SimHei') // 使用注册的字体名称
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)

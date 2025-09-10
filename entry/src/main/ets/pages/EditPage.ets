@@ -1,5 +1,12 @@
-import { promptAction, router } from '@kit.ArkUI';
+import { promptAction, router, font } from '@kit.ArkUI';
 import { QuoteDataManager, Quote, AddQuoteParams, UpdateQuoteParams } from '../common/QuoteDataManager';
+
+// 添加颜色候选数组，与 WallpaperPage 的 WALLPAPER_COLORS 保持一致
+const WALLPAPER_COLORS: string[] = [
+  "#E57373", "#F06292", "#BA68C8", "#9575CD", "#7986CB",
+  "#64B5F6", "#4DB6AC", "#81C784", "#DCE775", "#FFD54F",
+  "#5488BC", "#917C6B", "#AA9F7C", "#A29296", "#515E68"
+];
 
 /**
  * 编辑页面参数接口
@@ -42,24 +49,23 @@ struct EditPage {
   @State quotes: Quote[] = [];
   private dataManager: QuoteDataManager = QuoteDataManager.getInstance(getContext(this));
   
-  // Canvas相关状态
-  @State canvasWidth: number = 180;
-  @State canvasHeight: number = 320;
-  private canvasContext: CanvasRenderingContext2D | null = null;
-  private fixedPreviewColor: string = '#3498DB';
-  
-  // 颜色候选（与main.py保持一致）
-  private colors: string[] = [
-    '#3498DB', '#E74C3C', '#2ECC71', '#F39C12', '#9B59B6',
-    '#1ABC9C', '#E67E22', '#34495E', '#16A085', '#27AE60',
-    '#2980B9', '#8E44AD', '#2C3E50', '#F1C40F', '#E91E63',
-    '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03DAC6'
-  ];
+  // Canvas相关状态 - 与WallpaperPage保持一致
+  private settings: RenderingContextSettings = new RenderingContextSettings(true);
+  private canvasContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
+  @State private canvasWidth: number = 0;
+  @State private canvasHeight: number = 0;
+  private canvasElement: CanvasRenderingContext2D | null = null;
+  @State currentQuoteColor: string = '#4A90E2'; // 默认颜色，与WallpaperPage一致
 
   /**
    * 页面即将出现时的初始化
    */
   async aboutToAppear() {
+    // 注册自定义字体
+    font.registerFont({
+      familyName: 'SimHei',
+      familySrc: $rawfile('simhei.ttf')
+    });
     await this.initPage();
   }
 
@@ -153,9 +159,9 @@ struct EditPage {
   }
 
   /**
-   * 十六进制颜色转RGB
+   * 十六进制颜色转RGB（与WallpaperPage保持一致）
    */
-  hexToRgb(hex: string): number[] {
+  private hexToRgb(hex: string): number[] {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? [
       parseInt(result[1], 16),
@@ -165,9 +171,9 @@ struct EditPage {
   }
 
   /**
-   * 调整颜色亮度（与main.py的adjust_color函数保持一致）
+   * 调整颜色亮度（与WallpaperPage的adjustColor函数保持一致）
    */
-  adjustColor(rgb: number[], factor: number = 1.0): number[] {
+  private adjustColor(rgb: number[], factor: number = 1.0): number[] {
     const r = rgb[0];
     const g = rgb[1];
     const b = rgb[2];
@@ -179,53 +185,69 @@ struct EditPage {
   }
 
   /**
-   * 绘制分层波浪背景（与main.py的draw_layered_waves函数保持一致）
+   * 根据当前语录内容更新颜色（与WallpaperPage保持一致）
    */
-  drawLayeredWaves(ctx: CanvasRenderingContext2D, width: number, height: number, baseColor: string = '#4A90E2') {
+  private updateCurrentQuoteColor() {
+    // 使用语录内容的长度来选择颜色，确保一致性
+    const colorIndex = this.quoteContent.length % WALLPAPER_COLORS.length;
+    this.currentQuoteColor = WALLPAPER_COLORS[colorIndex];
+    console.log(`当前语录长度: ${this.quoteContent.length}, 使用颜色: ${this.currentQuoteColor}`);
+  }
+
+  /**
+   * 绘制分层波浪背景（与WallpaperPage的drawLayeredWaves函数100%保持一致）
+   */
+  private drawLayeredWaves(baseColor: string) {
+    // 检查Canvas是否就绪
+    if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+      console.warn(`Canvas未就绪，无法绘制. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
+      return;
+    }
+    const ctx = this.canvasElement; // 类型已收窄
+    const width = this.canvasWidth;
+    const height = this.canvasHeight;
     const baseRgb = this.hexToRgb(baseColor);
-    
-    // 清空画布并设置背景色
+
+    // 清空画布
+    ctx.clearRect(0, 0, width, height);
+    // 关键修改：先填充背景色 #E6E6E6，与WallpaperPage一致
     ctx.fillStyle = '#E6E6E6';
     ctx.fillRect(0, 0, width, height);
-    
-    // 参数设置（与main.py保持一致，按比例缩放）
-    const scale = Math.min(width / 375, height / 812); // 相对于手机屏幕的缩放比例
+
+    // 参数设置（与WallpaperPage保持一致）
     const numLayers = 6;
     const baseFromBottom = Math.floor(height * 0.32);
     const gapPerLayer = Math.floor(height * 0.035);
-    const baseWavelength = 420 * scale;
-    const baseAmplitude = 52 * scale;
-    const step = Math.max(2, Math.floor(6 * scale));
-    
+    const baseWavelength = 420;
+    const baseAmplitude = 52;
+    const step = 6;
+
     // 绘制6层波浪（从上到下，颜色逐渐加深）
     for (let i = 0; i < numLayers; i++) {
-      // 颜色调整（与main.py的adjust_color逻辑一致）
+      // 颜色调整（与WallpaperPage的adjust_color逻辑一致）
       const colorFactor = 1 - i * 0.06;
       const adjustedRgb = this.adjustColor(baseRgb, colorFactor);
-      
-      // 透明度计算（与main.py一致：25 + i*38，转换为0-1范围）
+      // 透明度计算（与WallpaperPage一致：25 + i*38，转换为0-1范围）
       const alpha = Math.min(255, 25 + i * 38) / 255;
-      
       ctx.fillStyle = `rgba(${adjustedRgb[0]}, ${adjustedRgb[1]}, ${adjustedRgb[2]}, ${alpha})`;
-      
-      // 波浪参数（与main.py一致）
+
+      // 波浪参数（与WallpaperPage一致）
       const wavelength = baseWavelength * (1.0 + i * 0.03);
       const amplitude = baseAmplitude * (1.0 + i * 0.05);
       const phase = Math.random() * Math.PI * 2; // 随机相位
-      
-      // 层偏移计算（与main.py一致）
+
+      // 层偏移计算（与WallpaperPage一致）
       const layerOffset = height - (baseFromBottom - i * gapPerLayer);
-      
+
       // 创建波浪路径
       ctx.beginPath();
-      
-      // 绘制正弦波（与main.py逻辑一致）
+      // 绘制正弦波（与WallpaperPage逻辑一致）
       const points: number[][] = [];
       for (let x = 0; x <= width; x += step) {
         const y = layerOffset - amplitude * Math.sin(2 * Math.PI * x / wavelength + phase);
         points.push([x, y]);
       }
-      
+
       // 开始绘制路径
       if (points.length > 0) {
         ctx.moveTo(points[0][0], points[0][1]);
@@ -233,31 +255,44 @@ struct EditPage {
           ctx.lineTo(points[j][0], points[j][1]);
         }
       }
-      
-      // 封闭路径到底部（与main.py一致）
+
+      // 封闭路径到底部（与WallpaperPage一致）
       ctx.lineTo(width, height);
       ctx.lineTo(0, height);
       ctx.closePath();
       ctx.fill();
     }
+    console.log('Canvas drawing completed successfully.');
   }
 
   /**
-   * 初始化壁纸预览Canvas
+   * 初始化壁纸预览Canvas（与WallpaperPage保持一致）
    */
-  initWallpaperPreview(ctx: CanvasRenderingContext2D) {
-    this.canvasContext = ctx;
-    // 绘制初始背景（使用固定颜色）
-    this.drawLayeredWaves(ctx, this.canvasWidth, this.canvasHeight, this.fixedPreviewColor);
+  private initWallpaperPreview(ctx: CanvasRenderingContext2D) {
+    this.canvasElement = ctx;
+    console.log('Canvas element ready. Element:', !!this.canvasElement);
+    
+    // 如果尺寸已知，立即绘制；否则等待onAreaChange
+    if (this.canvasWidth > 0 && this.canvasHeight > 0) {
+      console.log('Canvas ready: Context and size ready, drawing initial background.');
+      this.updateCurrentQuoteColor();
+      this.drawLayeredWaves(this.currentQuoteColor);
+    } else {
+      console.log('Canvas ready: Context ready, waiting for size (onAreaChange) to draw. W:', this.canvasWidth, ', H:', this.canvasHeight);
+    }
   }
 
   /**
-   * 更新壁纸预览
+   * 更新壁纸预览（与WallpaperPage保持一致）
    */
-  updateWallpaperPreview() {
-    if (this.canvasContext) {
-      // 重新绘制背景（使用固定颜色，不随输入变化）
-      this.drawLayeredWaves(this.canvasContext, this.canvasWidth, this.canvasHeight, this.fixedPreviewColor);
+  private updateWallpaperPreview() {
+    if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
+      // 根据当前语录内容更新颜色
+      this.updateCurrentQuoteColor();
+      // 重新绘制背景
+      this.drawLayeredWaves(this.currentQuoteColor);
+    } else {
+      console.log('Canvas not ready for update. Element:', !!this.canvasElement, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
     }
   }
 
@@ -337,23 +372,21 @@ struct EditPage {
   }
 
   /**
-   * 根据字数自动调整文字样式（与WallpaperPage保持一致）
+   * 根据字数自动调整文字样式（与WallpaperPage 100%保持一致）
+   * 修复：返回正确的行高数值，避免文字重叠
    */
-  getTextStyle(content: string): TextStyle {
+  private getTextStyle(content: string): TextStyle {
     const length = content.length;
-    
     if (length <= 15) {
-      const style: TextStyle = { fontSize: 28, lineHeight: 1.4 };
-      return style;
+      // 增大字体，调整行高，更符合web效果
+      return { fontSize: 28, lineHeight: 39 }; // 28 * 1.4 = 39.2
     } else if (length <= 30) {
-      const style: TextStyle = { fontSize: 24, lineHeight: 1.5 };
-      return style;
+      return { fontSize: 24, lineHeight: 36 }; // 24 * 1.5 = 36
     } else if (length <= 50) {
-      const style: TextStyle = { fontSize: 20, lineHeight: 1.6 };
-      return style;
+      return { fontSize: 20, lineHeight: 32 }; // 20 * 1.6 = 32
     } else {
-      const style: TextStyle = { fontSize: 18, lineHeight: 1.7 };
-      return style;
+      // 对于长文本，进一步减小字体和增加行高
+      return { fontSize: 18, lineHeight: 31 }; // 18 * 1.7 = 30.6
     }
   }
 
@@ -425,7 +458,10 @@ struct EditPage {
                   this.quoteContent = value;
                   this.updateCharCount();
                   this.validateForm();
-                  this.updateWallpaperPreview();
+                  // 延迟更新预览，避免频繁重绘
+                  setTimeout(() => {
+                    this.updateWallpaperPreview();
+                  }, 100);
                 })
               
               Row() {
@@ -461,41 +497,50 @@ struct EditPage {
             
             // 预览区域
             Stack() {
-              // Canvas背景
+              // Canvas背景 - 与WallpaperPage保持一致
               Canvas(this.canvasContext)
                 .width('100%')
                 .aspectRatio(9/16) // 竖向手机屏幕比例
                 .borderRadius(12)
                 .onReady(() => {
+                  console.log('Canvas ready for wallpaper preview');
+                  // Canvas准备就绪时初始化
                   if (this.canvasContext) {
                     this.initWallpaperPreview(this.canvasContext);
                   }
                 })
                 .onAreaChange((oldValue: Area, newValue: Area) => {
                   // 当Canvas尺寸改变时更新尺寸并重绘
-                  this.canvasWidth = Number(newValue.width);
-                  this.canvasHeight = Number(newValue.height);
-                  if (this.canvasContext) {
+                  const newWidth = Number(newValue.width);
+                  const newHeight = Number(newValue.height);
+                  
+                  if (newWidth !== this.canvasWidth || newHeight !== this.canvasHeight) {
+                    this.canvasWidth = newWidth;
+                    this.canvasHeight = newHeight;
+                    console.log(`Canvas size changed: ${this.canvasWidth}x${this.canvasHeight}`);
+                    
+                    // 延迟重绘，确保Canvas尺寸更新完成
                     setTimeout(() => {
                       this.updateWallpaperPreview();
-                    }, 50);
+                    }, 100);
                   }
                 })
               
-              // 文字覆盖层
+              // 文字覆盖层 - 与WallpaperPage保持一致
               Column() {
                 Text(this.quoteContent || '请输入语录内容...')
-                  .fontSize(this.getTextStyle(this.quoteContent).fontSize)
-                  .lineHeight(this.getTextStyle(this.quoteContent).lineHeight)
-                  .fontColor(Color.White)
+                  .fontSize(this.getTextStyle(this.quoteContent || '').fontSize)
+                  .fontColor('#181818') // 与WallpaperPage一致的文字颜色
                   .textAlign(TextAlign.Center)
-                  .fontFamily('SimHei')
-                  .textShadow({ radius: 4, color: 'rgba(0,0,0,0.3)', offsetX: 0, offsetY: 2 })
-                  .maxLines(10)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .lineHeight(this.getTextStyle(this.quoteContent || '').lineHeight)
+                  .fontWeight(FontWeight.Medium)
+                  .padding({ left: 32, right: 32 })
+                  .decoration({ type: TextDecorationType.None })
+                  .fontFamily('SimHei') // 使用注册的字体名称
               }
-              .width('90%')
+              .width('100%')
               .justifyContent(FlexAlign.Center)
+              .position({ x: 0, y: '25%' }) // 修复：将文字位置向上调整，与WallpaperPage一致
             }
             .width('100%')
             .alignContent(Alignment.Center)
