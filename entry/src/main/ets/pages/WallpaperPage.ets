@@ -5,6 +5,9 @@ import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
 import wallpaper from '@ohos.wallpaper'; // 导入壁纸设置API
 import image from '@ohos.multimedia.image'; // 导入图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
+import photoAccessHelper from '@ohos.file.photoAccessHelper'; // 导入相册访问API
+import fs from '@ohos.file.fs'; // 导入文件系统API
+import { common } from '@kit.AbilityKit'; // 导入应用上下文
 
 /**
  * 路由参数接口
@@ -340,11 +343,11 @@ struct WallpaperPage {
   }
 
   /**
-   * 设置壁纸 - 实现真正的系统壁纸设置功能
+   * 下载壁纸 - 将生成的壁纸保存到相册
    */
   private async setWallpaper() {
     try {
-      console.log('开始设置壁纸:', this.quotes[this.currentQuoteIndex]);
+      console.log('开始下载壁纸:', this.quotes[this.currentQuoteIndex]);
       // 等待画布就绪（必要时回退到屏幕尺寸）
       const ready = await this.ensureCanvasReady(2000); // 增加超时时间
       if (!ready) {
@@ -367,7 +370,7 @@ struct WallpaperPage {
       // 修复：通过局部常量收窄类型，避免空指针，并进行最终检查
       const validCanvasContext = this.canvasElement;
       if (!validCanvasContext) {
-        console.error('Canvas上下文未就绪，无法导出图像数据 (在setWallpaper中)');
+        console.error('Canvas上下文未就绪，无法导出图像数据 (在下载壁纸中)');
         promptAction.showToast({
           message: '生成壁纸失败，请稍后重试',
           duration: 2000
@@ -379,16 +382,18 @@ struct WallpaperPage {
       const imageData = validCanvasContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
       // 创建PixelMap
       const pixelMap = await this.createPixelMapFromImageData(imageData);
-      // 设置为系统壁纸
-      await wallpaper.setWallpaper(pixelMap, wallpaper.WallpaperType.WALLPAPER_SYSTEM);
-      console.log('壁纸设置成功');
+      
+      // 保存壁纸到相册
+      await this.saveImageToAlbum(pixelMap);
+      
+      console.log('壁纸下载成功');
       promptAction.showToast({
-        message: '壁纸设置成功！',
+        message: '壁纸已保存到相册！',
         duration: 2000
       });
     } catch (err) {
-      console.error('设置壁纸失败:', err);
-      let errMsg = '壁纸设置失败，请重试';
+      console.error('下载壁纸失败:', err);
+      let errMsg = '壁纸下载失败，请重试';
       if (err instanceof Error) {
         errMsg = err.message || errMsg;
       }
@@ -555,6 +560,66 @@ struct WallpaperPage {
   }
 
   /**
+   * 保存图片到相册
+   * 基于HarmonyOS官方文档实现，使用photoAccessHelper.createAsset和fs.copyFile
+   */
+  private async saveImageToAlbum(pixelMap: image.PixelMap): Promise<void> {
+    try {
+      // 获取应用上下文
+      const context = getContext(this) as common.UIAbilityContext;
+      
+      // 创建photoAccessHelper实例
+      const phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+      
+      // 生成唯一的文件名
+      const timestamp = new Date().getTime();
+      const fileName = `wallpaper_${timestamp}.png`;
+      
+      // 创建资产URI
+      const createOption: photoAccessHelper.CreateOptions = {
+        title: fileName
+      };
+      const assetUri = await phAccessHelper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'png', createOption);
+      
+      // 将PixelMap转换为ArrayBuffer
+      const imagePackerApi = image.createImagePacker();
+      const packOpts: image.PackingOption = {
+        format: 'image/png',
+        quality: 100
+      };
+      const arrayBuffer = await imagePackerApi.packing(pixelMap, packOpts);
+      
+      // 创建临时文件
+      const tempDir = context.tempDir;
+      const tempFilePath = `${tempDir}/${fileName}`;
+      const tempFile = fs.openSync(tempFilePath, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+      
+      // 写入临时文件
+      fs.writeSync(tempFile.fd, arrayBuffer);
+      fs.closeSync(tempFile);
+      
+      // 直接使用资产URI打开文件
+      
+      // 打开资产文件进行写入
+      const assetFile = fs.openSync(assetUri, fs.OpenMode.READ_WRITE);
+      
+      // 复制临时文件到相册
+      await fs.copyFile(tempFilePath, assetFile.fd);
+      
+      // 关闭文件
+      fs.closeSync(assetFile);
+      
+      // 清理临时文件
+      fs.unlinkSync(tempFilePath);
+      
+      console.log('图片已成功保存到相册:', assetUri);
+    } catch (error) {
+      console.error('保存图片到相册失败:', error);
+      throw new Error('保存图片失败，请检查相册权限');
+    }
+  }
+
+  /**
    * 构建页面UI
    */
   build() {
@@ -655,26 +720,6 @@ struct WallpaperPage {
         // 底部操作栏
         if (this.isControlsVisible) {
           Row() {
-            // 设置壁纸按钮
-            Button() {
-              Column() {
-                Image($r('app.media.ic_wallpaper'))
-                  .width(24)
-                  .height(24)
-                  .fillColor('#ffffff')
-                Text('设置壁纸')
-                  .fontSize(12)
-                  .fontColor('#FFFFFF')
-                  .margin({ top: 4 })
-              }
-            }
-            .width(72)
-            .height(72)
-            .backgroundColor('rgba(255, 255, 255, 0.2)')
-            .borderRadius(36)
-            .padding(12)
-            .onClick(() => this.setWallpaper()) // 确保此 onClick 有效
-            Blank()
             // 编辑按钮
             Button() {
               Column() {
@@ -690,10 +735,30 @@ struct WallpaperPage {
             }
             .width(72)
             .height(72)
-            .backgroundColor('#4A90E2')
+            .backgroundColor('rgba(255, 255, 255, 0.2)')
             .borderRadius(36)
             .padding(12)
             .onClick(() => this.editQuote()) // 确保此 onClick 有效
+            Blank()
+            // 设置壁纸按钮
+            Button() {
+              Column() {
+                Image($r('app.media.ic_wallpaper'))
+                  .width(24)
+                  .height(24)
+                  .fillColor('#ffffff')
+                Text('下载壁纸')
+                  .fontSize(12)
+                  .fontColor('#FFFFFF')
+                  .margin({ top: 4 })
+              }
+            }
+            .width(72)
+            .height(72)
+            .backgroundColor('#4A90E2')
+            .borderRadius(36)
+            .padding(12)
+            .onClick(() => this.setWallpaper()) // 确保此 onClick 有效
             Blank()
             // 分享按钮
             Button() {
