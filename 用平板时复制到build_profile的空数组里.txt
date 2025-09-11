@@ -1,0 +1,13 @@
+ {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B2A6DB260939D4A683E11A4815F3A7138852E5A5773CDC48E543768C47642904CBE550D4E258EB2",
+          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.p12",
+          "storePassword": "0000001B4C2C9A34C4537F542BA45815AA988D8661FD78ECCB753B9459D96308CDAB8EA38DD53A188F9A73"
+        }
+      }

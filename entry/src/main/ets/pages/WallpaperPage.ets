@@ -9,7 +9,7 @@ import photoAccessHelper from '@ohos.file.photoAccessHelper'; // 导入相册访
 import fs from '@ohos.file.fs';
 // SaveButton是安全控件，直接使用，无需导入
 import { common } from '@kit.AbilityKit'; // 导入应用上下文
-import { Want } from '@kit.AbilityKit'; // 导入Want接口用于分享功能
+// 已删除分享功能相关导入
 
 /**
  * 路由参数接口
@@ -47,8 +47,7 @@ struct WallpaperPage {
   @State currentQuoteIndex: number = 0;
   @State isControlsVisible: boolean = true;
   @State isLoading: boolean = true;
-  @State isShareVisible: boolean = false;
-  @State shareState: 'confirm' | 'loading' | 'success' = 'confirm';
+  // 已删除分享功能相关状态变量
   // 触摸相关状态
   @State touchStartX: number = 0;
   @State touchStartY: number = 0;
@@ -111,10 +110,10 @@ struct WallpaperPage {
     // 更新当前语录的颜色
     this.updateCurrentQuoteColor();
     
-    // 重新绘制背景
-    setTimeout(() => {
+    // 重新绘制完整壁纸（包含文字）
+    setTimeout(async () => {
       if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-        this.drawLayeredWaves(this.currentQuoteColor);
+        await this.drawCompleteWallpaper();
         console.log('WallpaperPage: 页面返回后重新绘制背景完成');
       }
     }, 100);
@@ -320,38 +319,148 @@ struct WallpaperPage {
   }
 
   /**
+   * 绘制完整的壁纸内容（包含背景和文字）
+   * 用于保存图片时生成完整的壁纸
+   */
+  private async drawCompleteWallpaper() {
+    if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+      console.warn('Canvas未就绪，无法绘制完整壁纸');
+      return;
+    }
+
+    const ctx = this.canvasElement;
+    const width = this.canvasWidth;
+    const height = this.canvasHeight;
+    const currentQuote = this.quotes[this.currentQuoteIndex];
+    
+    if (!currentQuote) {
+      console.warn('当前语录不存在，无法绘制');
+      return;
+    }
+
+    // 1. 绘制波浪背景
+    this.drawLayeredWaves(this.currentQuoteColor);
+
+    // 2. 加载并绘制语录文字
+    await this.drawQuoteText(ctx, currentQuote.text, width, height);
+
+    console.log('完整壁纸绘制完成');
+  }
+
+  /**
+   * 绘制语录文字（使用Canvas绘制并加载指定字体）
+   * @param ctx Canvas上下文
+   * @param text 语录文字
+   * @param width Canvas宽度
+   * @param height Canvas高度
+   */
+  private async drawQuoteText(ctx: CanvasRenderingContext2D, text: string, width: number, height: number) {
+    try {
+      // 获取文字样式
+      const textStyle = this.getTextStyle(text);
+      
+      // 设置字体样式（直接使用已在EntryAbility中注册的方正字体）
+      // 根据HarmonyOS文档，字体格式为："font-style font-weight font-size font-family"
+      ctx.font = `normal normal ${textStyle.fontSize +50}px fangzheng, sans-serif`;
+      ctx.fillStyle = '#181818';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      console.log('设置字体样式:', ctx.font);
+      
+      // 计算文字位置（与原Text组件位置保持一致：y: '25%'）
+      const centerX = width / 2;
+      const centerY = height * 0.25; // 对应原来的 y: '25%'
+
+      // 处理多行文字
+      const maxWidth = width - 64; // 左右各32px边距
+      const lines = this.wrapText(ctx, text, maxWidth);
+      const totalTextHeight = lines.length * textStyle.lineHeight;
+      const startY = centerY - totalTextHeight / 2;
+
+      // 绘制每一行文字
+      lines.forEach((line, index) => {
+        const y = startY + (index + 0.5) * textStyle.lineHeight;
+        ctx.fillText(line, centerX, y);
+      });
+      
+      console.log('语录文字绘制完成，使用字体:', ctx.font);
+    } catch (error) {
+      console.error('绘制语录文字失败:', error);
+      // 如果绘制失败，使用简单的文字绘制
+      ctx.fillStyle = '#181818';
+      ctx.font = 'normal normal 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, width / 2, height * 0.25);
+    }
+  }
+
+  /**
+   * 文字换行处理
+   * @param ctx Canvas上下文
+   * @param text 要换行的文字
+   * @param maxWidth 最大宽度
+   * @returns 换行后的文字数组
+   */
+  private wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+    const lines: string[] = [];
+    let currentLine = '';
+    
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      const testLine = currentLine + char;
+      const metrics = ctx.measureText(testLine);
+      
+      if (metrics.width > maxWidth && currentLine.length > 0) {
+        lines.push(currentLine);
+        currentLine = char;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    
+    if (currentLine.length > 0) {
+      lines.push(currentLine);
+    }
+    
+    return lines;
+  }
+
+  /**
    * 根据字数自动调整文字样式 (更接近web版本)
-   * 修复：返回正确的行高数值，避免文字重叠
+   * 修复：缩小行距，使多行文字更紧凑
+   * 更新：放大字体大小，提升可读性
    */
   private getTextStyle(content: string): TextStyle {
     const length = content.length;
     if (length <= 15) {
-      // 增大字体，调整行高，更符合web效果
-      return { fontSize: 28, lineHeight: 39 }; // 28 * 1.4 = 39.2
+      // 放大字体，保持合适行距
+      return { fontSize: 34, lineHeight: 38 }; // 34 * 1.12 = 38.08
     } else if (length <= 30) {
-      return { fontSize: 24, lineHeight: 36 }; // 24 * 1.5 = 36
+      return { fontSize: 30, lineHeight: 34 }; // 30 * 1.13 = 33.9
     } else if (length <= 50) {
-      return { fontSize: 20, lineHeight: 32 }; // 20 * 1.6 = 32
+      return { fontSize: 26, lineHeight: 30 }; // 26 * 1.15 = 29.9
     } else {
-      // 对于长文本，进一步减小字体和增加行高
-      return { fontSize: 18, lineHeight: 31 }; // 18 * 1.7 = 30.6
+      // 对于长文本，适当放大字体
+      return { fontSize: 22, lineHeight: 26 }; // 22 * 1.18 = 25.96
     }
   }
 
   /**
    * 切换到指定语录
-   * 修改：在切换后更新颜色并重绘
+   * 修改：在切换后更新颜色并重绘完整壁纸（包含文字）
    */
   private switchToQuote(index: number) {
     if (index < 0 || index >= this.quotes.length) return;
     this.currentQuoteIndex = index;
     // 新增：更新颜色
     this.updateCurrentQuoteColor();
-    // 重新绘制波浪背景
-    setTimeout(() => {
-      // 修改：使用当前语录的颜色绘制
+    // 重新绘制完整壁纸（包含背景和文字）
+    setTimeout(async () => {
+      // 修改：使用当前语录的颜色和文字绘制完整壁纸
       if (this.quotes[index]) {
-        this.drawLayeredWaves(this.currentQuoteColor); // 使用动态颜色
+        await this.drawCompleteWallpaper(); // 绘制包含文字的完整壁纸
       }
     }, 50); // 稍微延迟确保状态更新
   }
@@ -406,10 +515,12 @@ struct WallpaperPage {
         duration: 2000
       });
 
-      // 确保绘制的是当前状态
-      this.drawLayeredWaves(this.currentQuoteColor);
-      // 等待绘制完成
+      // 确保绘制的是当前状态（包含背景和文字）
+      console.log('开始重新绘制完整壁纸用于保存');
+      await this.drawCompleteWallpaper();
+      // 等待绘制完成，增加等待时间确保绘制完成
       await new Promise<void>((resolve) => setTimeout(resolve, 300));
+      console.log('壁纸绘制完成，准备获取图像数据');
 
       // 修复：通过局部常量收窄类型，避免空指针，并进行最终检查
       const validCanvasContext = this.canvasElement;
@@ -565,76 +676,7 @@ struct WallpaperPage {
     }
   }
 
-  /**
-   * 分享壁纸
-   */
-  private shareWallpaper() {
-    this.callSystemShare();
-  }
-
-  /**
-   * 关闭分享遮罩
-   */
-  private closeShareOverlay() {
-    this.isShareVisible = false;
-    this.shareState = 'confirm';
-  }
-
-  /**
-   * 确认分享
-   */
-  private confirmShare() {
-    this.shareState = 'loading';
-    // 模拟生成过程
-    setTimeout(() => {
-      this.shareState = 'success';
-    }, 2000);
-  }
-
-  /**
-   * 调用系统分享
-   * 使用Want和startAbility调用系统分享面板
-   */
-  private async callSystemShare() {
-    try {
-      console.log('调用系统分享面板');
-      
-      // 获取当前语录内容
-      const currentQuote = this.quotes[this.currentQuoteIndex];
-      const shareText = currentQuote ? currentQuote.text : '分享一句美好的语录';
-      
-      // 构建Want对象用于分享
-      const want: Want = {
-        action: 'ohos.want.action.sendData',
-        type: 'text/plain',
-        parameters: {
-          'ohos.extra.param.key.TEXT': shareText
-        }
-      };
-      
-      // 获取应用上下文
-      const context = getContext(this) as common.UIAbilityContext;
-      
-      // 调用系统分享面板
-      await context.startAbility(want);
-      
-      console.log('系统分享面板调用成功');
-      promptAction.showToast({
-        message: '正在打开分享面板...',
-        duration: 2000
-      });
-      
-    } catch (error) {
-      console.error('调用系统分享面板失败:', error);
-      promptAction.showToast({
-        message: '分享功能暂时不可用',
-        duration: 2000
-      });
-    } finally {
-      // 关闭分享遮罩
-      this.closeShareOverlay();
-    }
-  }
+  // 已删除所有分享相关方法
 
   /**
    * 保存图片到相册
@@ -708,8 +750,10 @@ struct WallpaperPage {
             
             // 如果尺寸已知，立即绘制；否则等待onAreaChange
             if (this.canvasWidth > 0 && this.canvasHeight > 0) {
-              console.log('Canvas onReady: Context and size ready, drawing initial background.');
-              this.drawLayeredWaves(this.currentQuoteColor);
+              console.log('Canvas onReady: Context and size ready, drawing complete wallpaper.');
+              setTimeout(async () => {
+                await this.drawCompleteWallpaper();
+              }, 50);
             } else {
               console.log('Canvas onReady: Context ready, waiting for size (onAreaChange) to draw. W:', this.canvasWidth, ', H:', this.canvasHeight);
             }
@@ -729,33 +773,16 @@ struct WallpaperPage {
             
             // 尺寸变化后，如果Canvas上下文已就绪且尺寸有效，则重新绘制
             if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-              setTimeout(() => {
-                console.log('Canvas尺寸已更新，开始绘制波浪背景，使用颜色:', this.currentQuoteColor);
-                this.drawLayeredWaves(this.currentQuoteColor);
+              setTimeout(async () => {
+                console.log('Canvas尺寸已更新，开始绘制完整壁纸，使用颜色:', this.currentQuoteColor);
+                await this.drawCompleteWallpaper();
               }, 50); // 减少延迟，提高响应速度
             } else {
               console.log('Canvas onAreaChange: 等待Canvas上下文就绪. Element:', !!this.canvasElement, ', Context:', !!this.canvasContext, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
             }
           })
 
-        // 语录内容区域 (修复文字重叠和位置问题)
-        if (!this.isLoading && this.quotes.length > 0) {
-          Column() {
-            Text(this.quotes[this.currentQuoteIndex]?.text || '')
-              .fontSize(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').fontSize)
-              .fontColor('#181818')
-              .textAlign(TextAlign.Center)
-              .lineHeight(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').lineHeight)
-              .fontWeight(FontWeight.Medium)
-              .padding({ left: 32, right: 32 })
-              // 移除了 shadow 属性
-              .decoration({ type: TextDecorationType.None })
-              .fontFamily('SimHei') // 使用注册的字体名称
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.Center)
-          .position({ x: 0, y: '25%' }) // 修复：将文字位置向上调整，从45%改为35%
-        }
+        // 语录文字现在通过Canvas绘制，不再需要Text组件
 
         // 返回按钮
         Button() {
@@ -803,153 +830,44 @@ struct WallpaperPage {
             }
             .width(72)
             .height(72)
-            .backgroundColor('rgba(255, 255, 255, 0.2)')
-            .borderRadius(36)
+            .backgroundColor('rgba(0, 0, 0, 0.3)')
+            .borderRadius(40)
             .padding(12)
-            .onClick(() => this.editQuote()) // 确保此 onClick 有效
+            .onClick(() => this.editQuote())
+            
             Blank()
-            // 保存壁纸按钮 - 使用SaveButton安全控件获取临时权限
-            SaveButton()
-            .width(72)
-            .height(72)
-            .backgroundColor('#4A90E2')
-            .borderRadius(36)
-            .padding(12)
-            .onClick((event: ClickEvent, result: number) => {
-              if (result === 0) { // 0表示SUCCESS
-                // SaveButton点击成功，获得10秒临时权限，立即执行保存
-                this.setWallpaper();
-              } else {
-                console.error('SaveButton点击失败:', result);
-                promptAction.showToast({
-                  message: '保存权限获取失败，请重试',
-                  duration: 2000
-                });
-              }
-            })
-            Blank()
-            // 分享按钮
-            Button() {
-              Column() {
-                Image($r('app.media.ic_share'))
-                  .width(24)
-                  .height(24)
-                  .fillColor('#ffffff')
-                Text('分享壁纸')
-                  .fontSize(12)
-                  .fontColor('#FFFFFF')
-                  .margin({ top: 4 })
-              }
+            
+            // 下载壁纸按钮 - 使用SaveButton安全控件获取临时权限
+            Column() {
+              SaveButton()
+                .width(72)
+                .height(72)
+                .backgroundColor('rgba(0, 0, 0, 0.3)')
+                .borderRadius(40)
+                .onClick((event: ClickEvent, result: number) => {
+                  if (result === 0) { // 0表示SUCCESS
+                    // SaveButton点击成功，获得10秒临时权限，立即执行保存
+                    this.setWallpaper();
+                  } else {
+                    console.error('SaveButton点击失败:', result);
+                    promptAction.showToast({
+                      message: '保存权限获取失败，请重试',
+                      duration: 2000
+                    });
+                  }
+                })
+              
+
             }
-            .width(72)
-            .height(72)
-            .backgroundColor('rgba(255, 255, 255, 0.2)')
-            .borderRadius(36)
-            .padding(12)
-            .onClick(() => this.shareWallpaper()) // 确保此 onClick 有效
           }
           .width('100%')
-          .padding({ left: 24, right: 24, bottom: 32 })
+          .padding({ left: 60, right: 60, bottom: 32 })
+          .justifyContent(FlexAlign.SpaceEvenly)
           .position({ x: 0, y: '100%' })
           .translate({ x: 0, y: '-100%' })
         }
 
-        // 分享生成遮罩
-        if (this.isShareVisible) {
-          Column() {
-            // 遮罩背景
-            Column()
-              .width('100%')
-              .height('100%')
-              .backgroundColor('rgba(0, 0, 0, 0.5)')
-              .onClick(() => this.closeShareOverlay())
-            // 分享内容卡片
-            Column() {
-              Text('分享壁纸')
-                .fontSize(18)
-                .fontWeight(FontWeight.Medium)
-                .fontColor('#333333')
-                .margin({ bottom: 16 })
-              // 预览内容
-              Column() {
-                Text(this.quotes[this.currentQuoteIndex]?.text || '')
-                  .fontSize(16)
-                  .fontColor('#333333')
-                  .textAlign(TextAlign.Center)
-                  .lineHeight(24)
-                // .maxLines(4) // 可选：如果希望分享预览也限制行数
-                // .textOverflow({ overflow: TextOverflow.Ellipsis }) // 可选
-              }
-              .width('100%')
-              .padding(16)
-              .backgroundColor('#F8F9FA')
-              .borderRadius(8)
-              .margin({ bottom: 20 })
-              // 状态显示
-              if (this.shareState === 'loading') {
-                Column() {
-                  LoadingProgress()
-                    .width(32)
-                    .height(32)
-                    .color('#007AFF')
-                  Text('正在生成分享图片...')
-                    .fontSize(14)
-                    .fontColor('#666666')
-                    .margin({ top: 8 })
-                }
-                .margin({ bottom: 20 })
-              } else if (this.shareState === 'success') {
-                Column() {
-                  Text('✅')
-                    .fontSize(32)
-                  Text('生成成功！')
-                    .fontSize(14)
-                    .fontColor('#666666')
-                    .margin({ top: 8 })
-                }
-                .margin({ bottom: 20 })
-              }
-              // 操作按钮
-              Row() {
-                Button('取消')
-                  .width(80)
-                  .height(40)
-                  .fontSize(16)
-                  .fontColor('#666666')
-                  .backgroundColor('#F5F5F5')
-                  .borderRadius(8)
-                  .onClick(() => this.closeShareOverlay())
-                Blank()
-                Button(this.shareState === 'loading' ? '生成中...' :
-                  this.shareState === 'success' ? '调用分享' : '分享')
-                  .width(120)
-                  .height(40)
-                  .fontSize(16)
-                  .fontColor('#FFFFFF')
-                  .backgroundColor(this.shareState === 'loading' ? '#CCCCCC' : '#007AFF')
-                  .borderRadius(8)
-                  .enabled(this.shareState !== 'loading')
-                  .onClick(() => {
-                    if (this.shareState === 'success') {
-                      this.callSystemShare();
-                    } else {
-                      this.confirmShare();
-                    }
-                  })
-              }
-              .width('100%')
-            }
-            .width('80%')
-            .padding(24)
-            .backgroundColor('#FFFFFF')
-            .borderRadius(16)
-            .position({ x: '50%', y: '50%' })
-            .translate({ x: '-50%', y: '-50%' })
-          }
-          .width('100%')
-          .height('100%')
-          .position({ x: 0, y: 0 })
-        }
+        // 已删除分享遮罩UI
 
         // 加载状态
         if (this.isLoading) {
