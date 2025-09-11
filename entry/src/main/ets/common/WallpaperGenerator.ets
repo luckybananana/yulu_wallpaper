@@ -39,7 +39,7 @@ const DEFAULT_CONFIG: WallpaperConfig = {
   textColor: '#FFFFFF',
   backgroundColor: '#1a1a2e',
   gradientColors: ['#1a1a2e', '#16213e', '#0f3460'],
-  fontFamily: 'fangzheng',
+  fontFamily: 'FangZhengFont',
   padding: 80,
   maxWidth: 920,
   waveCount: 3,
@@ -83,7 +83,7 @@ export class WallpaperGenerator {
 
     try {
       await font.registerFont({
-        familyName: 'fangzheng',
+        familyName: 'FangZhengFont',
         familySrc: '$rawfile("fangzheng.ttf")'
       });
       this.isFontRegistered = true;
@@ -118,12 +118,6 @@ export class WallpaperGenerator {
     // 创建简单的纯色背景PixelMap
     return this.createSimpleWallpaper(quote, finalConfig);
   }
-
-  // 注意：原有的复杂绘制方法已简化，使用createSimpleWallpaper替代
-
-  // 原有的波浪层绘制方法已移除，使用简化版本
-
-  // 原有的复杂绘制方法已移除，使用简化版本
 
   // 创建简单壁纸
   private async createSimpleWallpaper(quote: Quote, config: WallpaperConfig): Promise<image.PixelMap> {

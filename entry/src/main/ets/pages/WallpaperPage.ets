@@ -8,6 +8,8 @@ import image from '@ohos.multimedia.image'; // 导入图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
 import picker from '@ohos.file.picker'; // 导入文件选择器API
 import fs from '@ohos.file.fs'; // 导入文件系统API
+import abilityAccessCtrl from '@ohos.abilityAccessCtrl'; // 导入权限管理API
+import bundleManager from '@ohos.bundle.bundleManager'; // 导入包管理API
 
 /**
  * 路由参数接口
@@ -70,10 +72,10 @@ struct WallpaperPage {
     // 注册自定义字体（确保在绘制前完成注册）
     try {
       await font.registerFont({
-        familyName: 'fangzheng',
+        familyName: 'FangZhengFont',
         familySrc: $rawfile('fangzheng.ttf')
       });
-      console.log('自定义字体 fangzheng 注册成功');
+      console.log('自定义字体 FangZhengFont 注册成功');
     } catch (e) {
       console.warn('自定义字体注册失败，将回退系统字体:', e);
     }
@@ -324,7 +326,7 @@ struct WallpaperPage {
     ctx.save(); // 保存当前绘图状态
 
     // 设置字体和样式 - 使用注册的字体族名
-    ctx.font = `${textStyle.fontSize + 20}px fangzheng, Microsoft YaHei, sans-serif`;
+    ctx.font = `${textStyle.fontSize + 20}px FangZhengFont, Microsoft YaHei, sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(0, 0, 0, 0.96)'; // 使用黑色并提升可读性
     ctx.textAlign = 'center';
@@ -403,7 +405,7 @@ struct WallpaperPage {
     ctx.save(); // 保存当前绘图状态
     
     // 设置字体和样式 - 使用注册的字体族名
-    ctx.font = `${fontSize}px 'fangzheng', 'Microsoft YaHei', sans-serif`;
+    ctx.font = `${fontSize +30}px 'fangzheng', 'Microsoft YaHei', sans-serif`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; // 更明显
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
@@ -616,16 +618,61 @@ struct WallpaperPage {
   }
 
   /**
+   * 检查壁纸设置权限
+   */
+  private async checkWallpaperPermission(): Promise<boolean> {
+    try {
+      const atManager = abilityAccessCtrl.createAtManager();
+      const bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
+      
+      // 检查bundleInfo和appInfo是否存在
+      if (!bundleInfo || !bundleInfo.appInfo) {
+        console.error('无法获取应用信息，bundleInfo或appInfo为null');
+        return false;
+      }
+      
+      const tokenId = bundleInfo.appInfo.accessTokenId;
+      if (!tokenId) {
+        console.error('无法获取accessTokenId');
+        return false;
+      }
+      
+      const grantStatus = await atManager.checkAccessToken(tokenId, 'ohos.permission.SET_WALLPAPER');
+      return grantStatus === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+    } catch (error) {
+      console.error('检查壁纸权限失败:', error);
+      return false;
+    }
+  }
+
+  /**
    * 设置系统壁纸（API 兼容封装）
-   * - 仅调用 setWallpaper；对于不支持或失败场景，抛出明确错误给上层处理
+   * - 先检查权限，再调用 setWallpaper；对于不支持或失败场景，抛出明确错误给上层处理
    * - 说明：从 API 9 起壁纸相关能力调整为系统接口，第三方应用可能无法直接设置
    * @param pixelMap 已生成的像素图
    */
   private async applySystemWallpaper(pixelMap: image.PixelMap): Promise<void> {
     try {
+      // 检查权限
+      const hasPermission = await this.checkWallpaperPermission();
+      if (!hasPermission) {
+        throw new Error('应用缺少SET_WALLPAPER权限，无法设置壁纸');
+      }
+
+      console.log('开始设置系统壁纸...');
       await wallpaper.setWallpaper(pixelMap, wallpaper.WallpaperType.WALLPAPER_SYSTEM);
+      console.log('系统壁纸设置成功');
       return;
     } catch (err) {
+      // 结构化错误日志
+      console.error(JSON.stringify({
+        level: 'ERROR',
+        module: 'WallpaperPage',
+        func: 'applySystemWallpaper',
+        message: 'Failed to set wallpaper',
+        error: (err as Error)?.message ?? String(err)
+      }));
+      
       // 标准化错误，交由上层 UI 统一提示与降级（如引导用户手动设置或仅提供下载）
       let message = '设置壁纸失败：当前系统可能限制第三方应用直接设置壁纸，请保存图片后前往系统相册或壁纸设置中手动设置。';
       if (err instanceof Error && err.message) {

@@ -1,33 +1,58 @@
-09-11 16:16:58.598   15202-17137   C01719/ffrt                     com.wss.m...lication  W     28:FFRTQosApplyForOther:249 tid 17137, Interrupted system call, ret:-1, eno:4
-09-11 16:16:58.666   15202-17139   C01719/ffrt                     com.wss.m...lication  W     29:FFRTQosApplyForOther:249 tid 17139, Interrupted system call, ret:-1, eno:4
-09-11 16:16:58.680   15202-17141   C01719/ffrt                     com.wss.m...lication  W     30:FFRTQosApplyForOther:249 tid 17141, Interrupted system call, ret:-1, eno:4
-09-11 16:17:00.284   15202-17175   C01719/ffrt                     com.wss.m...lication  W     31:FFRTQosApplyForOther:249 tid 17175, Interrupted system call, ret:-1, eno:4
-09-11 16:17:02.733   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style 125829872 not contains toast_pattern!
-09-11 16:17:02.733   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style ohos_shadow_pattern not contains shadow_style_default_md_radius!
-09-11 16:17:02.748   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style 125829872 not contains dialog_pattern!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains shadow_dialog!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains button_bottom_top_margin!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains title_padding_horizontal!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains dialog_content_top_padding!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_left error!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_top error!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_right error!
-09-11 16:17:02.749   15202-15202   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_bottom error!
-09-11 16:17:04.128   15202-16373   C057c2/IPCObjectProxy           com.wss.m...lication  E     SendRequest 181: failed, handle:27 error:78053376 desc:*.IWallpaperService proxy:14446112 time:2849685057385
-09-11 16:17:04.128   15202-16373   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
-09-11 16:17:12.627   15202-17373   C01719/ffrt                     com.wss.m...lication  W     37:FFRTQosApplyForOther:249 tid 17373, Interrupted system call, ret:-1, eno:4
-09-11 16:17:14.030   15202-17404   C01719/ffrt                     com.wss.m...lication  W     38:FFRTQosApplyForOther:249 tid 17404, Interrupted system call, ret:-1, eno:4
-09-11 16:17:14.097   15202-17407   C01719/ffrt                     com.wss.m...lication  W     39:FFRTQosApplyForOther:249 tid 17407, Interrupted system call, ret:-1, eno:4
-09-11 16:17:14.108   15202-15202   C01406/OHOS::RS                 com.wss.m...lication  E     FlushImplicitTransaction return, [renderServiceClient_:1, transactionData empty:1]
-09-11 16:17:14.114   15202-17408   C01719/ffrt                     com.wss.m...lication  W     40:FFRTQosApplyForOther:249 tid 17408, Interrupted system call, ret:-1, eno:4
-09-11 16:17:15.484   15202-16375   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
-09-11 16:17:17.356   15202-17458   C01719/ffrt                     com.wss.m...lication  W     41:FFRTQosApplyForOther:249 tid 17458, Interrupted system call, ret:-1, eno:4
-09-11 16:17:18.764   15202-16373   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
-09-11 16:17:19.546   15202-15202   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 16335 apply qos failed, errno = 4
-09-11 16:17:19.549   15202-15202   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 16334 apply qos failed, errno = 4
-09-11 16:17:19.552   15202-15202   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 16333 apply qos failed, errno = 4
-09-11 16:17:19.557   15202-15202   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 16335 apply qos failed, errno = 4
-09-11 16:17:19.561   15202-15202   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 16334 apply qos failed, errno = 4
-09-11 16:17:19.679   15202-15202   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 16333 apply qos failed, errno = 4
-09-11 16:17:22.858   15202-17540   C01719/ffrt                     com.wss.m...lication  W     43:FFRTQosApplyForOther:249 tid 17540, Interrupted system call, ret:-1, eno:4
-09-11 16:17:26.515   15202-16373   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
+09-11 17:34:29.558   18748-23967   C01719/ffrt                     com.wss.m...lication  W     28:FFRTQosApplyForOther:249 tid 23967, Interrupted system call, ret:-1, eno:4
+09-11 17:34:29.581   18748-23968   C01719/ffrt                     com.wss.m...lication  W     29:FFRTQosApplyForOther:249 tid 23968, Interrupted system call, ret:-1, eno:4
+09-11 17:34:29.609   18748-23969   C01719/ffrt                     com.wss.m...lication  W     30:FFRTQosApplyForOther:249 tid 23969, Interrupted system call, ret:-1, eno:4
+09-11 17:34:29.667   18748-23975   C01719/ffrt                     com.wss.m...lication  W     31:FFRTQosApplyForOther:249 tid 23975, Interrupted system call, ret:-1, eno:4
+09-11 17:34:29.683   18748-23976   C01719/ffrt                     com.wss.m...lication  W     32:FFRTQosApplyForOther:249 tid 23976, Interrupted system call, ret:-1, eno:4
+09-11 17:34:35.574   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style 125829872 not contains toast_pattern!
+09-11 17:34:35.575   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style ohos_shadow_pattern not contains shadow_style_default_md_radius!
+09-11 17:34:35.581   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style 125829872 not contains dialog_pattern!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains shadow_dialog!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains button_bottom_top_margin!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains title_padding_horizontal!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains dialog_content_top_padding!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_left error!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_top error!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_right error!
+09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_bottom error!
+09-11 17:34:37.040   18748-23636   C057c2/IPCObjectProxy           com.wss.m...lication  E     SendRequest 181: failed, handle:27 error:78053376 desc:*.IWallpaperService proxy:7466128 time:1310635269736
+09-11 17:34:37.040   18748-23636   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
+09-11 17:34:41.068   18748-24158   C01719/ffrt                     com.wss.m...lication  W     35:FFRTQosApplyForOther:249 tid 24158, Interrupted system call, ret:-1, eno:4
+09-11 17:34:42.907   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
+09-11 17:34:42.911   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
+09-11 17:34:42.915   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
+09-11 17:34:42.923   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
+09-11 17:34:42.927   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
+09-11 17:34:42.933   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
+09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:356]open WS u:object_r:resourceschedule_writeable_param:s0 err 13
+09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:530]Selinux check name resourceschedule.memmgr.dma.reclaimable in u:object_r:resourceschedule_writeable_param:s0
+09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:690]deny access resourceschedule.memmgr.dma.reclaimable label 23280 65
+09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:741]SystemReadParam failed! name is:resourceschedule.memmgr.dma.reclaimable, err:1002!
+09-11 17:34:44.832   18748-23617   C01332/UIAbility                com.wss.m...lication  E     [ui_ability_thread.cpp:432]null abilityHandler_ or requestCode is -1
+09-11 17:34:44.861   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533634 does not exist
+09-11 17:34:44.878   18748-18748   C0392a/AceUiExtensionComponent  com.wss.m...lication  W     [(100000:100000:scope)] [@1808][ID: 1] UIExtension pattern instanceId 100000 not equal frame node instanceId -1
+09-11 17:34:44.879   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533634 does not exist
+09-11 17:34:44.941   18748-23576   C057c2/IPCObjectProxy           com.wss.m...lication  W     SendObituary 515: handle:29 desc:*.IWindowEventChannel 10566704
+09-11 17:34:44.941   18748-23576   C0420d/WMSUiext                 com.wss.m...lication  E     [] OnRemoteDied(173): Died
+09-11 17:34:44.943   18748-23617   C04200/ScenePersistentStorage   com.wss.m...lication  E     (31)[ScenePersistentStorage] Preferences is nullptr
+09-11 17:34:51.322   18748-24409   C01719/ffrt                     com.wss.m...lication  W     37:FFRTQosApplyForOther:249 tid 24409, Interrupted system call, ret:-1, eno:4
+09-11 17:34:53.073   18748-24446   C01719/ffrt                     com.wss.m...lication  W     40:FFRTQosApplyForOther:249 tid 24446, Interrupted system call, ret:-1, eno:4
+09-11 17:34:53.090   18748-24447   C01719/ffrt                     com.wss.m...lication  W     41:FFRTQosApplyForOther:249 tid 24447, Interrupted system call, ret:-1, eno:4
+09-11 17:34:54.539   18748-23638   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
+09-11 17:35:01.266   18748-24577   C01719/ffrt                     com.wss.m...lication  W     43:FFRTQosApplyForOther:249 tid 24577, Interrupted system call, ret:-1, eno:4
+09-11 17:35:02.732   18748-23638   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
+09-11 17:35:06.122   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
+09-11 17:35:06.127   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
+09-11 17:35:06.130   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
+09-11 17:35:06.136   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
+09-11 17:35:06.142   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
+09-11 17:35:06.145   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
+09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:356]open WS u:object_r:resourceschedule_writeable_param:s0 err 13
+09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:530]Selinux check name resourceschedule.memmgr.dma.reclaimable in u:object_r:resourceschedule_writeable_param:s0
+09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:690]deny access resourceschedule.memmgr.dma.reclaimable label 23280 65
+09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:741]SystemReadParam failed! name is:resourceschedule.memmgr.dma.reclaimable, err:1002!
+09-11 17:35:07.676   18748-23576   C01332/UIAbility                com.wss.m...lication  E     [ui_ability_thread.cpp:432]null abilityHandler_ or requestCode is -1
+09-11 17:35:07.690   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533635 does not exist
+09-11 17:35:07.706   18748-18748   C0392a/AceUiExtensionComponent  com.wss.m...lication  W     [(100000:100000:scope)] [@1808][ID: 1] UIExtension pattern instanceId 100000 not equal frame node instanceId -1
+09-11 17:35:07.706   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533635 does not exist
+09-11 17:35:07.743   18748-23588   C04200/ScenePersistentStorage   com.wss.m...lication  E     (31)[ScenePersistentStorage] Preferences is nullptr
+09-11 17:35:07.744   18748-23617   C057c2/IPCObjectProxy           com.wss.m...lication  W     SendObituary 515: handle:29 desc:*.IWindowEventChannel 10565904
