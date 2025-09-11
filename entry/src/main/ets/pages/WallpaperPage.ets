@@ -1,15 +1,10 @@
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
-// 修复：字体模块改为从 @ohos.font 引入，确保在Canvas文本绘制中可被识别
-import font from '@ohos.font';
+import { font } from '@kit.ArkUI';
 import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
 import wallpaper from '@ohos.wallpaper'; // 导入壁纸设置API
 import image from '@ohos.multimedia.image'; // 导入图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
-import picker from '@ohos.file.picker'; // 导入文件选择器API
-import fs from '@ohos.file.fs'; // 导入文件系统API
-import abilityAccessCtrl from '@ohos.abilityAccessCtrl'; // 导入权限管理API
-import bundleManager from '@ohos.bundle.bundleManager'; // 导入包管理API
 
 /**
  * 路由参数接口
@@ -47,8 +42,8 @@ struct WallpaperPage {
   @State currentQuoteIndex: number = 0;
   @State isControlsVisible: boolean = true;
   @State isLoading: boolean = true;
-  @State isDownloadVisible: boolean = false;
-  @State downloadState: 'confirm' | 'loading' | 'success' = 'confirm';
+  @State isShareVisible: boolean = false;
+  @State shareState: 'confirm' | 'loading' | 'success' = 'confirm';
   // 触摸相关状态
   @State touchStartX: number = 0;
   @State touchStartY: number = 0;
@@ -69,16 +64,11 @@ struct WallpaperPage {
    */
   async aboutToAppear() {
     console.log('壁纸预览界面加载完成');
-    // 注册自定义字体（确保在绘制前完成注册）
-    try {
-      await font.registerFont({
-        familyName: 'FangZhengFont',
-        familySrc: $rawfile('fangzheng.ttf')
-      });
-      console.log('自定义字体 FangZhengFont 注册成功');
-    } catch (e) {
-      console.warn('自定义字体注册失败，将回退系统字体:', e);
-    }
+    // 注册自定义字体
+    font.registerFont({
+      familyName: 'SimHei',
+      familySrc: $rawfile('fangzheng.ttf')
+    });
     await this.loadQuotes();
     this.initializeIndex();
   }
@@ -213,26 +203,8 @@ struct WallpaperPage {
   /**
    * 绘制分层波浪背景（与wallpaper.html的drawLayeredWaves函数保持一致）
    * 修改：使用 this.canvasElement 并确保其行为与web版本完全一致
-   * 用于预览显示，不包含水印
    */
   private drawLayeredWaves(baseColor: string) {
-    this.drawLayeredWavesInternal(baseColor, false);
-  }
-
-  /**
-   * 绘制带水印的分层波浪背景，专用于下载功能
-   * @param baseColor 基础颜色
-   */
-  private drawLayeredWavesWithWatermark(baseColor: string) {
-    this.drawLayeredWavesInternal(baseColor, true);
-  }
-
-  /**
-   * 内部绘制方法，根据参数决定是否添加水印
-   * @param baseColor 基础颜色
-   * @param includeWatermark 是否包含水印
-   */
-  private drawLayeredWavesInternal(baseColor: string, includeWatermark: boolean) {
     // 检查Canvas是否就绪
     if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
       console.warn(`Canvas未就绪，无法绘制. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
@@ -245,7 +217,7 @@ struct WallpaperPage {
 
     // 清空画布
     ctx.clearRect(0, 0, width, height);
-    // 统一壁纸图片背景色为 #E6E6E6（与原型一致，且避免JPEG透明变黑）
+    // 关键修改：先填充背景色 #E6E6E6，与web版本一致
     ctx.fillStyle = '#E6E6E6';
     ctx.fillRect(0, 0, width, height);
 
@@ -297,149 +269,25 @@ struct WallpaperPage {
       ctx.closePath();
       ctx.fill();
     }
-    
-    // 绘制语录文字内容
-    this.drawQuoteText(ctx, width, height);
-    
-    // 根据参数决定是否添加水印
-    if (includeWatermark) {
-      this.drawWatermark(ctx, width, height);
-    }
-    
-    console.log(`Canvas drawing completed successfully. 水印: ${includeWatermark ? '已添加' : '未添加'}`);
-  }
-
-  /**
-   * 在Canvas上绘制语录文字内容
-   * @param ctx Canvas绘图上下文
-   * @param width Canvas宽度
-   * @param height Canvas高度
-   */
-  private drawQuoteText(ctx: CanvasRenderingContext2D, width: number, height: number) {
-    if (!this.quotes[this.currentQuoteIndex]) {
-      return;
-    }
-
-    const quoteText = this.quotes[this.currentQuoteIndex].text;
-    const textStyle = this.getTextStyle(quoteText);
-
-    ctx.save(); // 保存当前绘图状态
-
-    // 设置字体和样式 - 使用注册的字体族名
-    ctx.font = `${textStyle.fontSize + 20}px FangZhengFont, Microsoft YaHei, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.96)'; // 使用黑色并提升可读性
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // 添加文字阴影，参考 web 版本文本阴影以增强对比度
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 2;
-    
-    // 计算文字位置（与UI层Text组件位置一致）
-    const textX = width / 2;
-    const textY = height * 0.25; // 对应UI层的25%位置
-    
-    // 处理文字换行
-    const maxWidth = width - 64; // 左右各32px边距
-    const lines = this.wrapText(ctx, quoteText, maxWidth);
-    
-    // 绘制多行文字
-    const lineHeight = (textStyle.fontSize) * 0.8; // 1.2倍行高
-    const totalHeight = lines.length * lineHeight;
-    const startY = textY - totalHeight / 2;
-    
-    for (let i = 0; i < lines.length; i++) {
-      const y = startY + i * lineHeight;
-      ctx.fillText(lines[i], textX, y);
-    }
-    
-    ctx.restore(); // 恢复绘图状态
-    console.log(`语录文字绘制完成: ${lines.length}行, 字体大小: ${textStyle.fontSize}px`);
-  }
-  
-  /**
-   * 文字自动换行处理
-   * @param ctx Canvas绘图上下文
-   * @param text 要处理的文字
-   * @param maxWidth 最大宽度
-   * @returns 换行后的文字数组
-   */
-  private wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
-    const lines: string[] = [];
-    let currentLine = '';
-    
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      const testLine = currentLine + char;
-      const metrics = ctx.measureText(testLine);
-      
-      if (metrics.width > maxWidth && currentLine !== '') {
-        lines.push(currentLine);
-        currentLine = char;
-      } else {
-        currentLine = testLine;
-      }
-    }
-    
-    if (currentLine !== '') {
-      lines.push(currentLine);
-    }
-    
-    return lines;
-  }
-
-  /**
-   * 在Canvas左下角绘制「语录壁纸」水印标识
-   * @param ctx Canvas绘图上下文
-   * @param width Canvas宽度
-   * @param height Canvas高度
-   */
-  private drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: number) {
-    // 设置水印样式
-    const watermarkText = '语录壁纸';
-    const fontSize = Math.max(30, Math.min(width, height) * 0.06); // 进一步增大水印字体尺寸
-    const padding = fontSize * 0.8; // 距离边缘的间距
-    
-    ctx.save(); // 保存当前绘图状态
-    
-    // 设置字体和样式 - 使用注册的字体族名
-    ctx.font = `${fontSize +30}px 'fangzheng', 'Microsoft YaHei', sans-serif`;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; // 更明显
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
-    
-    // 添加文字阴影效果
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.shadowBlur = 2;
-    
-    // 在左下角绘制水印文字
-    ctx.fillText(watermarkText, padding, height - padding);
-    
-    ctx.restore(); // 恢复绘图状态
-    console.log(`水印绘制完成: ${watermarkText}, 字体大小: ${fontSize}px`);
+    console.log('Canvas drawing completed successfully.');
   }
 
   /**
    * 根据字数自动调整文字样式 (更接近web版本)
    * 修复：返回正确的行高数值，避免文字重叠
-   * 增大字体尺寸以提升可读性
    */
   private getTextStyle(content: string): TextStyle {
     const length = content.length;
     if (length <= 15) {
-      // 显著增大字体，调整行高，更符合web效果
-      return { fontSize: 44, lineHeight: 62 }; // 44 * ~1.4
+      // 增大字体，调整行高，更符合web效果
+      return { fontSize: 28, lineHeight: 39 }; // 28 * 1.4 = 39.2
     } else if (length <= 30) {
-      return { fontSize: 38, lineHeight: 56 }; // 38 * ~1.47
+      return { fontSize: 24, lineHeight: 36 }; // 24 * 1.5 = 36
     } else if (length <= 50) {
-      return { fontSize: 32, lineHeight: 50 }; // 32 * ~1.56
+      return { fontSize: 20, lineHeight: 32 }; // 20 * 1.6 = 32
     } else {
-      // 对于长文本，适当减小字体但保持较大尺寸
-      return { fontSize: 28, lineHeight: 46 }; // 28 * ~1.64
+      // 对于长文本，进一步减小字体和增加行高
+      return { fontSize: 18, lineHeight: 31 }; // 18 * 1.7 = 30.6
     }
   }
 
@@ -532,7 +380,7 @@ struct WallpaperPage {
       // 创建PixelMap
       const pixelMap = await this.createPixelMapFromImageData(imageData);
       // 设置为系统壁纸
-      await this.applySystemWallpaper(pixelMap);
+      await wallpaper.setWallpaper(pixelMap, wallpaper.WallpaperType.WALLPAPER_SYSTEM);
       console.log('壁纸设置成功');
       promptAction.showToast({
         message: '壁纸设置成功！',
@@ -548,8 +396,6 @@ struct WallpaperPage {
         message: errMsg,
         duration: 2000
       });
-    } finally {
-      this.isLoading = false;
     }
   }
 
@@ -560,125 +406,69 @@ struct WallpaperPage {
    */
   private async ensureCanvasReady(timeoutMs: number = 1000): Promise<boolean> {
     const start = Date.now();
+    // 若还未初始化上下文，尝试从 this.canvasContext (@State) 获取
+    // 主要逻辑依赖 onReady 和 onAreaChange，这里作为后备和等待
     while ((!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) && Date.now() - start < timeoutMs) {
+      // 修复：在等待期间也尝试从 canvasContext 获取
+      // 处理框架赋值可能存在的极短延迟
       if (!this.canvasElement && this.canvasContext) {
-        this.canvasElement = this.canvasContext;
+        this.canvasElement = this.canvasContext; // 类型兼容
         console.log('ensureCanvasReady: Assigned canvasElement from canvasContext during wait loop.');
       }
-      // 仅等待UI回调(onAreaChange)提供的真实尺寸，避免与真实画布缓冲尺寸不一致
-      await new Promise<void>((resolve) => setTimeout(resolve, 50));
+      // 如果尺寸为0但上下文有效，尝试获取屏幕尺寸
+      if ((this.canvasWidth <= 0 || this.canvasHeight <= 0) && this.canvasElement) {
+        try {
+          const d = await display.getDefaultDisplay();
+          this.canvasWidth = d.width;
+          this.canvasHeight = d.height;
+          console.log(`Canvas尺寸回退为屏幕尺寸: ${this.canvasWidth}x${this.canvasHeight}`);
+          // 尺寸变更后重新绘制
+          if (this.canvasElement) {
+            this.drawLayeredWaves(this.currentQuoteColor);
+          }
+        } catch (e) {
+          console.warn('获取屏幕尺寸失败，保持原尺寸。');
+        }
+      }
+      // 如果仍未就绪，等待一小段时间再检查
+      if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 50));
+      }
     }
-    const ready = !!this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0;
-    console.log(`ensureCanvasReady: ready=${ready}, w=${this.canvasWidth}, h=${this.canvasHeight}`);
-    return ready;
+    // 最终检查
+    const isReady = !!this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0;
+    console.log(`Canvas就绪检查最终结果: ${isReady}. Element: ${!!this.canvasElement}, Width: ${this.canvasWidth}, Height: ${this.canvasHeight}`);
+    return isReady;
   }
 
   /**
    * 将ImageData转换为PixelMap
-   * 功能：把Canvas返回的RGBA像素数据转换为BGRA_8888并创建PixelMap，避免颜色通道错乱
-   * 参数：
-   *  - imageData: Canvas的像素数据对象，data为RGBA顺序的Uint8ClampedArray
-   * 返回：Promise<image.PixelMap>
    */
   private async createPixelMapFromImageData(imageData: ImageData): Promise<image.PixelMap> {
     try {
-      // 将Canvas返回的RGBA数据转换为BGRA，以匹配HarmonyOS Image模块默认处理格式，避免颜色偏差
-      // 含义：许多设备/版本在createPixelMap时默认按照BGRA_8888处理缓冲区，提前转换可确保显示正确
-      const src: Uint8ClampedArray = imageData.data;
-      const total: number = src.length;
-      const bgra: Uint8Array = new Uint8Array(total);
-      for (let i = 0; i < total; i += 4) {
-        bgra[i] = src[i + 2];     // B <- R
-        bgra[i + 1] = src[i + 1]; // G <- G
-        bgra[i + 2] = src[i];     // R <- B
-        bgra[i + 3] = src[i + 3]; // A <- A
-      }
-
-      // 使用强类型对象，符合 ArkTS 结构化类型校验要求
-      const size: image.Size = { width: this.canvasWidth, height: this.canvasHeight };
+      // 创建PixelMap的配置
       const opts: image.InitializationOptions = {
-        size,
+        alphaType: 0, // UNKNOWN
         editable: true,
-        pixelFormat: image.PixelMapFormat.BGRA_8888
+        pixelFormat: 3, // RGBA_8888
+        scaleMode: 1, // CENTER_CROP
+        size: {
+          height: this.canvasHeight,
+          width: this.canvasWidth
+        }
       };
-      const pixelMap: image.PixelMap = await image.createPixelMap(bgra.buffer, opts);
-
+      // 从ImageData创建PixelMap
+      // 修复：确保传递的是 ArrayBuffer
+      const pixelMap = await image.createPixelMap(imageData.data.buffer.slice(0) as ArrayBuffer, opts);
       return pixelMap;
     } catch (err) {
-      // 结构化日志，便于排查问题
-      console.error(JSON.stringify({
-        level: 'ERROR',
-        module: 'WallpaperPage',
-        func: 'createPixelMapFromImageData',
-        message: 'Failed to create PixelMap from ImageData',
-        error: (err as Error)?.message ?? String(err)
-      }));
-      throw (err instanceof Error ? err : new Error(String(err)));
-    }
-  }
-
-  /**
-   * 检查壁纸设置权限
-   */
-  private async checkWallpaperPermission(): Promise<boolean> {
-    try {
-      const atManager = abilityAccessCtrl.createAtManager();
-      const bundleInfo = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
-      
-      // 检查bundleInfo和appInfo是否存在
-      if (!bundleInfo || !bundleInfo.appInfo) {
-        console.error('无法获取应用信息，bundleInfo或appInfo为null');
-        return false;
+      console.error('创建PixelMap失败:', err);
+      // 提供更具体的错误信息
+      let errMsg = '创建壁纸数据失败';
+      if (err instanceof Error) {
+        errMsg = err.message || errMsg;
       }
-      
-      const tokenId = bundleInfo.appInfo.accessTokenId;
-      if (!tokenId) {
-        console.error('无法获取accessTokenId');
-        return false;
-      }
-      
-      const grantStatus = await atManager.checkAccessToken(tokenId, 'ohos.permission.SET_WALLPAPER');
-      return grantStatus === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
-    } catch (error) {
-      console.error('检查壁纸权限失败:', error);
-      return false;
-    }
-  }
-
-  /**
-   * 设置系统壁纸（API 兼容封装）
-   * - 先检查权限，再调用 setWallpaper；对于不支持或失败场景，抛出明确错误给上层处理
-   * - 说明：从 API 9 起壁纸相关能力调整为系统接口，第三方应用可能无法直接设置
-   * @param pixelMap 已生成的像素图
-   */
-  private async applySystemWallpaper(pixelMap: image.PixelMap): Promise<void> {
-    try {
-      // 检查权限
-      const hasPermission = await this.checkWallpaperPermission();
-      if (!hasPermission) {
-        throw new Error('应用缺少SET_WALLPAPER权限，无法设置壁纸');
-      }
-
-      console.log('开始设置系统壁纸...');
-      await wallpaper.setWallpaper(pixelMap, wallpaper.WallpaperType.WALLPAPER_SYSTEM);
-      console.log('系统壁纸设置成功');
-      return;
-    } catch (err) {
-      // 结构化错误日志
-      console.error(JSON.stringify({
-        level: 'ERROR',
-        module: 'WallpaperPage',
-        func: 'applySystemWallpaper',
-        message: 'Failed to set wallpaper',
-        error: (err as Error)?.message ?? String(err)
-      }));
-      
-      // 标准化错误，交由上层 UI 统一提示与降级（如引导用户手动设置或仅提供下载）
-      let message = '设置壁纸失败：当前系统可能限制第三方应用直接设置壁纸，请保存图片后前往系统相册或壁纸设置中手动设置。';
-      if (err instanceof Error && err.message) {
-        message += ` 详情：${err.message}`;
-      }
-      throw new Error(message);
+      throw new Error(errMsg);
     }
   }
 
@@ -727,197 +517,41 @@ struct WallpaperPage {
   }
 
   /**
-   * 下载壁纸到本地
+   * 分享壁纸
    */
-  private async downloadWallpaper() {
-    try {
-      console.log('开始下载壁纸:', this.quotes[this.currentQuoteIndex]);
-      
-      // 等待画布就绪
-      const ready = await this.ensureCanvasReady(2000);
-      if (!ready) {
-        promptAction.showToast({
-          message: '壁纸预览未准备就绪，请稍后重试',
-          duration: 2000
-        });
-        return;
-      }
-      
-      promptAction.showToast({
-        message: '正在生成壁纸...',
-        duration: 2000
-      });
-      
-      // 确保绘制的是当前状态（包含水印）
-      this.drawLayeredWavesWithWatermark(this.currentQuoteColor);
-      // 等待绘制完成
-      await new Promise<void>((resolve) => setTimeout(resolve, 300));
-      
-      // 获取Canvas内容
-      const validCanvasContext = this.canvasElement;
-      if (!validCanvasContext) {
-        console.error('Canvas上下文未就绪，无法导出图像数据');
-        promptAction.showToast({
-          message: '生成壁纸失败，请稍后重试',
-          duration: 2000
-        });
-        return;
-      }
-      
-      // 将Canvas内容转换为ImageData
-      const imageData = validCanvasContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
-      
-      // 创建PixelMap
-      const pixelMap = await this.createPixelMapFromImageData(imageData);
-      
-      // 将PixelMap转换为图片数据
-      const imagePackerApi = image.createImagePacker();
-      const packOpts: image.PackingOption = { 
-        format: "image/jpeg", 
-        quality: 95 
-      };
-      const arrayBuffer = await imagePackerApi.packing(pixelMap, packOpts);
-      
-      // 调用系统文件选择器保存文件
-      await this.saveImageToLocal(arrayBuffer);
-      
-      console.log('壁纸下载成功');
-      promptAction.showToast({
-        message: '壁纸下载成功！',
-        duration: 2000
-      });
-      
-    } catch (err) {
-      console.error('下载壁纸失败:', err);
-      let errMsg = '壁纸下载失败，请重试';
-      if (err instanceof Error) {
-        errMsg = err.message || errMsg;
-      }
-      promptAction.showToast({
-        message: errMsg,
-        duration: 2000
-      });
-    }
-  }
-  
-  /**
-   * 使用系统文件选择器保存图片到本地
-   * @param arrayBuffer 图片数据
-   */
-  private async saveImageToLocal(arrayBuffer: ArrayBuffer) {
-    // 说明：通过系统文件选择器（PhotoViewPicker.save）进行保存，无需额外的媒体读写权限；
-    // 系统会为返回的目标URI授予一次性写入权限。我们只需按URI写入并做好异常处理和资源释放。
-    let file: fs.File | null = null;
-    try {
-      // 创建文件保存选择器
-      const photoSaveOptions = new picker.PhotoSaveOptions();
-      photoSaveOptions.newFileNames = [`语录壁纸_${Date.now()}.jpg`];
-
-      const photoViewPicker = new picker.PhotoViewPicker();
-
-      // 调用save接口拉起FilePicker界面进行文件保存
-      const photoSaveResult = await photoViewPicker.save(photoSaveOptions);
-
-      if (!photoSaveResult || photoSaveResult.length === 0) {
-        throw new Error('用户取消了保存操作');
-      }
-
-      const saveUri = photoSaveResult[0];
-      const totalBytes = arrayBuffer?.byteLength ?? 0;
-      console.log(`获取保存路径成功: ${saveUri}, 即将写入字节数: ${totalBytes}`);
-      if (!arrayBuffer || totalBytes <= 0) {
-        throw new Error('生成的图片数据为空，无法保存');
-      }
-
-      // 使用只写模式+创建+清空，兼容平台行为
-      const openMode = fs.OpenMode.WRITE_ONLY | fs.OpenMode.CREATE | fs.OpenMode.TRUNC;
-      file = fs.openSync(saveUri, openMode);
-
-      // 将ArrayBuffer转换为Uint8Array以便稳健分块写入
-      const u8 = new Uint8Array(arrayBuffer);
-
-      // 优先使用同步写入，确保全部落盘；若不可用则回退到异步写入
-      let writtenTotal = 0;
-      const writeChunkSize = 256 * 1024; // 256KB分块写入，避免一次性写过大导致失败
-
-      const tryWriteSync = (buf: Uint8Array): number => {
-        // 某些版本仅支持ArrayBuffer入参，需切片保证偏移正确
-        const arrBuf: ArrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-        return fs.writeSync(file!.fd, arrBuf);
-      };
-
-      if (typeof fs.writeSync === 'function') {
-        // 分块同步写入
-        for (let offset = 0; offset < u8.length; offset += writeChunkSize) {
-          const end = Math.min(offset + writeChunkSize, u8.length);
-          const chunk = u8.subarray(offset, end);
-          const w = tryWriteSync(chunk);
-          if (typeof w !== 'number' || w <= 0) {
-            throw new Error(`写入失败（同步），offset=${offset}, 返回=${String(w)}`);
-          }
-          writtenTotal += w;
-        }
-      } else {
-        // 回退：一次性异步写入
-        const w = await fs.write(file.fd, arrayBuffer);
-        if (typeof w !== 'number' || w <= 0) {
-          throw new Error(`写入失败（异步），返回=${String(w)}`);
-        }
-        writtenTotal = w;
-      }
-
-      if (writtenTotal !== totalBytes) {
-        console.warn(`写入字节与期望不一致: 期望=${totalBytes}, 实际=${writtenTotal}`);
-      } else {
-        console.log(`图片写入完成，总字节=${writtenTotal}`);
-      }
-
-      // 去除对 fsAny 和 fsyncSync 的使用，避免 ArkTS any 与“命名空间作为对象”错误
-      // 说明：部分平台不提供 fsync 能力；closeSync 前系统会刷新缓冲区，配合分块写入已足以保证稳定性
-
-      console.log('图片保存成功:', saveUri);
-    } catch (e) {
-      console.error('保存图片失败:', e);
-      if (e instanceof Error) {
-        throw e; // 向上抛出，统一由调用方提示用户
-      } else {
-        throw new Error('保存图片失败: ' + String(e));
-      }
-    } finally {
-      // 确保文件句柄被关闭，避免资源泄露
-      if (file) {
-        try {
-          fs.closeSync(file);
-        } catch (closeErr) {
-          console.warn('关闭文件句柄时发生异常:', closeErr);
-        }
-      }
-    }
+  private shareWallpaper() {
+    this.callSystemShare();
   }
 
   /**
-   * 关闭下载遮罩
+   * 关闭分享遮罩
    */
-  private closeDownloadOverlay() {
-    this.isDownloadVisible = false;
-    this.downloadState = 'confirm';
+  private closeShareOverlay() {
+    this.isShareVisible = false;
+    this.shareState = 'confirm';
   }
 
   /**
-   * 确认下载
+   * 确认分享
    */
-  private confirmDownload() {
-    this.downloadState = 'loading';
-    // 执行实际下载
-    this.downloadWallpaper().then(() => {
-      this.downloadState = 'success';
-      // 2秒后自动关闭
-      setTimeout(() => {
-        this.closeDownloadOverlay();
-      }, 2000);
-    }).catch(() => {
-      this.downloadState = 'confirm';
+  private confirmShare() {
+    this.shareState = 'loading';
+    // 模拟生成过程
+    setTimeout(() => {
+      this.shareState = 'success';
+    }, 2000);
+  }
+
+  /**
+   * 调用系统分享
+   */
+  private callSystemShare() {
+    console.log('调用系统分享面板');
+    promptAction.showToast({
+      message: '调用系统分享面板',
+      duration: 2000
     });
+    this.closeShareOverlay();
   }
 
   /**
@@ -971,14 +605,30 @@ struct WallpaperPage {
             }
           })
 
-        // 语录内容区域已移至Canvas绘制，此处不再需要UI层Text组件
+        // 语录内容区域 (修复文字重叠和位置问题)
+        if (!this.isLoading && this.quotes.length > 0) {
+          Column() {
+            Text(this.quotes[this.currentQuoteIndex]?.text || '')
+              .fontSize(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').fontSize)
+              .fontColor('#181818')
+              .textAlign(TextAlign.Center)
+              .lineHeight(this.getTextStyle(this.quotes[this.currentQuoteIndex]?.text || '').lineHeight)
+              .fontWeight(FontWeight.Medium)
+              .padding({ left: 32, right: 32 })
+              // 移除了 shadow 属性
+              .decoration({ type: TextDecorationType.None })
+              .fontFamily('SimHei') // 使用注册的字体名称
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+          .position({ x: 0, y: '25%' }) // 修复：将文字位置向上调整，从45%改为35%
+        }
 
         // 返回按钮
         Button() {
-          Image($r('app.media.ic_back'))
-            .width(24)
-            .height(24)
-            .fillColor('#FFFFFF')
+          Text('←')
+            .fontSize(24)
+            .fontColor('#FFFFFF')
         }
         .width(40)
         .height(40)
@@ -1052,7 +702,7 @@ struct WallpaperPage {
                   .width(24)
                   .height(24)
                   .fillColor('#ffffff')
-                Text('下载壁纸')
+                Text('分享壁纸')
                   .fontSize(12)
                   .fontColor('#FFFFFF')
                   .margin({ top: 4 })
@@ -1063,7 +713,7 @@ struct WallpaperPage {
             .backgroundColor('rgba(255, 255, 255, 0.2)')
             .borderRadius(36)
             .padding(12)
-            .onClick(() => this.downloadWallpaper()) // 确保此 onClick 有效
+            .onClick(() => this.shareWallpaper()) // 确保此 onClick 有效
           }
           .width('100%')
           .padding({ left: 24, right: 24, bottom: 32 })
@@ -1071,18 +721,18 @@ struct WallpaperPage {
           .translate({ x: 0, y: '-100%' })
         }
 
-        // 下载生成遮罩
-        if (this.isDownloadVisible) {
+        // 分享生成遮罩
+        if (this.isShareVisible) {
           Column() {
             // 遮罩背景
             Column()
               .width('100%')
               .height('100%')
               .backgroundColor('rgba(0, 0, 0, 0.5)')
-              .onClick(() => this.closeDownloadOverlay())
-            // 下载内容卡片
+              .onClick(() => this.closeShareOverlay())
+            // 分享内容卡片
             Column() {
-              Text('下载壁纸')
+              Text('分享壁纸')
                 .fontSize(18)
                 .fontWeight(FontWeight.Medium)
                 .fontColor('#333333')
@@ -1094,7 +744,7 @@ struct WallpaperPage {
                   .fontColor('#333333')
                   .textAlign(TextAlign.Center)
                   .lineHeight(24)
-                // .maxLines(4) // 可选：如果希望下载预览也限制行数
+                // .maxLines(4) // 可选：如果希望分享预览也限制行数
                 // .textOverflow({ overflow: TextOverflow.Ellipsis }) // 可选
               }
               .width('100%')
@@ -1103,23 +753,23 @@ struct WallpaperPage {
               .borderRadius(8)
               .margin({ bottom: 20 })
               // 状态显示
-              if (this.downloadState === 'loading') {
+              if (this.shareState === 'loading') {
                 Column() {
                   LoadingProgress()
                     .width(32)
                     .height(32)
                     .color('#007AFF')
-                  Text('正在生成下载图片...')
+                  Text('正在生成分享图片...')
                     .fontSize(14)
                     .fontColor('#666666')
                     .margin({ top: 8 })
                 }
                 .margin({ bottom: 20 })
-              } else if (this.downloadState === 'success') {
+              } else if (this.shareState === 'success') {
                 Column() {
                   Text('✅')
                     .fontSize(32)
-                  Text('下载成功！')
+                  Text('生成成功！')
                     .fontSize(14)
                     .fontColor('#666666')
                     .margin({ top: 8 })
@@ -1135,22 +785,22 @@ struct WallpaperPage {
                   .fontColor('#666666')
                   .backgroundColor('#F5F5F5')
                   .borderRadius(8)
-                  .onClick(() => this.closeDownloadOverlay())
+                  .onClick(() => this.closeShareOverlay())
                 Blank()
-                Button(this.downloadState === 'loading' ? '下载中...' :
-                  this.downloadState === 'success' ? '完成' : '下载')
+                Button(this.shareState === 'loading' ? '生成中...' :
+                  this.shareState === 'success' ? '调用分享' : '分享')
                   .width(120)
                   .height(40)
                   .fontSize(16)
                   .fontColor('#FFFFFF')
-                  .backgroundColor(this.downloadState === 'loading' ? '#CCCCCC' : '#007AFF')
+                  .backgroundColor(this.shareState === 'loading' ? '#CCCCCC' : '#007AFF')
                   .borderRadius(8)
-                  .enabled(this.downloadState !== 'loading')
+                  .enabled(this.shareState !== 'loading')
                   .onClick(() => {
-                    if (this.downloadState === 'success') {
-                      this.closeDownloadOverlay();
+                    if (this.shareState === 'success') {
+                      this.callSystemShare();
                     } else {
-                      this.confirmDownload();
+                      this.confirmShare();
                     }
                   })
               }
@@ -1219,23 +869,5 @@ struct WallpaperPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#000000') // 保持黑色背景
-  }
-
-  /**
-   * 将RGBA字节数组转换为BGRA顺序
-   * - 目的：HarmonyOS在createPixelMap时常使用BGRA_8888格式，这里做通道转换以确保颜色正确
-   * @param rgbaData 源RGBA像素数据（Uint8ClampedArray）
-   * @returns 转换后的BGRA字节缓冲区（ArrayBuffer）
-   */
-  private convertRgbaToBgra(rgbaData: Uint8ClampedArray): ArrayBuffer {
-    const len = rgbaData.length;
-    const out = new Uint8Array(len);
-    for (let i = 0; i < len; i += 4) {
-      out[i] = rgbaData[i + 2];     // B
-      out[i + 1] = rgbaData[i + 1]; // G
-      out[i + 2] = rgbaData[i];     // R
-      out[i + 3] = rgbaData[i + 3]; // A
-    }
-    return out.buffer;
   }
 }
