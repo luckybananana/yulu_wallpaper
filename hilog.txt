@@ -1,160 +1,79 @@
-09-11 21:25:46.734   52926-53041   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 17267
-09-11 21:25:46.734   52926-53041   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:17267][OnPointerEvent:544] id:17267 recv
-09-11 21:25:46.734   52926-53041   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:8,InputId:17267,wid:239,ac:2
-09-11 21:25:46.737   52926-53041   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 239
-09-11 21:25:46.737   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:17267, fingerId:0, type=0, inject=0, isPrivacyMode=0
-09-11 21:25:46.737   52926-53041   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:17267,wid:239,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
-09-11 21:25:46.738   52926-52926   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
-09-11 21:25:46.738   52926-52926   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
-09-11 21:25:46.738   52926-53041   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 17268
-09-11 21:25:46.738   52926-52926   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
-09-11 21:25:46.738   52926-52926   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:17267, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };{ tag: Button, depth: 12 };{ tag: Image, depth: 14 };
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:17267, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: Button }; { tag: Stack };recognizer type LongPressRecognizer node info: { tag: Image }; { tag: Image };recognizer type PanRecognizer node info: { tag: Image }; { tag: Stack };
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, exclusive 0 type: 0
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, exclusive 0 type: 0
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, exclusive 0 type: 0
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, parallel 0 type: 0
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, sequenced 0 type: 0
-09-11 21:25:46.740   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, LongPress 0 down, state: 0
-09-11 21:25:46.741   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, LongPress 0 down, state: 0
-09-11 21:25:46.741   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, click 0 down, ETF: 0, CTP: 0, state: 0
-09-11 21:25:46.741   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, click 0 down, ETF: 0, CTP: 0, state: 0
-09-11 21:25:46.741   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17267, pan 0 down, state: 0
-09-11 21:25:46.741   52926-52926   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=17267 in ace_container, lastEventInfo: id:17258
-09-11 21:25:46.791   52926-52926   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
-09-11 21:25:46.791   52926-52926   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
-09-11 21:25:46.827   52926-53041   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 17269-(2025-09-11 21:25:46.743ms), 17278, count: 10, last: ac: up: 17279
-09-11 21:25:46.827   52926-53041   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:17279][OnPointerEvent:544] id:17279 recv
-09-11 21:25:46.827   52926-53041   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:9,InputId:17279,wid:239,ac:4
-09-11 21:25:46.828   52926-53041   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:17279,wid:239,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
-09-11 21:25:46.828   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:17279, fingerId:0, type=1, inject=0, isPrivacyMode=0
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, exclusive 0 type: 1
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, exclusive 0 type: 1
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, exclusive 0 type: 1
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, parallel 0 type: 1
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, sequenced 0 type: 1
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, LongPress 0 up, state: 1
-09-11 21:25:46.829   52926-52926   C03905/com.wss...ation/AceDrag  com.wss.m...lication  I     [(100000:100000:scope)] Trigger pan onReject
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, LongPress 0 up, state: 1
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, click 0 up, state: 0
-09-11 21:25:46.829   52926-52926   C0391E/com.wss...on/AceGesture  com.wss.m...lication  I     [(100000:100000:scope)] Click try accept
-09-11 21:25:46.829   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Click accepted, tag: Button
-09-11 21:25:46.829   52926-52926   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     调用系统分享面板
-09-11 21:25:46.831   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, click 0 up, state: 6
-09-11 21:25:46.831   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:17279, pan 0 up, state: 6
-09-11 21:25:46.831   52926-52926   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Sequenced, node: Image, prcd: Down, state: READY, prcd: Up, state: FAIL}{types: LongPress, node: Image, prcd: Down, state: DETECTING, prcd: Up, state: FAIL}{types: Pan, node: Image}{types: LongPress, node: Image, prcd: Down, state: DETECTING, prcd: Up, state: FAIL}{types: Click, node: Button, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: SUCCEED, extraInfo: ETF: 0 CFP: 0}{types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: FAIL, extraInfo: currentFingers: 1 fingers: 1}
-09-11 21:25:46.831   52926-52926   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=17279 in ace_container, lastEventInfo: id:17278
-09-11 21:25:46.855   52926-53013   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:11, cmdCount:1, instanceId:100000
-09-11 21:25:46.855   52926-52926   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:11, cmdCount:1, instanceId:100000
-09-11 21:25:46.879   52926-53448   C01331/com.wss...ation/Context  com.wss.m...lication  E     [ability_context_impl.cpp:157]ret=2097199
-09-11 21:25:46.879   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@200][ID: 1] The modal UIExtension is created.
-09-11 21:25:46.879   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@761][ID: 1] OnAttachToFrameNode
-09-11 21:25:46.879   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@332][ID: 1] The current state is 'NONE' when UpdateWant, needCheck: '0'.
-09-11 21:25:46.879   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@359][ID: 1] The ability KeyAsync 0, uIExtensionUsage: 0.
-09-11 21:25:46.879   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@278][ID: 0] The session is created with bundle = com.huawei.hmsapp.appgallery, ability = AppSelectorExtensionAbility
-09-11 21:25:46.879   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@319][ID: 0] Want param isNotifyOccupiedAreaChange is 1, realHostWindowId: 239, parentWindowType: 1
-09-11 21:25:46.880   52926-53100   C04207/com.wss...tion/WMSFocus  com.wss.m...lication  I     [] Session(100): focusedOnShow:1
-09-11 21:25:46.880   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] GeneratePersistentId(3137): persistentId: 0, persistentId_: 1290526724
-09-11 21:25:46.880   52926-53100   C0420D/com.wss...tion/WMSUiext  com.wss.m...lication  I     []: persistentId: 1290526724, bundleName: com.huawei.hmsapp.appgallery, moduleName: , abilityName: AppSelectorExtensionAbility
-09-11 21:25:46.880   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@667][ID: 1] The state is changing from 'NONE' to 'FOREGROUND'.
-09-11 21:25:46.880   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@533][ID: 0] NotifyForeground, persistentid = 1290526724, hostWindowId = 239, windowSceneId = -1, IsScenceBoardWindow: 0, componentId=353.
-09-11 21:25:46.880   52926-53100   C04200/com.wss...essionManager  com.wss.m...lication  I     (90)operator(): Activate session with persistentId: 1290526724
-09-11 21:25:46.880   52926-53100   C01336/com.wss...plication/AMS  com.wss.m...lication  I     [ability_manager_client.cpp:337]name: AppSelectorExtensionAbility com.huawei.hmsapp.appgallery, persistentId: 1290526724, userId: -1.
-09-11 21:25:46.880   52926-52926   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] modalNode->GetParent() 3 mark IsProhibitedAddChildNode when sessionId -1290526724,prohibitedRemoveByRouter: 1.
-09-11 21:25:46.880   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Focus view: ModalPage/354 show
-09-11 21:25:46.880   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Focus view: page/235 lost focus
-09-11 21:25:46.881   52926-52926   C03922/com.wss...AceNavigation  com.wss.m...lication  I     [(100000:100000:scope)] can't find inner navigation
-09-11 21:25:46.881   52926-52926   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  E     调用系统分享面板失败: Error: Can not match any component.
-09-11 21:25:46.881   52926-53013   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [com.wss.myapplication][entry][100000]: create modal page, sessionId=1290526724, isProhibitBack=0, isAsyncModalBinding=0, isAllowedBeCovered=0, prohibitedRemoveByRouter=1, prohibitedRemoveByNavigation=1
-09-11 21:25:46.886   52926-53100   C0420D/com.wss...tion/WMSUiext  com.wss.m...lication  I     []: Activate ret:0, persistentId:1290526724
-09-11 21:25:46.889   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@761][ID: 0] NotifyDisplayArea displayArea=RectT (0.00, 0.00) - [1840.00 x 2800.00], curWindow=Rect (0.00, 0.00) - [1840.00 x 2800.00], reason=0, duration=0, persistentId=1290526724, componentId=353.
-09-11 21:25:46.889   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Request focus on focus view: ModalPage/354.
-09-11 21:25:46.889   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Focus view has no default focus.
-09-11 21:25:46.889   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] FocusSwitch end, Stack/secure_field onBlur, ModalPage/secure_field onFocus, start: 2, end: 1, update: 2
-09-11 21:25:46.889   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] current focus node info : (ModalPage/354).
-09-11 21:25:46.889   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] FrameNode(ModalPage/354) notNeedSoftKeyboard.
-09-11 21:25:46.889   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] Ime Not Shown, Ime Not Attached, No need to close keyboard
-09-11 21:25:46.889   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Request focus on view root scope: ModalPage/354 return: 1.
-09-11 21:25:46.944   52926-53013   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:12, cmdCount:1, instanceId:100000
-09-11 21:25:46.944   52926-52926   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:12, cmdCount:1, instanceId:100000
-09-11 21:25:47.000   52926-53013   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:13, cmdCount:2, instanceId:100000
-09-11 21:25:47.000   52926-52926   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:13, cmdCount:2, instanceId:100000
-09-11 21:25:47.302   52926-53013   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSSurfaceNode::Unmarshalling, Node: 228921756876801, Name: com.huawei.hmsapp.appgalleryAppSelectorExtensionAbility
-09-11 21:25:47.302   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] ConnectInner(1076): id: 1290526724, state: 0,isTerminating:0, callingPid:53300, disableDelegator:0
-09-11 21:25:47.302   52926-53100   C04208/com.wss...ion/WMSLayout  com.wss.m...lication  I     [] InitSystemSessionDragEnable(1173): windId: 1290526724, defaultDragEnable: 0, isSystemWindow: 0, isDialog: 0, isSubWindow: 0, isSystemCalling: 0
-09-11 21:25:47.302   52926-53100   C04200/com.wss...plication/WMS  com.wss.m...lication  I     [] InitSessionPropertyWhenConnect(1137): Id: 1290526724, requestedOrientation: 0, defaultRequestedOrientation: 0
-09-11 21:25:47.302   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 1, persistent: 1290526724]
-09-11 21:25:47.302   52926-53100   C04208/com.wss...ion/WMSLayout  com.wss.m...lication  I     [] SetClientRect(3005): Id:1290526724, update client rect:[0 0 1840 2800]
-09-11 21:25:47.302   52926-53100   C04200/com.wss...on/ANRManager  com.wss.m...lication  W     (193)GetBundleName: AppInfoGetter is nullptr
-09-11 21:25:47.302   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(-1:100000:singleton)] [@414][ID: 1] The session is connected and the current state is 'FOREGROUND'.
-09-11 21:25:47.302   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1094][ID: 1] OnRemoteReady the current state is 'FOREGROUND'.
-09-11 21:25:47.302   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] UIExtensionComponent/secure_field RequestFocusImmediately isOnMainTree:1
-09-11 21:25:47.302   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@467][ID: 0] focused state notified to uiextension, persistentid = 1290526724, componentId=353.
-09-11 21:25:47.302   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] FocusSwitch end, ModalPage/secure_field onBlur, UIExtensionComponent/secure_field onFocus, start: 2, end: 1, update: 2
-09-11 21:25:47.302   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] current focus node info : (UIExtensionComponent/353).
-09-11 21:25:47.302   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] UIExtension(UIExtensionComponent/353) not need process.
-09-11 21:25:47.302   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@467][ID: 0] focused state notified to uiextension, persistentid = 1290526724, componentId=353.
-09-11 21:25:47.302   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1334][ID: 1] UIExtension: 349 register child tree, realHostWindowId: 239
-09-11 21:25:47.309   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] UIExtensionSurface: isDisappearing = 0, paintRect = RectT (0.00, 0.00) - [1840.00 x 2800.00].
-09-11 21:25:47.309   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@761][ID: 0] NotifyDisplayArea displayArea=RectT (0.00, 0.00) - [1840.00 x 2800.00], curWindow=Rect (0.00, 0.00) - [1840.00 x 2800.00], reason=0, duration=0, persistentId=1290526724, componentId=353.
-09-11 21:25:47.309   52926-52926   C04208/com.wss...ion/WMSLayout  com.wss.m...lication  I     [] SetClientRect(3005): Id:1290526724, update client rect:[0 0 1840 2800]
-09-11 21:25:47.309   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@458][ID: 0] Notify uiextension, persistentid = 1290526724 to clear the focus state, componentId=353.
-09-11 21:25:47.309   52926-52926   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSNode::AddChild, Id: 227315439108334, SurfaceNode:[Id: 228921756876801, name: com.huawei.hmsapp.appgalleryAppSelectorExtensionAbility]
-09-11 21:25:47.309   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1458][ID: 1] HandleVisibleAreaChange visible: 1, curVisible: 0, ratio: 1.000000, displayArea: RectT (0.00, 0.00) - [1840.00 x 2800.00].
-09-11 21:25:47.309   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1298][ID: 1] The component is changing from 'visible' to 'visible'.
-09-11 21:25:47.332   52926-53013   C04209/com.wss...ation/WMSImms  com.wss.m...lication  I     [] GetAvoidAreaByType(2034): Window [239, myapplication0] type 0 times 12 area top [0 0 1840 97] 
-09-11 21:25:47.332   52926-53013   C04209/com.wss...ation/WMSImms  com.wss.m...lication  I     [] GetAvoidAreaByType(2034): Window [239, myapplication0] type 4 times 13 area bottom [598 2730 644 70] 
-09-11 21:25:47.340   52926-53044   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] Foreground(1217): id:1290526724, state:1, isTerminating:0
-09-11 21:25:47.340   52926-53044   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] SetActive(1392): new active:1, id:1290526724, state:2
-09-11 21:25:47.340   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 2, persistent: 1290526724]
-09-11 21:25:47.340   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 3, persistent: 1290526724]
-09-11 21:25:47.510   52926-53044   C04209/com.wss...ation/WMSImms  com.wss.m...lication  I     [] GetAvoidAreaByType(2034): Window [239, myapplication0] type 4 times 14 area bottom [598 2730 644 70] 
-09-11 21:25:47.534   52926-53044   C04209/com.wss...ation/WMSImms  com.wss.m...lication  I     [] GetAvoidAreaByType(2034): Window [239, myapplication0] type 1 times 15 area empty
-09-11 21:25:47.562   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] UEC Transform rect param[scaleX:1.000000, scaleY:1.000000].
-09-11 21:25:47.562   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1658][ID: 1] SendBusinessData businessCode=2001.
-09-11 21:25:47.562   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@951][ID: 0] SendBusinessData ASYNC Success, businessCode=2001, componentId=353.
-09-11 21:25:47.631   52926-52926   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
-09-11 21:25:47.631   52926-52926   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
-09-11 21:25:47.631   52926-52926   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
-09-11 21:25:48.790   52926-53044   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] Background(500): Background ExtensionSession, id: 1290526724, state: 3
-09-11 21:25:48.790   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 4, persistent: 1290526724]
-09-11 21:25:48.790   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 5, persistent: 1290526724]
-09-11 21:25:48.794   52926-53044   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] Disconnect(1326): Disconnect session, id: 1290526724, state: 5
-09-11 21:25:48.794   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 5, persistent: 1290526724]
-09-11 21:25:48.794   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(-1:100000:singleton)] [@589][ID: 1] The session is disconnected and the current state is 'FOREGROUND'.
-09-11 21:25:48.794   52926-53100   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] operator()(2462): NotifySessionStateChange, [state: 0, persistent: 1290526724]
-09-11 21:25:48.794   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(-1:100000:singleton)] [@1128][ID: 1] OnRelease the state is changing from 'FOREGROUND' to 'DESTRUCTION' and releaseCode = 0.
-09-11 21:25:48.794   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(-1:100000:singleton)] [com.wss.myapplication][entry][100000]: close modal page, sessionId=1290526724
-09-11 21:25:48.794   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(-1:100000:singleton)] [@559][ID: 0] OnReleaseDone, persistentid = 1290526724, componentId=353.
-09-11 21:25:48.794   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] ProcessModalPageScene
-09-11 21:25:48.794   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] Nav CloseKeyboard FrameNode notNeedSoftKeyboard.
-09-11 21:25:48.794   52926-53100   C0420D/com.wss...tion/WMSUiext  com.wss.m...lication  I     []: Destroy session done with persistentId: 1290526724
-09-11 21:25:48.794   52926-53100   C01336/com.wss...plication/AMS  com.wss.m...lication  I     [ability_manager_client.cpp:391]name: AppSelectorExtensionAbility com.huawei.hmsapp.appgallery, persistentId: 1290526724
-09-11 21:25:48.795   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] Nav CloseKeyboard SoftKeyboard Closes Successfully.
-09-11 21:25:48.795   52926-52926   C03922/com.wss...AceNavigation  com.wss.m...lication  I     [(100000:100000:scope)] can't find inner navigation
-09-11 21:25:48.795   52926-52926   C03922/com.wss...AceNavigation  com.wss.m...lication  I     [(100000:100000:scope)] can't find inner navigation
-09-11 21:25:48.795   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Focus view: ModalPage/354 close
-09-11 21:25:48.795   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Focus view: ModalPage/354 lost focus
-09-11 21:25:48.796   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1458][ID: 1] HandleVisibleAreaChange visible: 0, curVisible: 1, ratio: 0.000000, displayArea: RectT (0.00, 0.00) - [1840.00 x 2800.00].
-09-11 21:25:48.796   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1298][ID: 1] The component is changing from 'visible' to 'invisible'.
-09-11 21:25:48.796   52926-52926   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] ResetRootNode -1290526724.
-09-11 21:25:48.799   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@205][ID: 1] The modal UIExtension is destroyed.
-09-11 21:25:48.799   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@238][ID: 1] LogoutModalUIExtension sessionId 0.
-09-11 21:25:48.799   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  I     [(100000:100000:scope)] [@1112][ID: 1] ModalOnDestroy the current state is 'DESTRUCTION'.
-09-11 21:25:48.799   52926-52926   C0392A/com.wss...sionComponent  com.wss.m...lication  W     [(100000:100000:scope)] [@1509][ID: 1] UIExtension pattern instanceId 100000 not equal frame node instanceId -1
-09-11 21:25:48.799   52926-52926   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSSurfaceNode::~RSSurfaceNode, Node: 228921756876801, Name: com.huawei.hmsapp.appgalleryAppSelectorExtensionAbility
-09-11 21:25:48.799   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Request focus on focus view: page/235.
-09-11 21:25:48.799   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Focus view has no default focus.
-09-11 21:25:48.799   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] FocusSwitch end, NULL/secure_field onBlur, Stack/secure_field onFocus, start: 2, end: 1, update: 2
-09-11 21:25:48.799   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] current focus node info : (Stack/238).
-09-11 21:25:48.799   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] FrameNode(Stack/238) notNeedSoftKeyboard.
-09-11 21:25:48.799   52926-52926   C03933/com.wss...n/AceKeyboard  com.wss.m...lication  I     [(100000:100000:scope)] Ime Not Shown, Ime Not Attached, No need to close keyboard
-09-11 21:25:48.799   52926-52926   C0391C/com.wss...tion/AceFocus  com.wss.m...lication  I     [(100000:100000:scope)] Request focus on view root scope: Stack/238 return: 1.
-09-11 21:25:48.860   52926-53044   C057C2/com.wss...PCObjectProxy  com.wss.m...lication  W     SendObituary 519: handle:32 desc:*.IWindowEventChannel 2787510208
-09-11 21:25:48.860   52926-53044   C0420D/com.wss...tion/WMSUiext  com.wss.m...lication  E     [] OnRemoteDied(168): Died
-09-11 21:25:48.861   52926-53044   C0420D/com.wss...tion/WMSUiext  com.wss.m...lication  I     [] ~ExtensionSession(183): release extension, id=1290526724
-09-11 21:25:48.861   52926-53044   C0420A/com.wss...ation/WMSLife  com.wss.m...lication  I     [] ~Session(113): id:1290526724
-09-11 21:25:49.102   52926-53044   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:14, cmdCount:2, instanceId:100000
-09-11 21:25:49.103   52926-52926   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:14, cmdCount:2, instanceId:100000
-09-11 21:25:49.103   52926-52926   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root
+09-11 21:36:20.741   60244-60352   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 18839
+09-11 21:36:20.741   60244-60352   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:18839][OnPointerEvent:544] id:18839 recv
+09-11 21:36:20.741   60244-60352   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:26,InputId:18839,wid:254,ac:2
+09-11 21:36:20.745   60244-60352   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 254
+09-11 21:36:20.745   60244-60352   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:18839,wid:254,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
+09-11 21:36:20.745   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:18839, fingerId:0, type=0, inject=0, isPrivacyMode=0
+09-11 21:36:20.745   60244-60352   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 18840
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:18839, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };{ tag: SaveButton, depth: 12 };{ tag: Button, depth: 13 };
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:18839, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: SaveButton }; { tag: Stack };recognizer type PanRecognizer node info: { tag: Stack };
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18839, exclusive 0 type: 0
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18839, exclusive 0 type: 0
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18839, click 0 down, ETF: 0, CTP: 0, state: 0
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18839, click 0 down, ETF: 0, CTP: 0, state: 0
+09-11 21:36:20.746   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18839, pan 0 down, state: 0
+09-11 21:36:20.747   60244-60244   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=18839 in ace_container, lastEventInfo: id:18837
+09-11 21:36:20.775   60244-60244   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  E     FlushImplicitTransaction return, [renderServiceClient_:1, transactionData empty:1]
+09-11 21:36:20.775   60244-60352   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 18841-(2025-09-11 21:36:20.746ms), 18844, count: 4, last: ac: up: 18845
+09-11 21:36:20.775   60244-60352   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:18845][OnPointerEvent:544] id:18845 recv
+09-11 21:36:20.775   60244-60352   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:27,InputId:18845,wid:254,ac:4
+09-11 21:36:20.775   60244-60352   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:18845,wid:254,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
+09-11 21:36:20.775   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:18845, fingerId:0, type=1, inject=0, isPrivacyMode=0
+09-11 21:36:20.776   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18845, exclusive 0 type: 1
+09-11 21:36:20.776   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18845, exclusive 0 type: 1
+09-11 21:36:20.776   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18845, click 0 up, state: 0
+09-11 21:36:20.776   60244-60244   C0391E/com.wss...on/AceGesture  com.wss.m...lication  I     [(100000:100000:scope)] Click try accept
+09-11 21:36:20.776   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Click accepted, tag: SaveButton
+09-11 21:36:20.777   60244-60244   C05A05/com.wss...ntEnhanceImpl  com.wss.m...lication  I     [EnhanceClientSerialize]Client sessionInfo sent: pid=60244, sessionId=2030056047, seqNum=******989.
+09-11 21:36:20.789   60244-60244   C05A05/com.wss...ntEnhanceImpl  com.wss.m...lication  I     [EnhanceClientDeserialize]Client sessionInfo updated: pid=60244, sessionId=2030056047, seqNum=******989.
+09-11 21:36:20.789   60244-60244   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始下载壁纸: [object Object]
+09-11 21:36:20.789   60244-60244   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas就绪检查最终结果: true. Element: true, Width: 736, Height: 1053.2
+09-11 21:36:20.790   60244-60244   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas drawing completed successfully.
+09-11 21:36:20.790   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18845, click 0 up, state: 6
+09-11 21:36:20.790   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:18845, pan 0 up, state: 6
+09-11 21:36:20.790   60244-60244   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Click, node: SaveButton, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: SUCCEED, extraInfo: ETF: 0 CFP: 0}{types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: FAIL, extraInfo: currentFingers: 1 fingers: 1}
+09-11 21:36:20.791   60244-60244   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [B:UK:18845][SetLastProcessedEventId:54] Last eventId:18793, current eventId:18845
+09-11 21:36:20.791   60244-60244   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=18845 in ace_container, lastEventInfo: id:18844
+09-11 21:36:20.791   60244-61100   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][MarkProcessed:71] Ffrt PE: 18796 18845
+09-11 21:36:20.854   60244-60328   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:19, cmdCount:1, instanceId:100000
+09-11 21:36:20.854   60244-60244   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:19, cmdCount:1, instanceId:100000
+09-11 21:36:20.886   60244-60328   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:20, cmdCount:3, instanceId:100000
+09-11 21:36:20.887   60244-60244   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:20, cmdCount:3, instanceId:100000
+09-11 21:36:21.187   60244-60244   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaLibraryNapi:{CreateNewInstance:588} CreateNewInstance for other user is -1
+09-11 21:36:21.188   60244-60244   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [Connect()-ams_mgr_proxy.cpp:73]: connect start, uri = ******/media
+09-11 21:36:21.189   60244-60328   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [operator()()-data_share_manager_impl.cpp:134]: RecoverObs start
+09-11 21:36:21.191   60244-60244   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [ConnectDataShareExtAbility()-datashare_connection.cpp:182]: connect ability, uri = ******/media. ret = 0
+09-11 21:36:21.193   60244-60328   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [OnAbilityConnectDone()-datashare_connection.cpp:44]: on connect done, req uri:******/media, rev uri:******dialibrary.medialibrarydata//DataShareExtAbility, ret=0
+09-11 21:36:21.193   60244-60328   C01336/com.wss...plication/AMS  com.wss.m...lication  I     [ability_connect_callback_stub.cpp:142]ON_ABILITY_CONNECT_DONE end
+09-11 21:36:21.193   60244-60244   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     photoAccessHelper getPhotoAccessHelper inner add createDeleteRequest and showAssetsCreationDialog
+09-11 21:36:21.194   60244-60244   C02B61/com.wss...agePackerNapi  com.wss.m...lication  I     PackingFromNapi IN
+09-11 21:36:21.194   60244-60244   C02B61/com.wss...agePackerNapi  com.wss.m...lication  I     parsePackOptions format:[image/jpeg]
+09-11 21:36:21.230   60244-61075   C02B61/com.wss...ion/ImageCode  com.wss.m...lication  I     DoEncode:(736, 1053) cost 18473 us
+09-11 21:36:21.234   60244-60244   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaLibraryNapi:{PhotoAccessHelperCreatePhotoAsset:8499} enter
+09-11 21:36:21.355   60244-60244   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaLibraryNapi:{JSCreateAssetCompleteCallback:1945} End create asset.
+09-11 21:36:21.355   60244-61107   C04313/com.wss...ppFileService  com.wss.m...lication  I     [GetRealPath:156] GetRealPath  uri is ,<private>
+09-11 21:36:21.356   60244-61107   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [Connect()-ams_mgr_proxy.cpp:73]: connect start, uri = ******/media
+09-11 21:36:21.368   60244-61107   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [ConnectDataShareExtAbility()-datashare_connection.cpp:182]: connect ability, uri = ******/media. ret = 0
+09-11 21:36:21.370   60244-60328   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [OnAbilityConnectDone()-datashare_connection.cpp:44]: on connect done, req uri:******/media, rev uri:******dialibrary.medialibrarydata//DataShareExtAbility, ret=0
+09-11 21:36:21.370   60244-60328   C01336/com.wss...plication/AMS  com.wss.m...lication  I     [ability_connect_callback_stub.cpp:142]ON_ABILITY_CONNECT_DONE end
+09-11 21:36:21.390   60244-60328   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [OnAbilityDisconnectDone()-datashare_connection.cpp:77]: on disconnect done, req uri:, rev uri:******dialibrary.medialibrarydata//DataShareExtAbility, ret=0
+09-11 21:36:21.390   60244-60328   C01336/com.wss...plication/AMS  com.wss.m...lication  I     [ability_connect_callback_stub.cpp:149]ON_ABILITY_DISCONNECT_DONE end
+09-11 21:36:21.391   60244-61107   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [DisconnectDataShareExtAbility()-datashare_connection.cpp:233]: disconnect uri:******/media, ret = 0
+09-11 21:36:21.393   60244-60244   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     图片已成功保存到相册: wallpaper_1757597781193.jpg
+09-11 21:36:21.393   60244-60244   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     壁纸下载成功
+09-11 21:36:21.486   60244-60328   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:21, cmdCount:4, instanceId:100000
+09-11 21:36:21.486   60244-60244   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:21, cmdCount:4, instanceId:100000
+09-11 21:36:21.576   60244-60244   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
+09-11 21:36:21.577   60244-60244   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
+09-11 21:36:21.577   60244-60244   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
+09-11 21:36:23.601   60244-60354   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:22, cmdCount:2, instanceId:100000
+09-11 21:36:23.601   60244-60244   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:22, cmdCount:2, instanceId:100000
+09-11 21:36:23.602   60244-60244   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root
+09-11 21:36:25.750   60244-61096   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     46:~WorkerThread:72 to exit, qos[4]
+09-11 21:36:25.752   60244-61098   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     47:~WorkerThread:72 to exit, qos[4]
+09-11 21:36:25.759   60244-61099   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     48:~WorkerThread:72 to exit, qos[4]
+09-11 21:36:25.792   60244-61100   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     49:~WorkerThread:72 to exit, qos[4]
+09-11 21:36:28.619   60244-61106   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     50:~WorkerThread:72 to exit, qos[2]
+09-11 21:36:28.619   60244-61107   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     51:~WorkerThread:72 to exit, qos[2]
+09-11 21:36:28.808   60244-60345   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     52:RecordPollerInfo:323 3:90;
+09-11 21:36:31.214   60244-61075   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     53:~WorkerThread:72 to exit, qos[3]

@@ -1,0 +1,11 @@
+{
+  "app": {
+    "bundleName": "com.wss.myapplication",
+    "patchVersionCode": 2000000,
+    "versionCode": 1000000
+  },
+  "module": {
+    "name": "entry",
+    "type": "hotreload"
+  }
+}
