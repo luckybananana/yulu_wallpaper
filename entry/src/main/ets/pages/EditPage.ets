@@ -526,11 +526,11 @@ struct EditPage {
                   }
                 })
               
-              // 文字覆盖层 - 与WallpaperPage保持一致
+              // 文字覆盖层 - 与WallpaperPage完全保持一致
               Column() {
                 Text(this.quoteContent || '请输入语录内容...')
                   .fontSize(this.getTextStyle(this.quoteContent || '').fontSize)
-                  .fontColor('#181818') // 与WallpaperPage一致的文字颜色
+                  .fontColor('#181818')
                   .textAlign(TextAlign.Center)
                   .lineHeight(this.getTextStyle(this.quoteContent || '').lineHeight)
                   .fontWeight(FontWeight.Medium)
@@ -540,7 +540,7 @@ struct EditPage {
               }
               .width('100%')
               .justifyContent(FlexAlign.Center)
-              .position({ x: 0, y: '25%' }) // 修复：将文字位置向上调整，与WallpaperPage一致
+              .position({ x: 0, y: '15%' }) // 与WallpaperPage一致的文字位置
             }
             .width('100%')
             .alignContent(Alignment.Center)

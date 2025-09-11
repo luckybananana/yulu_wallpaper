@@ -11,7 +11,7 @@ import display from '@ohos.display'; // 获取屏幕尺寸用于回退
  */
 interface RouterParams {
   index?: number;
-  quote?: Quote;
+  quote?: Quote | string; // 支持Quote对象或JSON字符串
 }
 
 /**
@@ -125,23 +125,49 @@ struct WallpaperPage {
   /**
    * 初始化索引
    * 修改：在设置索引后，计算并设置当前语录的颜色
+   * 优化：支持解析JSON字符串形式的quote参数
    */
   initializeIndex() {
     const params = router.getParams() as RouterParams;
     if (params) {
       // 优先使用传递的quote参数
       if (params.quote) {
-        const quoteIndex = this.quotes.findIndex(q => q.id === params.quote!.id);
-        if (quoteIndex >= 0) {
-          this.currentQuoteIndex = quoteIndex;
+        let targetQuote: Quote | null = null;
+        
+        // 处理quote参数：可能是Quote对象或JSON字符串
+        if (typeof params.quote === 'string') {
+          try {
+            // 解析JSON字符串为Quote对象
+            targetQuote = JSON.parse(params.quote) as Quote;
+            console.log('WallpaperPage: 成功解析JSON字符串形式的quote参数:', targetQuote);
+          } catch (parseError) {
+            console.error('WallpaperPage: 解析quote JSON字符串失败:', parseError, params.quote);
+            // 解析失败时使用默认处理
+            targetQuote = null;
+          }
         } else {
-          // 如果没找到对应的quote，将传递的quote添加到列表开头
-          this.quotes.unshift(params.quote);
-          this.currentQuoteIndex = 0;
+          // 直接使用Quote对象
+          targetQuote = params.quote;
+          console.log('WallpaperPage: 使用Quote对象形式的参数:', targetQuote);
+        }
+        
+        // 如果成功获取到targetQuote，查找对应的索引
+        if (targetQuote) {
+          const quoteIndex = this.quotes.findIndex(q => q.id === targetQuote!.id);
+          if (quoteIndex >= 0) {
+            this.currentQuoteIndex = quoteIndex;
+            console.log(`WallpaperPage: 找到匹配的语录，索引为: ${quoteIndex}`);
+          } else {
+            // 如果没找到对应的quote，将传递的quote添加到列表开头
+            this.quotes.unshift(targetQuote);
+            this.currentQuoteIndex = 0;
+            console.log('WallpaperPage: 未找到匹配语录，已添加到列表开头');
+          }
         }
       } else if (typeof params.index === 'number' &&
         params.index >= 0 && params.index < this.quotes.length) {
         this.currentQuoteIndex = params.index;
+        console.log(`WallpaperPage: 使用索引参数: ${params.index}`);
       }
     }
     // 新增：根据当前索引设置颜色
