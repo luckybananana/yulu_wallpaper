@@ -21,14 +21,6 @@ export interface WallpaperConfig {
   waveFrequency: number;
 }
 
-// 预设主题配置接口
-interface PresetThemes {
-  '深蓝夜空': Partial<WallpaperConfig>;
-  '温暖日落': Partial<WallpaperConfig>;
-  '清新绿意': Partial<WallpaperConfig>;
-  '优雅紫调': Partial<WallpaperConfig>;
-  '简约黑白': Partial<WallpaperConfig>;
-}
 
 // RGBA颜色接口
 interface RgbaColor {
@@ -171,37 +163,5 @@ export class WallpaperGenerator {
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     return { r, g, b, a: 255 };
-  }
-
-  // 生成预设主题配置
-  public static getPresetThemes(): PresetThemes {
-    const themes: PresetThemes = {
-      '深蓝夜空': {
-        backgroundColor: '#1a1a2e',
-        gradientColors: ['#1a1a2e', '#16213e', '#0f3460'],
-        textColor: '#FFFFFF'
-      } as Partial<WallpaperConfig>,
-      '温暖日落': {
-        backgroundColor: '#ff6b6b',
-        gradientColors: ['#ff6b6b', '#ffa500', '#ff4757'],
-        textColor: '#FFFFFF'
-      } as Partial<WallpaperConfig>,
-      '清新绿意': {
-        backgroundColor: '#2ed573',
-        gradientColors: ['#2ed573', '#1dd1a1', '#00d2d3'],
-        textColor: '#FFFFFF'
-      } as Partial<WallpaperConfig>,
-      '优雅紫调': {
-        backgroundColor: '#5f27cd',
-        gradientColors: ['#5f27cd', '#341f97', '#8c7ae6'],
-        textColor: '#FFFFFF'
-      } as Partial<WallpaperConfig>,
-      '简约黑白': {
-        backgroundColor: '#2f3542',
-        gradientColors: ['#2f3542', '#57606f', '#747d8c'],
-        textColor: '#FFFFFF'
-      } as Partial<WallpaperConfig>
-    };
-    return themes;
   }
 }
