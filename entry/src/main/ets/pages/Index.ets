@@ -445,8 +445,10 @@ struct Index {
         } else if (this.getCurrentQuotes().length === 0) {
           // 空状态
           Column() {
-            Text('💬')
-              .fontSize(48)
+            Image($r('app.media.ic_anything'))
+              .width(48)
+              .height(48)
+
               .margin({ bottom: 16 })
             Text(this.isSearchMode && this.searchKeyword.trim() !== '' ? '未找到相关语录' : '还没有语录')
               .fontSize(18)
@@ -574,10 +576,10 @@ struct Index {
           // 设置按钮
           Column({ space: 4 }) {
             Image($r('app.media.ic_settings'))
-              .width(20)
-              .height(20)
+              .width(24)
+              .height(24)
               .fillColor('#666666')
-            Text('设置')
+            Text('应用设置')
               .fontSize(12)
               .fontColor('#666666')
           }

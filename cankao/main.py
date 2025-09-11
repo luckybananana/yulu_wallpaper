@@ -18,7 +18,7 @@ def resource_path(relative_path):
 # ===== 基本配置 =====
 W, H = 2560, 1440
 OUT = os.path.join(os.path.abspath("."), "output.jpg")
-FONT_PATH = resource_path("simhei.ttf")
+FONT_PATH = resource_path("fangzheng.ttf")
 DEFAULT_QUOTES_PATH = resource_path("quotes.json")
 ICON_PATH = resource_path("yulu.ico")
 

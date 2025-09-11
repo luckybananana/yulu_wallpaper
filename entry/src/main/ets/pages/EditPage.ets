@@ -63,8 +63,8 @@ struct EditPage {
   async aboutToAppear() {
     // 注册自定义字体
     font.registerFont({
-      familyName: 'SimHei',
-      familySrc: $rawfile('simhei.ttf')
+      familyName: 'fangzheng',
+      familySrc: $rawfile('fangzheng.ttf')
     });
     await this.initPage();
   }
@@ -536,7 +536,7 @@ struct EditPage {
                   .fontWeight(FontWeight.Medium)
                   .padding({ left: 32, right: 32 })
                   .decoration({ type: TextDecorationType.None })
-                  .fontFamily('SimHei') // 使用注册的字体名称
+                  .fontFamily('fangzheng') // 使用注册的字体名称
               }
               .width('100%')
               .justifyContent(FlexAlign.Center)

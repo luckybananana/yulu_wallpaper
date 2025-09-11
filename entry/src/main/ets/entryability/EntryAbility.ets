@@ -1,44 +1,78 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { window, font } from '@kit.ArkUI';
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
+  /**
+   * Ability 创建阶段回调。
+   * 作用：进行应用级初始化（如主题/色彩模式等）。
+   * @param want 应用启动参数
+   * @param launchParam 启动参数
+   */
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+    hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'onCreate');
   }
 
+  /**
+   * Ability 销毁阶段回调。
+   * 作用：释放资源、打印日志。
+   */
   onDestroy(): void {
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onDestroy');
+    hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'onDestroy');
   }
 
+  /**
+   * 窗口创建回调：设置主页面并在此处全局注册自定义字体。
+   * 意义：按照官方建议在窗口阶段注册，使字体在整个应用生命周期内可用，避免各页面重复注册。
+   * @param windowStage 主窗口阶段对象
+   */
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // Main window is created, set main page for this ability
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+    hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'onWindowStageCreate');
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
-        hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
+        hilog.error(DOMAIN, 'EntryAbility', 'Failed to load content. Cause: %{public}s', JSON.stringify(err));
         return;
       }
-      hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+      hilog.info(DOMAIN, 'EntryAbility', 'Succeeded in loading the content.');
+
+      // 全局注册 fangzheng 字体。路径指向 rawfile/fangzheng.ttf。
+      try {
+        font.registerFont({
+          familyName: 'fangzheng',
+          familySrc: $rawfile('fangzheng.ttf')
+        });
+        hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'Font fangzheng registered globally.');
+      } catch (e) {
+        hilog.error(DOMAIN, 'EntryAbility', 'registerFont fangzheng failed: %{public}s', JSON.stringify(e));
+      }
     });
   }
 
+  /**
+   * 窗口销毁回调。
+   * 作用：释放与窗口相关的资源。
+   */
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
+    hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'onWindowStageDestroy');
   }
 
+  /**
+   * 前台回调。
+   * 作用：可在此恢复前台所需状态。
+   */
   onForeground(): void {
-    // Ability has brought to foreground
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
+    hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'onForeground');
   }
 
+  /**
+   * 后台回调。
+   * 作用：可在此暂停非关键逻辑、节省资源。
+   */
   onBackground(): void {
-    // Ability has back to background
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+    hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'onBackground');
   }
 }

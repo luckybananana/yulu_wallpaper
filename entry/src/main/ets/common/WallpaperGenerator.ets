@@ -47,7 +47,7 @@ const DEFAULT_CONFIG: WallpaperConfig = {
   textColor: '#FFFFFF',
   backgroundColor: '#1a1a2e',
   gradientColors: ['#1a1a2e', '#16213e', '#0f3460'],
-  fontFamily: 'SimHei',
+  fontFamily: 'fangzheng',
   padding: 80,
   maxWidth: 920,
   waveCount: 3,
@@ -91,8 +91,8 @@ export class WallpaperGenerator {
 
     try {
       await font.registerFont({
-        familyName: 'SimHei',
-        familySrc: '$rawfile("simhei.ttf")'
+        familyName: 'fangzheng',
+        familySrc: '$rawfile("fangzheng.ttf")'
       });
       this.isFontRegistered = true;
     } catch (error) {

@@ -1,7 +1,7 @@
-1.你精通HarmonyOS ArkTS语言开发。本项目是鸿蒙原生应用，软件名为——语录壁纸。
+1.你精通HarmonyOS ArkTS语言开发。本项目是鸿蒙原生应用，软件名为——语录壁纸。。
 2.本项目的代码规范遵循鸿蒙的代码规范
 3.本项目的代码注释遵循鸿蒙的代码注释规范
-4.本项目使用HarmonyOS ArkTS语言开发
+4.本项目使用HarmonyOS ArkTS语言开发，鸿蒙版本为HarmonyOS 5.0及以上。
 5.页面布局要严格参考E:\project\yulu_wallpaper\prototype这个文件夹里的html文件，不得增加按钮和功能。
 6.每次修复完运行run.ps1。
 7.编程时注意及时搜索鸿蒙文档集，以获得最新的信息。
