@@ -1,42 +1,111 @@
-09-11 20:36:24.948   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 7178
-09-11 20:36:24.948   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:7178][OnPointerEvent:544] id:7178 recv
-09-11 20:36:24.948   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:172,InputId:7178,wid:75,ac:2
-09-11 20:36:24.951   59204-59282   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 75
-09-11 20:36:24.952   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:7178,wid:75,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
-09-11 20:36:24.952   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:7178, fingerId:0, type=0, inject=0, isPrivacyMode=0
-09-11 20:36:24.952   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 7179
-09-11 20:36:24.952   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:7178, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };{ tag: Button, depth: 12 };
-09-11 20:36:24.952   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:7178, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: Button }; { tag: Stack };recognizer type PanRecognizer node info: { tag: Stack };
-09-11 20:36:24.953   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7178, exclusive 0 type: 0
-09-11 20:36:24.953   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7178, exclusive 0 type: 0
-09-11 20:36:24.953   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7178, click 0 down, ETF: 0, CTP: 0, state: 0
-09-11 20:36:24.953   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7178, click 0 down, ETF: 0, CTP: 0, state: 0
-09-11 20:36:24.953   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7178, pan 0 down, state: 0
-09-11 20:36:24.953   59204-59204   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=7178 in ace_container, lastEventInfo: id:7176
-09-11 20:36:24.955   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:M:7180][OnPointerEvent:228] Last eventId:7130, current eventId:7180
-09-11 20:36:24.977   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  E     FlushImplicitTransaction return, [renderServiceClient_:1, transactionData empty:1]
-09-11 20:36:24.986   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 7180-(2025-09-11 20:36:24.955ms), 7183, count: 4, last: ac: up: 7184
-09-11 20:36:24.986   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:7184][OnPointerEvent:544] id:7184 recv
-09-11 20:36:24.986   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:173,InputId:7184,wid:75,ac:4
-09-11 20:36:24.987   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:7184,wid:75,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
-09-11 20:36:24.987   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:7184, fingerId:0, type=1, inject=0, isPrivacyMode=0
-09-11 20:36:24.987   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7184, exclusive 0 type: 1
-09-11 20:36:24.987   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7184, exclusive 0 type: 1
-09-11 20:36:24.987   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7184, click 0 up, state: 0
-09-11 20:36:24.987   59204-59204   C0391E/com.wss...on/AceGesture  com.wss.m...lication  I     [(100000:100000:scope)] Click try accept
-09-11 20:36:24.987   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Click accepted, tag: Button
-09-11 20:36:24.988   59204-59204   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     调用系统分享面板
-09-11 20:36:24.988   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7184, click 0 up, state: 6
-09-11 20:36:24.988   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:7184, pan 0 up, state: 6
-09-11 20:36:24.988   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Click, node: Button, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: SUCCEED, extraInfo: ETF: 0 CFP: 0}{types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: FAIL, extraInfo: currentFingers: 1 fingers: 1}
-09-11 20:36:24.988   59204-59204   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=7184 in ace_container, lastEventInfo: id:7183
-09-11 20:36:25.058   59204-59260   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:115, cmdCount:1, instanceId:100000
-09-11 20:36:25.058   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:115, cmdCount:1, instanceId:100000
-09-11 20:36:25.091   59204-59260   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:116, cmdCount:3, instanceId:100000
-09-11 20:36:25.091   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:116, cmdCount:3, instanceId:100000
-09-11 20:36:25.789   59204-59204   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
-09-11 20:36:25.789   59204-59204   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
-09-11 20:36:25.789   59204-59204   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
-09-11 20:36:27.220   59204-59260   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:117, cmdCount:2, instanceId:100000
-09-11 20:36:27.221   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:117, cmdCount:2, instanceId:100000
-09-11 20:36:27.221   59204-59204   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root
+09-11 21:16:05.059   47307-47864   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     27:~WorkerThread:72 to exit, qos[4]
+09-11 21:16:05.061   47307-47862   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     28:~WorkerThread:72 to exit, qos[4]
+09-11 21:16:05.096   47307-47866   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     29:~WorkerThread:72 to exit, qos[3]
+09-11 21:16:05.097   47307-47867   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     30:~WorkerThread:72 to exit, qos[3]
+09-11 21:16:05.097   47307-47860   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     31:~WorkerThread:72 to exit, qos[4]
+09-11 21:16:05.144   47307-47865   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     32:~WorkerThread:72 to exit, qos[3]
+09-11 21:16:05.161   47307-47869   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     33:~WorkerThread:72 to exit, qos[2]
+09-11 21:16:05.171   47307-47870   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     34:~WorkerThread:72 to exit, qos[2]
+09-11 21:16:07.271   47307-47389   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 15342
+09-11 21:16:07.271   47307-47389   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:15342][OnPointerEvent:544] id:15342 recv
+09-11 21:16:07.271   47307-47389   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:4,InputId:15342,wid:221,ac:2
+09-11 21:16:07.274   47307-47389   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 221
+09-11 21:16:07.274   47307-47389   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:15342,wid:221,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
+09-11 21:16:07.274   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:15342, fingerId:0, type=0, inject=0, isPrivacyMode=0
+09-11 21:16:07.274   47307-47389   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 15343
+09-11 21:16:07.275   47307-47307   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
+09-11 21:16:07.276   47307-47307   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, Connecting IntentionService success
+09-11 21:16:07.276   47307-47307   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
+09-11 21:16:07.276   47307-47307   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
+09-11 21:16:07.276   47307-47307   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
+09-11 21:16:07.277   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:15342, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };{ tag: Button, depth: 12 };{ tag: Image, depth: 14 };
+09-11 21:16:07.277   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:15342, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: Button }; { tag: Stack };recognizer type LongPressRecognizer node info: { tag: Image }; { tag: Image };recognizer type PanRecognizer node info: { tag: Image }; { tag: Stack };
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, exclusive 0 type: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, exclusive 0 type: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, exclusive 0 type: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, parallel 0 type: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, sequenced 0 type: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, LongPress 0 down, state: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, LongPress 0 down, state: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, click 0 down, ETF: 0, CTP: 0, state: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, click 0 down, ETF: 0, CTP: 0, state: 0
+09-11 21:16:07.278   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15342, pan 0 down, state: 0
+09-11 21:16:07.279   47307-47307   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=15342 in ace_container, lastEventInfo: id:15340
+09-11 21:16:07.293   47307-47389   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 15344-(2025-09-11 21:16:07.279ms), 15345, count: 2, last: ac: up: 15346
+09-11 21:16:07.293   47307-47389   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:15346][OnPointerEvent:544] id:15346 recv
+09-11 21:16:07.293   47307-47389   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:5,InputId:15346,wid:221,ac:4
+09-11 21:16:07.294   47307-47389   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:15346,wid:221,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
+09-11 21:16:07.294   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:15346, fingerId:0, type=1, inject=0, isPrivacyMode=0
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, exclusive 0 type: 1
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, exclusive 0 type: 1
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, exclusive 0 type: 1
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, parallel 0 type: 1
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, sequenced 0 type: 1
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, LongPress 0 up, state: 1
+09-11 21:16:07.295   47307-47307   C03905/com.wss...ation/AceDrag  com.wss.m...lication  I     [(100000:100000:scope)] Trigger pan onReject
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, LongPress 0 up, state: 1
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, click 0 up, state: 0
+09-11 21:16:07.295   47307-47307   C0391E/com.wss...on/AceGesture  com.wss.m...lication  I     [(100000:100000:scope)] Click try accept
+09-11 21:16:07.295   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Click accepted, tag: Button
+09-11 21:16:07.296   47307-47307   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始下载壁纸: [object Object]
+09-11 21:16:07.297   47307-47307   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas就绪检查最终结果: true. Element: true, Width: 736, Height: 1053.2
+09-11 21:16:07.297   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style shadow_pattern not contains shadow_style_default_md_radius!
+09-11 21:16:07.297   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style shadow_pattern not contains shadow_style_default_sm_radius!
+09-11 21:16:07.297   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style shadow_pattern not contains shadow_style_default_xs_radius!
+09-11 21:16:07.301   47307-47307   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas drawing completed successfully.
+09-11 21:16:07.301   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, click 0 up, state: 6
+09-11 21:16:07.301   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:15346, pan 0 up, state: 6
+09-11 21:16:07.301   47307-47307   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Sequenced, node: Image, prcd: Down, state: READY, prcd: Up, state: FAIL}{types: LongPress, node: Image, prcd: Down, state: DETECTING, prcd: Up, state: FAIL}{types: Pan, node: Image}{types: LongPress, node: Image, prcd: Down, state: DETECTING, prcd: Up, state: FAIL}{types: Click, node: Button, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: SUCCEED, extraInfo: ETF: 0 CFP: 0}{types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: FAIL, extraInfo: currentFingers: 1 fingers: 1}
+09-11 21:16:07.301   47307-47307   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=15346 in ace_container, lastEventInfo: id:15345
+09-11 21:16:07.301   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style -1 not contains toast_pattern!
+09-11 21:16:07.305   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style -1 not contains dialog_pattern!
+09-11 21:16:07.306   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains button_bottom_top_margin!
+09-11 21:16:07.306   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains title_padding_horizontal!
+09-11 21:16:07.306   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains dialog_content_top_padding!
+09-11 21:16:07.306   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_left error!
+09-11 21:16:07.306   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_top error!
+09-11 21:16:07.306   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_right error!
+09-11 21:16:07.307   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_bottom error!
+09-11 21:16:07.307   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_left error!
+09-11 21:16:07.307   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_top error!
+09-11 21:16:07.307   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_right error!
+09-11 21:16:07.307   47307-47307   C03926/com.wss...tion/AceTheme  com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_bottom error!
+09-11 21:16:07.378   47307-47391   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:3, cmdCount:1, instanceId:100000
+09-11 21:16:07.379   47307-47307   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:3, cmdCount:1, instanceId:100000
+09-11 21:16:07.402   47307-47391   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:4, cmdCount:3, instanceId:100000
+09-11 21:16:07.402   47307-47307   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:4, cmdCount:3, instanceId:100000
+09-11 21:16:07.671   47307-47307   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaLibraryNapi:{CreateNewInstance:588} CreateNewInstance for other user is -1
+09-11 21:16:07.672   47307-47307   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [Connect()-ams_mgr_proxy.cpp:73]: connect start, uri = ******/media
+09-11 21:16:07.674   47307-47391   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [operator()()-data_share_manager_impl.cpp:134]: RecoverObs start
+09-11 21:16:07.676   47307-47307   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [ConnectDataShareExtAbility()-datashare_connection.cpp:182]: connect ability, uri = ******/media. ret = 0
+09-11 21:16:07.678   47307-47391   C01651/com.wss...ion/DataShare  com.wss.m...lication  I     [OnAbilityConnectDone()-datashare_connection.cpp:44]: on connect done, req uri:******/media, rev uri:******dialibrary.medialibrarydata//DataShareExtAbility, ret=0
+09-11 21:16:07.678   47307-47391   C01336/com.wss...plication/AMS  com.wss.m...lication  I     [ability_connect_callback_stub.cpp:142]ON_ABILITY_CONNECT_DONE end
+09-11 21:16:07.678   47307-47307   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     photoAccessHelper getPhotoAccessHelper inner add createDeleteRequest and showAssetsCreationDialog
+09-11 21:16:07.680   47307-47307   C057C2/com.wss...PCObjectProxy  com.wss.m...lication  E     SendRequest 160: failed, handle:3 error:-31 desc:*.BundleMgr proxy:2767466368 time:8262329390404
+09-11 21:16:07.680   47307-47307   C01120/com.wss...plication/BMS  com.wss.m...lication  E     [bundle_mgr_proxy.cpp(SendTransactCmd:4701)]receive error transact code -31 in transact cmd 43
+09-11 21:16:07.680   47307-47307   C01120/com.wss...plication/BMS  com.wss.m...lication  E     [bundle_mgr_client_impl.cpp(Connect:591)]failed to get bundle installer proxy
+09-11 21:16:07.680   47307-47307   C04313/com.wss...ppFileService  com.wss.m...lication  I     [GetRealPath:156] GetRealPath  uri is ,<private>
+09-11 21:16:07.681   47307-47307   C01120/com.wss...plication/BMS  com.wss.m...lication  E     [bundle_mgr_proxy.cpp(SendTransactCmd:4701)]receive error transact code -31 in transact cmd 43
+09-11 21:16:07.681   47307-47307   C01120/com.wss...plication/BMS  com.wss.m...lication  E     [bundle_mgr_client_impl.cpp(Connect:591)]failed to get bundle installer proxy
+09-11 21:16:07.681   47307-47307   C04313/com.wss...ppFileService  com.wss.m...lication  I     [GetRealPath:188] GetRealPath return path is ,<private>
+09-11 21:16:07.681   47307-47307   C03D00/utils_base               com.wss.m...lication  E     path (/wallpaper_1757596567679.jpg) to realpath error: No such file or directory
+09-11 21:16:07.681   47307-47307   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  E     Common:{ThrowError:72} {ParseFileUri:<private>} ThrowError errCode:13900002 errMsg:no such file
+09-11 21:16:07.681   47307-47307   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  E     Common:{ThrowError:72} {JSCreateImageAssetRequest:<private>} ThrowError errCode:401 errMsg:Failed to parse args
+09-11 21:16:07.681   47307-47307   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  E     [ecmascript] Pending exception before Error called in line:3820, exception details as follows:
+09-11 21:16:07.681   47307-47307   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  E     Error: no such file
+                                                                                                   at saveImageToAlbum (entry/src/main/ets/pages/WallpaperPage.ets:579:76)
+                                                                                                   at setWallpaper (entry/src/main/ets/pages/WallpaperPage.ets:387:18)
+09-11 21:16:07.681   47307-47307   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  E     [ecmascript] Pending exception before Set called in line:2564, exception details as follows:
+09-11 21:16:07.681   47307-47307   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  E     Error: no such file
+                                                                                                   at saveImageToAlbum (entry/src/main/ets/pages/WallpaperPage.ets:579:76)
+                                                                                                   at setWallpaper (entry/src/main/ets/pages/WallpaperPage.ets:387:18)
+09-11 21:16:07.681   47307-47307   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  E     保存图片到相册失败: Error: no such file
+09-11 21:16:07.681   47307-47307   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  E     下载壁纸失败: Error: 保存图片失败，请检查相册权限
+09-11 21:16:07.780   47307-47391   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:5, cmdCount:4, instanceId:100000
+09-11 21:16:07.780   47307-47307   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:5, cmdCount:4, instanceId:100000
+09-11 21:16:08.096   47307-47307   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
+09-11 21:16:08.097   47307-47307   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
+09-11 21:16:08.097   47307-47307   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
+09-11 21:16:09.893   47307-47391   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:6, cmdCount:2, instanceId:100000
+09-11 21:16:09.893   47307-47307   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:6, cmdCount:2, instanceId:100000
+09-11 21:16:09.894   47307-47307   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root

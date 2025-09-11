@@ -6,7 +6,8 @@ import wallpaper from '@ohos.wallpaper'; // 导入壁纸设置API
 import image from '@ohos.multimedia.image'; // 导入图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
 import photoAccessHelper from '@ohos.file.photoAccessHelper'; // 导入相册访问API
-import fs from '@ohos.file.fs'; // 导入文件系统API
+import fs from '@ohos.file.fs';
+// SaveButton是安全控件，直接使用，无需导入
 import { common } from '@kit.AbilityKit'; // 导入应用上下文
 
 /**
@@ -561,7 +562,7 @@ struct WallpaperPage {
 
   /**
    * 保存图片到相册
-   * 基于HarmonyOS官方文档实现，使用photoAccessHelper.createAsset和fs.copyFile
+   * 使用SaveButton组件提供的临时权限保存图片到相册
    */
   private async saveImageToAlbum(pixelMap: image.PixelMap): Promise<void> {
     try {
@@ -571,51 +572,42 @@ struct WallpaperPage {
       // 创建photoAccessHelper实例
       const phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
       
-      // 生成唯一的文件名
+      // 生成符合规范的文件名：包含有效文件主名和扩展名，长度1-255字符
       const timestamp = new Date().getTime();
-      const fileName = `wallpaper_${timestamp}.png`;
-      
-      // 创建资产URI
-      const createOption: photoAccessHelper.CreateOptions = {
-        title: fileName
-      };
-      const assetUri = await phAccessHelper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'png', createOption);
+      const fileName = `wallpaper_${timestamp}.jpg`;
       
       // 将PixelMap转换为ArrayBuffer
       const imagePackerApi = image.createImagePacker();
       const packOpts: image.PackingOption = {
-        format: 'image/png',
-        quality: 100
+        format: 'image/jpeg',
+        quality: 90
       };
       const arrayBuffer = await imagePackerApi.packing(pixelMap, packOpts);
       
-      // 创建临时文件
-      const tempDir = context.tempDir;
-      const tempFilePath = `${tempDir}/${fileName}`;
-      const tempFile = fs.openSync(tempFilePath, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+      // 使用SaveButton提供的临时权限创建资产
+      // 在点击SaveButton后10秒内通过createAsset接口创建图片文件
+      const uri = await phAccessHelper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg');
       
-      // 写入临时文件
-      fs.writeSync(tempFile.fd, arrayBuffer);
-      fs.closeSync(tempFile);
+      // 打开文件并写入数据
+      const file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+      try {
+        await fs.write(file.fd, arrayBuffer);
+      } finally {
+        await fs.close(file.fd);
+      }
       
-      // 直接使用资产URI打开文件
-      
-      // 打开资产文件进行写入
-      const assetFile = fs.openSync(assetUri, fs.OpenMode.READ_WRITE);
-      
-      // 复制临时文件到相册
-      await fs.copyFile(tempFilePath, assetFile.fd);
-      
-      // 关闭文件
-      fs.closeSync(assetFile);
-      
-      // 清理临时文件
-      fs.unlinkSync(tempFilePath);
-      
-      console.log('图片已成功保存到相册:', assetUri);
+      console.log('图片已成功保存到相册:', fileName);
+      promptAction.showToast({
+        message: '壁纸已保存到相册',
+        duration: 2000
+      });
     } catch (error) {
       console.error('保存图片到相册失败:', error);
-      throw new Error('保存图片失败，请检查相册权限');
+      promptAction.showToast({
+        message: '保存失败，请重试',
+        duration: 2000
+      });
+      throw new Error('保存图片失败，请重试');
     }
   }
 
@@ -740,25 +732,25 @@ struct WallpaperPage {
             .padding(12)
             .onClick(() => this.editQuote()) // 确保此 onClick 有效
             Blank()
-            // 设置壁纸按钮
-            Button() {
-              Column() {
-                Image($r('app.media.ic_wallpaper'))
-                  .width(24)
-                  .height(24)
-                  .fillColor('#ffffff')
-                Text('下载壁纸')
-                  .fontSize(12)
-                  .fontColor('#FFFFFF')
-                  .margin({ top: 4 })
-              }
-            }
+            // 保存壁纸按钮 - 使用SaveButton安全控件获取临时权限
+            SaveButton()
             .width(72)
             .height(72)
             .backgroundColor('#4A90E2')
             .borderRadius(36)
             .padding(12)
-            .onClick(() => this.setWallpaper()) // 确保此 onClick 有效
+            .onClick((event: ClickEvent, result: number) => {
+              if (result === 0) { // 0表示SUCCESS
+                // SaveButton点击成功，获得10秒临时权限，立即执行保存
+                this.setWallpaper();
+              } else {
+                console.error('SaveButton点击失败:', result);
+                promptAction.showToast({
+                  message: '保存权限获取失败，请重试',
+                  duration: 2000
+                });
+              }
+            })
             Blank()
             // 分享按钮
             Button() {
