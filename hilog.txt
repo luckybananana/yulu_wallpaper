@@ -1,58 +1,67 @@
-09-11 17:34:29.558   18748-23967   C01719/ffrt                     com.wss.m...lication  W     28:FFRTQosApplyForOther:249 tid 23967, Interrupted system call, ret:-1, eno:4
-09-11 17:34:29.581   18748-23968   C01719/ffrt                     com.wss.m...lication  W     29:FFRTQosApplyForOther:249 tid 23968, Interrupted system call, ret:-1, eno:4
-09-11 17:34:29.609   18748-23969   C01719/ffrt                     com.wss.m...lication  W     30:FFRTQosApplyForOther:249 tid 23969, Interrupted system call, ret:-1, eno:4
-09-11 17:34:29.667   18748-23975   C01719/ffrt                     com.wss.m...lication  W     31:FFRTQosApplyForOther:249 tid 23975, Interrupted system call, ret:-1, eno:4
-09-11 17:34:29.683   18748-23976   C01719/ffrt                     com.wss.m...lication  W     32:FFRTQosApplyForOther:249 tid 23976, Interrupted system call, ret:-1, eno:4
-09-11 17:34:35.574   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style 125829872 not contains toast_pattern!
-09-11 17:34:35.575   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style ohos_shadow_pattern not contains shadow_style_default_md_radius!
-09-11 17:34:35.581   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style 125829872 not contains dialog_pattern!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains shadow_dialog!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains button_bottom_top_margin!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains title_padding_horizontal!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern not contains dialog_content_top_padding!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_left error!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_top error!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_right error!
-09-11 17:34:35.583   18748-18748   C03926/AceTheme                 com.wss.m...lication  W     [(100000:100000:scope)] style dialog_pattern get attr dialog_padding_actions_bottom error!
-09-11 17:34:37.040   18748-23636   C057c2/IPCObjectProxy           com.wss.m...lication  E     SendRequest 181: failed, handle:27 error:78053376 desc:*.IWallpaperService proxy:7466128 time:1310635269736
-09-11 17:34:37.040   18748-23636   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
-09-11 17:34:41.068   18748-24158   C01719/ffrt                     com.wss.m...lication  W     35:FFRTQosApplyForOther:249 tid 24158, Interrupted system call, ret:-1, eno:4
-09-11 17:34:42.907   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
-09-11 17:34:42.911   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
-09-11 17:34:42.915   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
-09-11 17:34:42.923   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
-09-11 17:34:42.927   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
-09-11 17:34:42.933   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
-09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:356]open WS u:object_r:resourceschedule_writeable_param:s0 err 13
-09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:530]Selinux check name resourceschedule.memmgr.dma.reclaimable in u:object_r:resourceschedule_writeable_param:s0
-09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:690]deny access resourceschedule.memmgr.dma.reclaimable label 23280 65
-09-11 17:34:43.420   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:741]SystemReadParam failed! name is:resourceschedule.memmgr.dma.reclaimable, err:1002!
-09-11 17:34:44.832   18748-23617   C01332/UIAbility                com.wss.m...lication  E     [ui_ability_thread.cpp:432]null abilityHandler_ or requestCode is -1
-09-11 17:34:44.861   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533634 does not exist
-09-11 17:34:44.878   18748-18748   C0392a/AceUiExtensionComponent  com.wss.m...lication  W     [(100000:100000:scope)] [@1808][ID: 1] UIExtension pattern instanceId 100000 not equal frame node instanceId -1
-09-11 17:34:44.879   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533634 does not exist
-09-11 17:34:44.941   18748-23576   C057c2/IPCObjectProxy           com.wss.m...lication  W     SendObituary 515: handle:29 desc:*.IWindowEventChannel 10566704
-09-11 17:34:44.941   18748-23576   C0420d/WMSUiext                 com.wss.m...lication  E     [] OnRemoteDied(173): Died
-09-11 17:34:44.943   18748-23617   C04200/ScenePersistentStorage   com.wss.m...lication  E     (31)[ScenePersistentStorage] Preferences is nullptr
-09-11 17:34:51.322   18748-24409   C01719/ffrt                     com.wss.m...lication  W     37:FFRTQosApplyForOther:249 tid 24409, Interrupted system call, ret:-1, eno:4
-09-11 17:34:53.073   18748-24446   C01719/ffrt                     com.wss.m...lication  W     40:FFRTQosApplyForOther:249 tid 24446, Interrupted system call, ret:-1, eno:4
-09-11 17:34:53.090   18748-24447   C01719/ffrt                     com.wss.m...lication  W     41:FFRTQosApplyForOther:249 tid 24447, Interrupted system call, ret:-1, eno:4
-09-11 17:34:54.539   18748-23638   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
-09-11 17:35:01.266   18748-24577   C01719/ffrt                     com.wss.m...lication  W     43:FFRTQosApplyForOther:249 tid 24577, Interrupted system call, ret:-1, eno:4
-09-11 17:35:02.732   18748-23638   C01c20/WallpaperClient          com.wss.m...lication  E     Send request failed!
-09-11 17:35:06.122   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
-09-11 17:35:06.127   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
-09-11 17:35:06.130   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
-09-11 17:35:06.136   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23592 apply qos failed, errno = 4
-09-11 17:35:06.142   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23590 apply qos failed, errno = 4
-09-11 17:35:06.145   18748-18748   C01707/CONCUR                   com.wss.m...lication  E     [Interface] task 23591 apply qos failed, errno = 4
-09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:356]open WS u:object_r:resourceschedule_writeable_param:s0 err 13
-09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_base.c:530]Selinux check name resourceschedule.memmgr.dma.reclaimable in u:object_r:resourceschedule_writeable_param:s0
-09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:690]deny access resourceschedule.memmgr.dma.reclaimable label 23280 65
-09-11 17:35:06.669   18748-18748   C02c02/PARAM                    com.wss.m...lication  E     [param_manager.c:741]SystemReadParam failed! name is:resourceschedule.memmgr.dma.reclaimable, err:1002!
-09-11 17:35:07.676   18748-23576   C01332/UIAbility                com.wss.m...lication  E     [ui_ability_thread.cpp:432]null abilityHandler_ or requestCode is -1
-09-11 17:35:07.690   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533635 does not exist
-09-11 17:35:07.706   18748-18748   C0392a/AceUiExtensionComponent  com.wss.m...lication  W     [(100000:100000:scope)] [@1808][ID: 1] UIExtension pattern instanceId 100000 not equal frame node instanceId -1
-09-11 17:35:07.706   18748-18748   C03900/Ace                      com.wss.m...lication  W     [(100000:100000:scope)] The sessionId 1150533635 does not exist
-09-11 17:35:07.743   18748-23588   C04200/ScenePersistentStorage   com.wss.m...lication  E     (31)[ScenePersistentStorage] Preferences is nullptr
-09-11 17:35:07.744   18748-23617   C057c2/IPCObjectProxy           com.wss.m...lication  W     SendObituary 515: handle:29 desc:*.IWindowEventChannel 10565904
+09-11 20:27:41.701   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 3396
+09-11 20:27:41.701   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:3396][OnPointerEvent:544] id:3396 recv
+09-11 20:27:41.701   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:136,InputId:3396,wid:75,ac:2
+09-11 20:27:41.703   59204-59282   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 75
+09-11 20:27:41.703   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:3396,wid:75,pointId:0,srcType:2,rect:[0,0,2800,1840],notify:1
+09-11 20:27:41.703   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:3396, fingerId:0, type=0, inject=0, isPrivacyMode=0
+09-11 20:27:41.704   59204-59204   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
+09-11 20:27:41.704   59204-59204   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
+09-11 20:27:41.705   59204-59204   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, enter
+09-11 20:27:41.705   59204-59204   C02220/com.wss....TunnelClient  com.wss.m...lication  I     in Connect, leave
+09-11 20:27:41.705   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 3397
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:3396, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };{ tag: Button, depth: 12 };{ tag: Image, depth: 14 };
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:3396, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: Button }; { tag: Stack };recognizer type LongPressRecognizer node info: { tag: Image }; { tag: Image };recognizer type PanRecognizer node info: { tag: Image }; { tag: Stack };
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, exclusive 0 type: 0
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, exclusive 0 type: 0
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, exclusive 0 type: 0
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, parallel 0 type: 0
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, sequenced 0 type: 0
+09-11 20:27:41.706   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, LongPress 0 down, state: 0
+09-11 20:27:41.707   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, LongPress 0 down, state: 0
+09-11 20:27:41.707   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, click 0 down, ETF: 0, CTP: 0, state: 0
+09-11 20:27:41.707   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, click 0 down, ETF: 0, CTP: 0, state: 0
+09-11 20:27:41.707   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3396, pan 0 down, state: 0
+09-11 20:27:41.707   59204-59204   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=3396 in ace_container, lastEventInfo: id:3378
+09-11 20:27:41.734   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  E     FlushImplicitTransaction return, [renderServiceClient_:1, transactionData empty:1]
+09-11 20:27:41.754   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 3398-(2025-09-11 20:27:41.707ms), 3403, count: 6, last: ac: up: 3404
+09-11 20:27:41.754   59204-59282   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:3404][OnPointerEvent:544] id:3404 recv
+09-11 20:27:41.754   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:137,InputId:3404,wid:75,ac:4
+09-11 20:27:41.755   59204-59282   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:3404,wid:75,pointId:0,srcType:2,rect:[0,0,2800,1840],notify:1
+09-11 20:27:41.755   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:3404, fingerId:0, type=1, inject=0, isPrivacyMode=0
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, exclusive 0 type: 1
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, exclusive 0 type: 1
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, exclusive 0 type: 1
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, parallel 0 type: 1
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, sequenced 0 type: 1
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, LongPress 0 up, state: 1
+09-11 20:27:41.756   59204-59204   C03905/com.wss...ation/AceDrag  com.wss.m...lication  I     [(100000:100000:scope)] Trigger pan onReject
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, LongPress 0 up, state: 1
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, click 0 up, state: 0
+09-11 20:27:41.756   59204-59204   C0391E/com.wss...on/AceGesture  com.wss.m...lication  I     [(100000:100000:scope)] Click try accept
+09-11 20:27:41.756   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Click accepted, tag: Button
+09-11 20:27:41.756   59204-59204   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始设置壁纸: [object Object]
+09-11 20:27:41.756   59204-59204   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas就绪检查最终结果: true. Element: true, Width: 1120, Height: 669.2
+09-11 20:27:41.759   59204-59204   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas drawing completed successfully.
+09-11 20:27:41.759   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, click 0 up, state: 6
+09-11 20:27:41.759   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:3404, pan 0 up, state: 6
+09-11 20:27:41.759   59204-59204   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Sequenced, node: Image, prcd: Down, state: READY, prcd: Up, state: FAIL}{types: LongPress, node: Image, prcd: Down, state: DETECTING, prcd: Up, state: FAIL}{types: Pan, node: Image}{types: LongPress, node: Image, prcd: Down, state: DETECTING, prcd: Up, state: FAIL}{types: Click, node: Button, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: SUCCEED, extraInfo: ETF: 0 CFP: 0}{types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: FAIL, extraInfo: currentFingers: 1 fingers: 1}
+09-11 20:27:41.759   59204-59204   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=3404 in ace_container, lastEventInfo: id:3403
+09-11 20:27:41.814   59204-59264   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:92, cmdCount:1, instanceId:100000
+09-11 20:27:41.814   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:92, cmdCount:1, instanceId:100000
+09-11 20:27:41.865   59204-59264   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:93, cmdCount:3, instanceId:100000
+09-11 20:27:41.865   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:93, cmdCount:3, instanceId:100000
+09-11 20:27:42.194   59204-59204   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     壁纸设置成功
+09-11 20:27:42.299   59204-59264   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:94, cmdCount:2, instanceId:100000
+09-11 20:27:42.299   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:94, cmdCount:2, instanceId:100000
+09-11 20:27:42.558   59204-59204   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
+09-11 20:27:42.558   59204-59204   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
+09-11 20:27:42.558   59204-59204   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
+09-11 20:27:44.428   59204-59264   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:95, cmdCount:2, instanceId:100000
+09-11 20:27:44.428   59204-59204   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:95, cmdCount:2, instanceId:100000
+09-11 20:27:44.429   59204-59204   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root
+09-11 20:27:46.724   59204-888     C01719/com.wss...lication/ffrt  com.wss.m...lication  W     115:~WorkerThread:72 to exit, qos[4]
+09-11 20:27:46.743   59204-887     C01719/com.wss...lication/ffrt  com.wss.m...lication  W     116:~WorkerThread:72 to exit, qos[4]
+09-11 20:27:46.760   59204-886     C01719/com.wss...lication/ffrt  com.wss.m...lication  W     117:~WorkerThread:72 to exit, qos[4]
+09-11 20:27:47.195   59204-897     C01719/com.wss...lication/ffrt  com.wss.m...lication  W     118:~WorkerThread:72 to exit, qos[3]
+09-11 20:27:49.435   59204-895     C01719/com.wss...lication/ffrt  com.wss.m...lication  W     119:~WorkerThread:72 to exit, qos[2]
+09-11 20:27:49.446   59204-896     C01719/com.wss...lication/ffrt  com.wss.m...lication  W     120:~WorkerThread:72 to exit, qos[2]
