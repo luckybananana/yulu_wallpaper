@@ -9,6 +9,7 @@ import photoAccessHelper from '@ohos.file.photoAccessHelper'; // 导入相册访
 import fs from '@ohos.file.fs';
 // SaveButton是安全控件，直接使用，无需导入
 import { common } from '@kit.AbilityKit'; // 导入应用上下文
+import { Want } from '@kit.AbilityKit'; // 导入Want接口用于分享功能
 
 /**
  * 路由参数接口
@@ -75,6 +76,48 @@ struct WallpaperPage {
     });
     await this.loadQuotes();
     this.initializeIndex();
+  }
+
+  /**
+   * 页面显示时的回调
+   * 用于处理从编辑页面返回时的数据刷新
+   */
+  async onPageShow() {
+    console.log('WallpaperPage: 页面显示，检查是否需要刷新数据');
+    
+    // 重新加载语录数据，以获取最新的编辑结果
+    const previousQuotesLength = this.quotes.length;
+    const currentQuoteId = this.quotes[this.currentQuoteIndex]?.id;
+    
+    await this.loadQuotes();
+    
+    // 如果当前语录ID存在，尝试找到更新后的位置
+    if (currentQuoteId && this.quotes.length > 0) {
+      const updatedIndex = this.quotes.findIndex(q => q.id === currentQuoteId);
+      if (updatedIndex >= 0) {
+        // 找到了对应的语录，更新索引
+        this.currentQuoteIndex = updatedIndex;
+        console.log(`WallpaperPage: 找到更新后的语录，索引为: ${updatedIndex}`);
+      } else {
+        // 没找到对应语录（可能被删除），重置到第一条
+        this.currentQuoteIndex = 0;
+        console.log('WallpaperPage: 原语录未找到，重置到第一条');
+      }
+    } else if (this.quotes.length > 0) {
+      // 确保索引在有效范围内
+      this.currentQuoteIndex = Math.min(this.currentQuoteIndex, this.quotes.length - 1);
+    }
+    
+    // 更新当前语录的颜色
+    this.updateCurrentQuoteColor();
+    
+    // 重新绘制背景
+    setTimeout(() => {
+      if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
+        this.drawLayeredWaves(this.currentQuoteColor);
+        console.log('WallpaperPage: 页面返回后重新绘制背景完成');
+      }
+    }, 100);
   }
 
   /**
@@ -550,14 +593,47 @@ struct WallpaperPage {
 
   /**
    * 调用系统分享
+   * 使用Want和startAbility调用系统分享面板
    */
-  private callSystemShare() {
-    console.log('调用系统分享面板');
-    promptAction.showToast({
-      message: '调用系统分享面板',
-      duration: 2000
-    });
-    this.closeShareOverlay();
+  private async callSystemShare() {
+    try {
+      console.log('调用系统分享面板');
+      
+      // 获取当前语录内容
+      const currentQuote = this.quotes[this.currentQuoteIndex];
+      const shareText = currentQuote ? currentQuote.text : '分享一句美好的语录';
+      
+      // 构建Want对象用于分享
+      const want: Want = {
+        action: 'ohos.want.action.sendData',
+        type: 'text/plain',
+        parameters: {
+          'ohos.extra.param.key.TEXT': shareText
+        }
+      };
+      
+      // 获取应用上下文
+      const context = getContext(this) as common.UIAbilityContext;
+      
+      // 调用系统分享面板
+      await context.startAbility(want);
+      
+      console.log('系统分享面板调用成功');
+      promptAction.showToast({
+        message: '正在打开分享面板...',
+        duration: 2000
+      });
+      
+    } catch (error) {
+      console.error('调用系统分享面板失败:', error);
+      promptAction.showToast({
+        message: '分享功能暂时不可用',
+        duration: 2000
+      });
+    } finally {
+      // 关闭分享遮罩
+      this.closeShareOverlay();
+    }
   }
 
   /**
