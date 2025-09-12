@@ -1,118 +1,55 @@
-09-12 14:23:03.702   29353-30048   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     33:~WorkerThread:72 to exit, qos[2]
-09-12 14:23:03.703   29353-30049   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     34:~WorkerThread:72 to exit, qos[2]
-09-12 14:23:04.987   29353-30068   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     35:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:05.001   29353-30070   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     36:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:05.012   29353-30071   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     37:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:05.026   29353-30072   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     38:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:05.038   29353-30067   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     39:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:05.048   29353-30069   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     40:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:05.202   29353-29443   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 84571
-09-12 14:23:05.202   29353-29443   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:84571][OnPointerEvent:544] id:84571 recv
-09-12 14:23:05.202   29353-29443   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:8,InputId:84571,wid:574,ac:2
-09-12 14:23:05.205   29353-29443   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 574
-09-12 14:23:05.205   29353-29443   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:84571,wid:574,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
-09-12 14:23:05.205   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:84571, fingerId:0, type=0, inject=0, isPrivacyMode=0
-09-12 14:23:05.205   29353-29443   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 84572
-09-12 14:23:05.205   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:84571, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };{ tag: SaveButton, depth: 13 };{ tag: Button, depth: 14 };
-09-12 14:23:05.205   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:84571, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: SaveButton }; { tag: Stack };recognizer type PanRecognizer node info: { tag: Stack };
-09-12 14:23:05.206   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84571, exclusive 0 type: 0
-09-12 14:23:05.206   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84571, exclusive 0 type: 0
-09-12 14:23:05.206   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84571, click 0 down, ETF: 0, CTP: 0, state: 0
-09-12 14:23:05.206   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84571, click 0 down, ETF: 0, CTP: 0, state: 0
-09-12 14:23:05.206   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84571, pan 0 down, state: 0
-09-12 14:23:05.206   29353-29353   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=84571 in ace_container, lastEventInfo: id:84569
-09-12 14:23:05.206   29353-29353   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [B:UK:84572][SetLastProcessedEventId:54] Last eventId:0, current eventId:84572
-09-12 14:23:05.208   29353-30103   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][MarkProcessed:71] Ffrt PE: 84473 84572
-09-12 14:23:05.213   29353-29443   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:M:84574][OnPointerEvent:228] Last eventId:0, current eventId:84574
-09-12 14:23:05.249   29353-29443   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 84573-(2025-09-12 14:23:05.206ms), 84577, count: 5, last: ac: up: 84578
-09-12 14:23:05.249   29353-29443   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:84578][OnPointerEvent:544] id:84578 recv
-09-12 14:23:05.249   29353-29443   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:9,InputId:84578,wid:574,ac:4
-09-12 14:23:05.250   29353-29443   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:84578,wid:574,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
-09-12 14:23:05.250   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:84578, fingerId:0, type=1, inject=0, isPrivacyMode=0
-09-12 14:23:05.250   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84578, exclusive 0 type: 1
-09-12 14:23:05.250   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84578, exclusive 0 type: 1
-09-12 14:23:05.250   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84578, click 0 up, state: 0
-09-12 14:23:05.250   29353-29353   C0391E/com.wss...on/AceGesture  com.wss.m...lication  I     [(100000:100000:scope)] Click try accept
-09-12 14:23:05.250   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Click accepted, tag: SaveButton
-09-12 14:23:05.255   29353-29353   C05A05/com.wss...ntEnhanceImpl  com.wss.m...lication  I     [EnhanceClientSerialize]Client sessionInfo sent: pid=29353, sessionId=2440218153, seqNum=******447.
-09-12 14:23:05.262   29353-29353   C05A05/com.wss...ntEnhanceImpl  com.wss.m...lication  I     [EnhanceClientDeserialize]Client sessionInfo updated: pid=29353, sessionId=2440218153, seqNum=******447.
-09-12 14:23:05.262   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始下载壁纸: [object Object]
-09-12 14:23:05.262   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas就绪检查最终结果: true. Element: true, Width: 736, Height: 1053.2
-09-12 14:23:05.263   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始重新绘制完整壁纸用于保存
-09-12 14:23:05.263   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84578, click 0 up, state: 6
-09-12 14:23:05.263   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:84578, pan 0 up, state: 6
-09-12 14:23:05.263   29353-29353   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Click, node: SaveButton, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: SUCCEED, extraInfo: ETF: 0 CFP: 0}{types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: FAIL, extraInfo: currentFingers: 1 fingers: 1}
-09-12 14:23:05.263   29353-29353   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=84578 in ace_container, lastEventInfo: id:84577
-09-12 14:23:05.314   29353-30047   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:8, cmdCount:1, instanceId:100000
-09-12 14:23:05.314   29353-29353   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:8, cmdCount:1, instanceId:100000
-09-12 14:23:05.364   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始绘制完整壁纸
-09-12 14:23:05.364   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas尺寸: 736x1053.2
-09-12 14:23:05.364   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     当前语录: 慎独、慎初、慎微、慎友
-09-12 14:23:05.364   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     使用颜色: #64B5F6
-09-12 14:23:05.364   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     步骤1: 绘制波浪背景
-09-12 14:23:05.364   29353-30047   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:9, cmdCount:3, instanceId:100000
-09-12 14:23:05.365   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas drawing completed successfully.
-09-12 14:23:05.365   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     步骤2: 等待背景绘制完成
-09-12 14:23:05.365   29353-29353   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:9, cmdCount:3, instanceId:100000
-09-12 14:23:05.969   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     步骤3: 绘制语录文字
-09-12 14:23:05.969   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始绘制语录文字: 慎独、慎初、慎微、慎友
-09-12 14:23:05.970   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     文字样式: [object Object]
-09-12 14:23:05.971   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     设置字体样式: 84px HarmonyOS Sans, PingFang SC, Microsoft YaHei, sans-serif
-09-12 14:23:05.971   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     实际字体属性: undefined
-09-12 14:23:05.971   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  W     字体设置失败，使用备用字体
-09-12 14:23:05.971   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     文字绘制位置: centerX=368, centerY=263.3
-09-12 14:23:05.971   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     最大文字宽度: 672
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     文字分行结果: 慎独、慎初、慎微、慎友
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     总文字高度: 38, 起始Y: 244.3
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始逐行绘制文字
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     绘制第1行: "慎独、慎初、慎微、慎友" at (368, 263.3)
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     语录文字绘制完成，使用字体: undefined
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     绘制了 1 行文字
-09-12 14:23:05.973   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     步骤4: 等待文字绘制完成
-09-12 14:23:06.052   29353-29353   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
-09-12 14:23:06.052   29353-29353   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
-09-12 14:23:06.052   29353-29353   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
-09-12 14:23:06.615   29353-29436   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     41:RecordPollerInfo:323 3:53;
-09-12 14:23:06.775   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     步骤5: 强制刷新Canvas状态
-09-12 14:23:06.930   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     步骤6: 最终等待Canvas状态稳定
-09-12 14:23:07.232   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     完整壁纸绘制完成
-09-12 14:23:07.232   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     等待Canvas绘制完全完成...
-09-12 14:23:07.484   29353-30047   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:10, cmdCount:2, instanceId:100000
-09-12 14:23:07.485   29353-29353   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:10, cmdCount:2, instanceId:100000
-09-12 14:23:07.485   29353-29353   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root
-09-12 14:23:09.539   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas绘制完成，准备获取图像数据
-09-12 14:23:09.540   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     准备获取Canvas内容，Canvas尺寸: 736x1053.2 -> 导出尺寸(取整): 736x1053
-09-12 14:23:09.605   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     ImageData获取成功，数据长度: 19371520
-09-12 14:23:09.615   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas内容检查: 包含多种颜色内容
-09-12 14:23:09.615   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     第一个像素颜色: rgb(230, 230, 230)
-09-12 14:23:09.615   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     颜色变化数: 51
-09-12 14:23:09.632   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     从ImageData创建PixelMap成功
-09-12 14:23:09.632   29353-29353   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaLibraryNapi:{CreateNewInstance:588} CreateNewInstance for other user is -1
-09-12 14:23:09.632   29353-29353   C02B61/com.wss...agePackerNapi  com.wss.m...lication  I     PackingFromNapi IN
-09-12 14:23:09.632   29353-29353   C02B61/com.wss...agePackerNapi  com.wss.m...lication  I     parsePackOptions format:[image/jpeg]
-09-12 14:23:09.673   29353-30128   C02B61/com.wss...ion/ImageCode  com.wss.m...lication  I     DoEncode:(1840, 2632) cost 31730 us
-09-12 14:23:09.685   29353-29353   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaAssetChangeRequestNapi:{ApplyChanges:2603} Begin MediaAssetChangeRequestNapi::ApplyChanges
-09-12 14:23:09.685   29353-30128   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaAssetChangeRequestNapi:{RecordAddResourceAndSetLocation:2527} Check addResource and setLocation, isAddResource: 1, isSetLocation: 0
-09-12 14:23:09.685   29353-30128   C02B71/com.wss...iaLibraryNapi  com.wss.m...lication  I     MediaAssetChangeRequestNapi:{AddResourceExecute:2115} JSSetLocation begin.
-09-12 14:23:09.709   29353-29431   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  I     [gc] IdleGCTrigger: post once local remark on idleTime
-09-12 14:23:09.709   29353-29353   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  I     [gc] IdleGCTrigger: trigger local remark
-09-12 14:23:09.729   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     图片已成功保存到相册（applyChanges）
-09-12 14:23:09.729   29353-29353   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     壁纸下载成功
-09-12 14:23:09.848   29353-30047   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:11, cmdCount:4, instanceId:100000
-09-12 14:23:09.849   29353-29353   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:11, cmdCount:4, instanceId:100000
-09-12 14:23:10.208   29353-30102   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     42:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:10.224   29353-30104   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     43:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:10.241   29353-30105   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     44:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:10.264   29353-30103   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     45:~WorkerThread:72 to exit, qos[4]
-09-12 14:23:11.968   29353-30047   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::ProcessMessages messageId:12, cmdCount:2, instanceId:100000
-09-12 14:23:11.968   29353-29353   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  I     RSUIDirector::PostTask messageId:12, cmdCount:2, instanceId:100000
-09-12 14:23:11.969   29353-29353   C0390D/com.wss...on/AceOverlay  com.wss.m...lication  I     [(100000:100000:scope)] toast remove from root
-09-12 14:23:14.710   29353-30132   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     46:~WorkerThread:72 to exit, qos[3]
-09-12 14:23:14.717   29353-30133   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     47:~WorkerThread:72 to exit, qos[0]
-09-12 14:23:14.717   29353-30135   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     48:~WorkerThread:72 to exit, qos[0]
-09-12 14:23:14.718   29353-30137   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     49:~WorkerThread:72 to exit, qos[0]
-09-12 14:23:14.719   29353-30134   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     50:~WorkerThread:72 to exit, qos[0]
-09-12 14:23:14.719   29353-30136   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     51:~WorkerThread:72 to exit, qos[0]
-09-12 14:23:14.730   29353-30128   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     52:~WorkerThread:72 to exit, qos[3]
-09-12 14:23:16.975   29353-30108   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     53:~WorkerThread:72 to exit, qos[2]
-09-12 14:23:16.986   29353-30107   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     54:~WorkerThread:72 to exit, qos[2]
+09-12 19:19:44.657   53083-53417   C02D10/com.wss...RemoteService  com.wss.m...lication  I     GetHiViewRemoteService: refresh remote service instance.
+09-12 19:19:44.667   53083-53417   C01201/com.wss....EventHandler  com.wss.m...lication  I     [(EventHandler:66)]log suppressed cnt 14
+09-12 19:19:44.667   53083-53417   C01201/com.wss....EventHandler  com.wss.m...lication  I     Create eventHandler 16_47644982186472
+09-12 19:19:44.668   53083-53083   C03F00/com.wss...n/ArkCompiler  com.wss.m...lication  I     [gc] IdleGCTrigger: trigger full gc
+09-12 19:19:46.386   53083-53153   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: down: 109274
+09-12 19:19:46.386   53083-53153   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:D:109274][OnPointerEvent:544] id:109274 recv
+09-12 19:19:46.386   53083-53153   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:20,InputId:109274,wid:767,ac:2
+09-12 19:19:46.389   53083-53153   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(-1:100000:singleton)] pointdown windowId: 767
+09-12 19:19:46.390   53083-53153   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:109274,wid:767,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
+09-12 19:19:46.390   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:109274, fingerId:0, type=0, inject=0, isPrivacyMode=0
+09-12 19:19:46.390   53083-53153   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move: 109275
+09-12 19:19:46.390   53083-53153   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:M:109275][OnPointerEvent:228] Last eventId:109081, current eventId:109275
+09-12 19:19:46.390   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:109274, touch test hitted node info: fingerId: 0{ tag: page, depth: 6 };{ tag: Stack, depth: 9 };
+09-12 19:19:46.390   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:109274, touch test hitted recognizer type info: recognizer type ClickRecognizer node info: { tag: Stack };recognizer type PanRecognizer node info: { tag: Stack };
+09-12 19:19:46.390   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:109274, exclusive 0 type: 0
+09-12 19:19:46.390   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:109274, click 0 down, ETF: 0, CTP: 0, state: 0
+09-12 19:19:46.391   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:109274, pan 0 down, state: 0
+09-12 19:19:46.391   53083-53083   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [B:UK:109274][SetLastProcessedEventId:54] Last eventId:109079, current eventId:109274
+09-12 19:19:46.391   53083-53083   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=109274 in ace_container, lastEventInfo: id:109128
+09-12 19:19:46.393   53083-53675   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][MarkProcessed:71] Ffrt PE: 109081 109274
+09-12 19:19:46.404   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Pan accepted, tag = Stack
+09-12 19:19:46.404   53083-53083   C01406/com.wss...tion/OHOS::RS  com.wss.m...lication  E     FlushImplicitTransaction return, [renderServiceClient_:1, transactionData empty:1]
+09-12 19:19:46.464   53083-53153   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [][OnPointerEvent:216] ac: move, first: 109276-(2025-09-12 19:19:46.396ms), 109282, count: 7, last: ac: up: 109283
+09-12 19:19:46.464   53083-53153   C02805/com.wss....InputKeyFlow  com.wss.m...lication  I     [P:U:109283][OnPointerEvent:544] id:109283 recv
+09-12 19:19:46.464   53083-53153   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] OnInputEvent(86): eid:21,InputId:109283,wid:767,ac:4
+09-12 19:19:46.465   53083-53153   C04213/com.wss....InputKeyFlow  com.wss.m...lication  I     [] ConsumePointerEventInner(876): InputId:109283,wid:767,pointId:0,srcType:2,rect:[0,0,1840,2800],notify:1
+09-12 19:19:46.465   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] InputTracking id:109283, fingerId:0, type=1, inject=0, isPrivacyMode=0
+09-12 19:19:46.466   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:109283, exclusive 0 type: 1
+09-12 19:19:46.466   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:109283, click 0 up, state: 6
+09-12 19:19:46.466   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] Id:109283, pan 0 up, state: 5
+09-12 19:19:46.467   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     当前语录索引: 12, 使用颜色: #AA9F7C
+09-12 19:19:46.467   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     [scheduleDraw] switchToQuote: 切换语录 -> seq=12, delay=16ms
+09-12 19:19:46.468   53083-53083   C03951/com.wss....InputKeyFlow  com.wss.m...lication  I     [(100000:100000:scope)] id: 0, log: {types: Click, node: Stack, prcd: Down, state: READY, extraInfo: ETF: 0 CFP: 0, prcd: Up, state: FAIL, extraInfo: ETF: 0 CFP: 0}{types: Pan, node: Stack, prcd: Down, state: DETECTING, prcd: Up, state: SUCCEED, prcd: Up, state: READY, extraInfo: currentFingers: 1 fingers: 1}
+09-12 19:19:46.468   53083-53083   C03919/com.wss...InputTracking  com.wss.m...lication  I     [(100000:100000:scope)] Consumed new event id=109283 in ace_container, lastEventInfo: id:109282
+09-12 19:19:46.484   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     [drawCompleteWallpaper] 开始绘制，seq=12，Canvas=736x1053.2
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     Canvas drawing completed successfully.
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始绘制语录文字: 抓铁有痕，踏石留印
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     文字样式: [object Object]
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     设置字体样式: 84px YuluCustomFont, HarmonyOS Sans, PingFang SC, Microsoft YaHei, sans-serif
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     实际字体属性: undefined
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  W     字体设置失败，使用备用字体
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     文字绘制位置: centerX=368, centerY=263.3
+09-12 19:19:46.486   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     最大文字宽度: 672
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     文字分行结果: 抓铁有痕，踏石留印
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     总文字高度: 38, 起始Y: 244.3
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     开始逐行绘制文字
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     绘制第1行: "抓铁有痕，踏石留印" at (368, 263.3)
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     语录文字绘制完成，使用字体: undefined
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     绘制了 1 行文字
+09-12 19:19:46.488   53083-53083   A03D00/com.wss...ication/JSAPP  com.wss.m...lication  I     [drawCompleteWallpaper] 绘制完成
+09-12 19:19:47.267   53083-53083   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     ThpExtraRunCommand[122]ver:5.0.8ThpExtraRunCommand, cmd:THP_UpdateViewsLocation, param:thp#Location#
+09-12 19:19:47.268   53083-53083   C02504/com.wss...ion/thp_extra  com.wss.m...lication  I     InitTpInterfaces[33]InitTpInterfaces+
+09-12 19:19:47.268   53083-53083   C02504/com.wss...ion/thp_extra  com.wss.m...lication  E     InitTpInterfaces[35]inited +
+09-12 19:19:48.657   53083-53588   C01719/com.wss...lication/ffrt  com.wss.m...lication  W     28:~WorkerThread:72 to exit, qos[3]
+
