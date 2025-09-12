@@ -719,9 +719,7 @@ struct Index {
     .width('100%')
     .height('100%')
   }
-}
 
-// ... existing code ...
   /**
    * 处理物理返回键/侧滑返回事件。
    * 优先级依次为：操作菜单 > 多选模式 > 搜索模式。
@@ -752,3 +750,4 @@ struct Index {
       return false;
     }
   }
+}
