@@ -59,6 +59,10 @@ struct WallpaperPage {
   // 服务实例
   private quoteManager = QuoteDataManager.getInstance(getContext(this));
 
+  // 绘制任务调度相关 - 避免快速滑动导致文字重叠
+  // 含义：为所有触发绘制的来源（尺寸变化、页面显隐、语录切换等）提供统一的节流合并与并发取消能力
+  private currentDrawSeq: number = 0; // 当前最新绘制序列号，每次调度递增，用于丢弃过期绘制
+  private drawTimeoutId: number | null = null; // 延迟绘制定时器ID，避免抖动
   /**
    * 页面初始化
    */
@@ -101,13 +105,8 @@ struct WallpaperPage {
     // 更新当前语录的颜色
     this.updateCurrentQuoteColor();
     
-    // 重新绘制完整壁纸（包含文字）
-    setTimeout(async () => {
-      if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-        await this.drawCompleteWallpaper();
-        console.log('WallpaperPage: 页面返回后重新绘制背景完成');
-      }
-    }, 100);
+    // 统一通过调度触发，避免并发重叠
+    this.scheduleDraw('onPageShow: 页面返回后重绘', 16);
   }
 
   /**
@@ -312,11 +311,37 @@ struct WallpaperPage {
   /**
    * 绘制完整的壁纸内容（包含背景和文字）
    * 用于保存图片时生成完整的壁纸
-   * 修复：优化绘制同步和等待机制
+   * 修复：优化绘制同步和等待机制 -> 改为同步绘制并引入序列校验，移除不必要的延时，防止并发交错造成文字重叠
+   * @param seq 可选的绘制序列号。若传入且不等于 currentDrawSeq，则丢弃本次过期绘制
    */
-  private async drawCompleteWallpaper() {
+  private scheduleDraw(source: string, delayMs: number = 16) {
+    // 取消上一次的定时任务，进行节流合并
+    if (this.drawTimeoutId !== null) {
+      clearTimeout(this.drawTimeoutId as number);
+      this.drawTimeoutId = null;
+    }
+    // 递增序列号，用于并发取消
+    const seq = ++this.currentDrawSeq;
+    console.log(`[scheduleDraw] ${source} -> seq=${seq}, delay=${delayMs}ms`);
+
+    // 若画布尚未就绪，稍后重试由同一调度承担
+    this.drawTimeoutId = setTimeout(async () => {
+      this.drawTimeoutId = null;
+      if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
+        console.warn(`[scheduleDraw] Canvas未就绪，跳过本次绘制 seq=${seq}`);
+        return;
+      }
+      await this.drawCompleteWallpaper(seq);
+    }, delayMs) as number;
+  }
+
+  private async drawCompleteWallpaper(seq?: number) {
     if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
       console.warn('Canvas未就绪，无法绘制完整壁纸');
+      return;
+    }
+    if (seq !== undefined && seq !== this.currentDrawSeq) {
+      console.warn(`[drawCompleteWallpaper] 丢弃过期绘制 seq=${seq}, current=${this.currentDrawSeq}`);
       return;
     }
 
@@ -324,51 +349,34 @@ struct WallpaperPage {
     const width = this.canvasWidth;
     const height = this.canvasHeight;
     const currentQuote = this.quotes[this.currentQuoteIndex];
-    
+
     if (!currentQuote) {
       console.warn('当前语录不存在，无法绘制');
       return;
     }
 
-    console.log('开始绘制完整壁纸');
-    console.log(`Canvas尺寸: ${width}x${height}`);
-    console.log(`当前语录: ${currentQuote.text}`);
-    console.log(`使用颜色: ${this.currentQuoteColor}`);
+    console.log(`[drawCompleteWallpaper] 开始绘制，seq=${seq ?? 'n/a'}，Canvas=${width}x${height}`);
 
-    // 1. 绘制波浪背景
-    console.log('步骤1: 绘制波浪背景');
-    this.drawLayeredWaves(this.currentQuoteColor);
-
-    // 2. 等待背景绘制完成，增加等待时间
-    console.log('步骤2: 等待背景绘制完成');
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
-    
-    // 3. 强制刷新Canvas确保背景绘制完成
     ctx.save();
-    ctx.restore();
-    await new Promise<void>((resolve) => setTimeout(resolve, 100));
+    try {
+      // 清空画布，避免任何叠影
+      ctx.clearRect(0, 0, width, height);
+      // 绘制波浪背景
+      this.drawLayeredWaves(this.currentQuoteColor);
 
-    // 4. 绘制语录文字
-    console.log('步骤3: 绘制语录文字');
-    await this.drawQuoteText(ctx, currentQuote.text, width, height);
+      // 序列再次校验，防止在文字阶段被抢占
+      if (seq !== undefined && seq !== this.currentDrawSeq) {
+        console.warn(`[drawCompleteWallpaper] 背景绘制后检测到过期，放弃文字绘制 seq=${seq}, current=${this.currentDrawSeq}`);
+        return;
+      }
 
-    // 5. 等待文字绘制完全完成，大幅增加等待时间
-    console.log('步骤4: 等待文字绘制完成');
-    await new Promise<void>((resolve) => setTimeout(resolve, 800));
-    
-    // 6. 多次强制刷新Canvas确保所有绘制操作完成
-    console.log('步骤5: 强制刷新Canvas状态');
-    for (let i = 0; i < 3; i++) {
-      ctx.save();
+      // 绘制语录文字
+      await this.drawQuoteText(ctx, currentQuote.text, width, height, seq);
+
+      console.log('[drawCompleteWallpaper] 绘制完成');
+    } finally {
       ctx.restore();
-      await new Promise<void>((resolve) => setTimeout(resolve, 50));
     }
-    
-    // 7. 最终等待确保Canvas状态完全稳定
-    console.log('步骤6: 最终等待Canvas状态稳定');
-    await new Promise<void>((resolve) => setTimeout(resolve, 300));
-
-    console.log('完整壁纸绘制完成');
   }
 
   /**
@@ -378,114 +386,129 @@ struct WallpaperPage {
    * @param width Canvas宽度
    * @param height Canvas高度
    * 修复：优化字体设置和文字绘制逻辑
+   * @param seq 可选绘制序列号，用于丢弃过期任务
    */
-  private async drawQuoteText(ctx: CanvasRenderingContext2D, text: string, width: number, height: number) {
-    try {
-      console.log('开始绘制语录文字:', text);
-      
-      // 获取文字样式
-      const textStyle = this.getTextStyle(text);
-      console.log('文字样式:', textStyle);
-      
-      // 设置字体样式，根据HarmonyOS 5.0使用系统字体
-      const fontSize = textStyle.fontSize + 50;
-      
-      // 设置基本绘制样式
-      ctx.fillStyle = '#181818';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      // 使用HarmonyOS系统字体，确保兼容性
-      const fontString = `${fontSize}px HarmonyOS Sans, PingFang SC, Microsoft YaHei, sans-serif`;
-      ctx.font = fontString;
-      
-      console.log('设置字体样式:', fontString);
-      console.log('实际字体属性:', ctx.font);
-      
-      // 验证字体设置
-      if (!ctx.font || ctx.font === '') {
-        console.warn('字体设置失败，使用备用字体');
-        ctx.font = `${fontSize}px sans-serif`;
+  private async drawQuoteText(ctx: CanvasRenderingContext2D, text: string, width: number, height: number, seq?: number) {
+     try {
+      // 并发校验：若序列号过期则不执行
+      if (seq !== undefined && seq !== this.currentDrawSeq) {
+        console.warn(`[drawQuoteText] 丢弃过期文字绘制 seq=${seq}, current=${this.currentDrawSeq}`);
+        return;
       }
-      
-      // 计算文字位置（与原Text组件位置保持一致：y: '25%'）
-      const centerX = width / 2;
-      const centerY = height * 0.25;
-      console.log(`文字绘制位置: centerX=${centerX}, centerY=${centerY}`);
+       console.log('开始绘制语录文字:', text);
+       
+       // 获取文字样式
+       const textStyle = this.getTextStyle(text);
+       console.log('文字样式:', textStyle);
+       
+       // 设置字体样式，根据HarmonyOS 5.0使用系统字体
+       const fontSize = textStyle.fontSize + 50;
+       
+       // 设置基本绘制样式
+       ctx.fillStyle = '#181818';
+       ctx.textAlign = 'center';
+       ctx.textBaseline = 'middle';
+       
+       // 使用HarmonyOS系统字体，确保兼容性
+       const fontString = `${fontSize}px HarmonyOS Sans, PingFang SC, Microsoft YaHei, sans-serif`;
+       ctx.font = fontString;
+       
+       console.log('设置字体样式:', fontString);
+       console.log('实际字体属性:', ctx.font);
+       
+       // 验证字体设置
+       if (!ctx.font || ctx.font === '') {
+         console.warn('字体设置失败，使用备用字体');
+         ctx.font = `${fontSize}px sans-serif`;
+       }
+       
+       // 计算文字位置（与原Text组件位置保持一致：y: '25%'）
+       const centerX = width / 2;
+       const centerY = height * 0.25;
+       console.log(`文字绘制位置: centerX=${centerX}, centerY=${centerY}`);
 
-      // 处理多行文字
-      const maxWidth = width - 64; // 左右各32px边距
-      console.log('最大文字宽度:', maxWidth);
-      
-      const lines = this.wrapText(ctx, text, maxWidth);
-      console.log('文字分行结果:', lines);
-      
-      const totalTextHeight = lines.length * textStyle.lineHeight;
-      const startY = centerY - totalTextHeight / 2;
-      console.log(`总文字高度: ${totalTextHeight}, 起始Y: ${startY}`);
+       // 处理多行文字
+       const maxWidth = width - 64; // 左右各32px边距
+       console.log('最大文字宽度:', maxWidth);
+       
+       const lines = this.wrapText(ctx, text, maxWidth);
+       console.log('文字分行结果:', lines);
+       
+       const totalTextHeight = lines.length * textStyle.lineHeight;
+       const startY = centerY - totalTextHeight / 2;
+       console.log(`总文字高度: ${totalTextHeight}, 起始Y: ${startY}`);
 
-      // 绘制每一行文字
-      console.log('开始逐行绘制文字');
-      lines.forEach((line, index) => {
-        const y = startY + (index + 0.5) * textStyle.lineHeight;
-        console.log(`绘制第${index + 1}行: "${line}" at (${centerX}, ${y})`);
-        ctx.fillText(line, centerX, y);
-      });
-      
-      // 强制刷新确保文字绘制完成
-      ctx.save();
-      ctx.restore();
-      
-      console.log('语录文字绘制完成，使用字体:', ctx.font);
-      console.log('绘制了', lines.length, '行文字');
-      
-    } catch (error) {
-      console.error('绘制语录文字失败:', error);
-      
-      // 降级处理：使用简单的文字绘制
-      try {
-        console.log('尝试降级文字绘制');
-        const fallbackFontSize = Math.min(32, width / 15);
-        ctx.fillStyle = '#181818';
-        ctx.font = `${fallbackFontSize}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        console.log('降级字体设置:', ctx.font);
-        
-        // 简单的文字换行处理
-        const maxWidth = width - 64;
-        const words = text.split('');
-        let line = '';
-        let y = height * 0.25;
-        let lineCount = 0;
-        
-        for (let i = 0; i < words.length; i++) {
-          const testLine = line + words[i];
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxWidth && line !== '') {
-            console.log(`降级绘制第${lineCount + 1}行: "${line}" at (${width / 2}, ${y})`);
-            ctx.fillText(line, width / 2, y);
-            line = words[i];
-            y += fallbackFontSize * 1.3;
-            lineCount++;
-          } else {
-            line = testLine;
+       // 绘制每一行文字
+       console.log('开始逐行绘制文字');
+       lines.forEach((line, index) => {
+        // 循环中也校验是否被新绘制抢占
+        if (seq !== undefined && seq !== this.currentDrawSeq) {
+          console.warn(`[drawQuoteText] 绘制过程中检测到过期，提前终止 seq=${seq}, current=${this.currentDrawSeq}`);
+          return;
+        }
+         const y = startY + (index + 0.5) * textStyle.lineHeight;
+         console.log(`绘制第${index + 1}行: "${line}" at (${centerX}, ${y})`);
+         ctx.fillText(line, centerX, y);
+       });
+       
+       // 强制刷新确保文字绘制完成
+       ctx.save();
+       ctx.restore();
+       
+       console.log('语录文字绘制完成，使用字体:', ctx.font);
+       console.log('绘制了', lines.length, '行文字');
+       
+     } catch (error) {
+       console.error('绘制语录文字失败:', error);
+       
+       // 降级处理：使用简单的文字绘制
+       try {
+         console.log('尝试降级文字绘制');
+         const fallbackFontSize = Math.min(32, width / 15);
+         ctx.fillStyle = '#181818';
+         ctx.font = `${fallbackFontSize}px sans-serif`;
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         
+         console.log('降级字体设置:', ctx.font);
+         
+         // 简单的文字换行处理
+         const maxWidth = width - 64;
+         const words = text.split('');
+         let line = '';
+         let y = height * 0.25;
+         let lineCount = 0;
+         
+         for (let i = 0; i < words.length; i++) {
+          if (seq !== undefined && seq !== this.currentDrawSeq) {
+            console.warn(`[drawQuoteText] 降级绘制过程中检测到过期，终止 seq=${seq}, current=${this.currentDrawSeq}`);
+            return;
           }
-        }
-        if (line !== '') {
-          console.log(`降级绘制最后一行: "${line}" at (${width / 2}, ${y})`);
-          ctx.fillText(line, width / 2, y);
-          lineCount++;
-        }
-        
-        console.log('降级文字绘制完成，共绘制', lineCount, '行');
-        
-      } catch (fallbackError) {
-        console.error('降级文字绘制也失败:', fallbackError);
-      }
-    }
-  }
+           const testLine = line + words[i];
+           const metrics = ctx.measureText(testLine);
+           if (metrics.width > maxWidth && line !== '') {
+             console.log(`降级绘制第${lineCount + 1}行: "${line}" at (${width / 2}, ${y})`);
+             ctx.fillText(line, width / 2, y);
+             line = words[i];
+             y += fallbackFontSize * 1.3;
+             lineCount++;
+           } else {
+             line = testLine;
+           }
+         }
+         if (line !== '') {
+           console.log(`降级绘制最后一行: "${line}" at (${width / 2}, ${y})`);
+           ctx.fillText(line, width / 2, y);
+           lineCount++;
+         }
+         
+         console.log('降级文字绘制完成，共绘制', lineCount, '行');
+         
+       } catch (fallbackError) {
+         console.error('降级文字绘制也失败:', fallbackError);
+       }
+     }
+   }
 
   /**
    * 文字换行处理
@@ -547,13 +570,8 @@ struct WallpaperPage {
     this.currentQuoteIndex = index;
     // 新增：更新颜色
     this.updateCurrentQuoteColor();
-    // 重新绘制完整壁纸（包含背景和文字）
-    setTimeout(async () => {
-      // 修改：使用当前语录的颜色和文字绘制完整壁纸
-      if (this.quotes[index]) {
-        await this.drawCompleteWallpaper(); // 绘制包含文字的完整壁纸
-      }
-    }, 50); // 稍微延迟确保状态更新
+    // 通过调度统一触发绘制，自动合并频繁滑动
+    this.scheduleDraw('switchToQuote: 切换语录', 16);
   }
 
   /**
@@ -897,12 +915,10 @@ struct WallpaperPage {
             this.canvasElement = this.canvasContext;
             console.log('Canvas context ready. Element:', !!this.canvasElement);
             
-            // 如果尺寸已知，立即绘制；否则等待onAreaChange
+            // 如果尺寸已知，立即通过调度绘制；否则等待onAreaChange
             if (this.canvasWidth > 0 && this.canvasHeight > 0) {
-              console.log('Canvas onReady: Context and size ready, drawing complete wallpaper.');
-              setTimeout(async () => {
-                await this.drawCompleteWallpaper();
-              }, 50);
+              console.log('Canvas onReady: Context and size ready, schedule draw.');
+              this.scheduleDraw('onReady: 上下文与尺寸就绪', 16);
             } else {
               console.log('Canvas onReady: Context ready, waiting for size (onAreaChange) to draw. W:', this.canvasWidth, ', H:', this.canvasHeight);
             }
@@ -920,12 +936,10 @@ struct WallpaperPage {
               console.log('Canvas onAreaChange: Canvas元素已就绪. Element:', !!this.canvasElement);
             }
             
-            // 尺寸变化后，如果Canvas上下文已就绪且尺寸有效，则重新绘制
+            // 尺寸变化后，如果Canvas上下文已就绪且尺寸有效，则重新调度绘制
             if (this.canvasElement && this.canvasWidth > 0 && this.canvasHeight > 0) {
-              setTimeout(async () => {
-                console.log('Canvas尺寸已更新，开始绘制完整壁纸，使用颜色:', this.currentQuoteColor);
-                await this.drawCompleteWallpaper();
-              }, 50); // 减少延迟，提高响应速度
+              console.log('Canvas尺寸已更新，调度绘制');
+              this.scheduleDraw('onAreaChange: 尺寸变化', 16);
             } else {
               console.log('Canvas onAreaChange: 等待Canvas上下文就绪. Element:', !!this.canvasElement, ', Context:', !!this.canvasContext, ', W:', this.canvasWidth, ', H:', this.canvasHeight);
             }
