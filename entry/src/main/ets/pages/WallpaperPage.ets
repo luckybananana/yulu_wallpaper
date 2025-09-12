@@ -1,23 +1,19 @@
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
-import { font } from '@kit.ArkUI';
 import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
-import wallpaper from '@ohos.wallpaper'; // 导入壁纸设置API
-import image from '@ohos.multimedia.image'; // 导入图像处理API
+import { image } from '@kit.ImageKit'; // 使用HarmonyOS 5.0推荐的图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
-import photoAccessHelper from '@ohos.file.photoAccessHelper'; // 导入相册访问API
-import fs from '@ohos.file.fs';
-// SaveButton是安全控件，直接使用，无需导入
+import { photoAccessHelper } from '@kit.MediaLibraryKit'; // 使用HarmonyOS 5.0推荐的相册访问API
 import { common } from '@kit.AbilityKit'; // 导入应用上下文
 // 已删除分享功能相关导入
 
 /**
  * 路由参数接口
  */
-interface RouterParams {
-  index?: number;
-  quote?: Quote | string; // 支持Quote对象或JSON字符串
-}
+ interface RouterParams {
+   index?: number;
+   quote?: Quote | string; // 支持Quote对象或JSON字符串
+ }
 
 /**
  * 文字样式接口
@@ -68,11 +64,6 @@ struct WallpaperPage {
    */
   async aboutToAppear() {
     console.log('壁纸预览界面加载完成');
-    // 注册自定义字体
-    font.registerFont({
-      familyName: 'SimHei',
-      familySrc: $rawfile('fangzheng.ttf')
-    });
     await this.loadQuotes();
     this.initializeIndex();
   }
@@ -321,6 +312,7 @@ struct WallpaperPage {
   /**
    * 绘制完整的壁纸内容（包含背景和文字）
    * 用于保存图片时生成完整的壁纸
+   * 修复：优化绘制同步和等待机制
    */
   private async drawCompleteWallpaper() {
     if (!this.canvasElement || this.canvasWidth <= 0 || this.canvasHeight <= 0) {
@@ -338,61 +330,160 @@ struct WallpaperPage {
       return;
     }
 
+    console.log('开始绘制完整壁纸');
+    console.log(`Canvas尺寸: ${width}x${height}`);
+    console.log(`当前语录: ${currentQuote.text}`);
+    console.log(`使用颜色: ${this.currentQuoteColor}`);
+
     // 1. 绘制波浪背景
+    console.log('步骤1: 绘制波浪背景');
     this.drawLayeredWaves(this.currentQuoteColor);
 
-    // 2. 加载并绘制语录文字
+    // 2. 等待背景绘制完成，增加等待时间
+    console.log('步骤2: 等待背景绘制完成');
+    await new Promise<void>((resolve) => setTimeout(resolve, 500));
+    
+    // 3. 强制刷新Canvas确保背景绘制完成
+    ctx.save();
+    ctx.restore();
+    await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+    // 4. 绘制语录文字
+    console.log('步骤3: 绘制语录文字');
     await this.drawQuoteText(ctx, currentQuote.text, width, height);
+
+    // 5. 等待文字绘制完全完成，大幅增加等待时间
+    console.log('步骤4: 等待文字绘制完成');
+    await new Promise<void>((resolve) => setTimeout(resolve, 800));
+    
+    // 6. 多次强制刷新Canvas确保所有绘制操作完成
+    console.log('步骤5: 强制刷新Canvas状态');
+    for (let i = 0; i < 3; i++) {
+      ctx.save();
+      ctx.restore();
+      await new Promise<void>((resolve) => setTimeout(resolve, 50));
+    }
+    
+    // 7. 最终等待确保Canvas状态完全稳定
+    console.log('步骤6: 最终等待Canvas状态稳定');
+    await new Promise<void>((resolve) => setTimeout(resolve, 300));
 
     console.log('完整壁纸绘制完成');
   }
 
   /**
-   * 绘制语录文字（使用Canvas绘制并加载指定字体）
+   * 绘制语录文字（使用Canvas绘制）
    * @param ctx Canvas上下文
    * @param text 语录文字
    * @param width Canvas宽度
    * @param height Canvas高度
+   * 修复：优化字体设置和文字绘制逻辑
    */
   private async drawQuoteText(ctx: CanvasRenderingContext2D, text: string, width: number, height: number) {
     try {
+      console.log('开始绘制语录文字:', text);
+      
       // 获取文字样式
       const textStyle = this.getTextStyle(text);
+      console.log('文字样式:', textStyle);
       
-      // 设置字体样式（直接使用已在EntryAbility中注册的方正字体）
-      // 根据HarmonyOS文档，字体格式为："font-style font-weight font-size font-family"
-      ctx.font = `normal normal ${textStyle.fontSize +50}px fangzheng, sans-serif`;
+      // 设置字体样式，根据HarmonyOS 5.0使用系统字体
+      const fontSize = textStyle.fontSize + 50;
+      
+      // 设置基本绘制样式
       ctx.fillStyle = '#181818';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
-      console.log('设置字体样式:', ctx.font);
+      // 使用HarmonyOS系统字体，确保兼容性
+      const fontString = `${fontSize}px HarmonyOS Sans, PingFang SC, Microsoft YaHei, sans-serif`;
+      ctx.font = fontString;
+      
+      console.log('设置字体样式:', fontString);
+      console.log('实际字体属性:', ctx.font);
+      
+      // 验证字体设置
+      if (!ctx.font || ctx.font === '') {
+        console.warn('字体设置失败，使用备用字体');
+        ctx.font = `${fontSize}px sans-serif`;
+      }
       
       // 计算文字位置（与原Text组件位置保持一致：y: '25%'）
       const centerX = width / 2;
-      const centerY = height * 0.25; // 对应原来的 y: '25%'
+      const centerY = height * 0.25;
+      console.log(`文字绘制位置: centerX=${centerX}, centerY=${centerY}`);
 
       // 处理多行文字
       const maxWidth = width - 64; // 左右各32px边距
+      console.log('最大文字宽度:', maxWidth);
+      
       const lines = this.wrapText(ctx, text, maxWidth);
+      console.log('文字分行结果:', lines);
+      
       const totalTextHeight = lines.length * textStyle.lineHeight;
       const startY = centerY - totalTextHeight / 2;
+      console.log(`总文字高度: ${totalTextHeight}, 起始Y: ${startY}`);
 
       // 绘制每一行文字
+      console.log('开始逐行绘制文字');
       lines.forEach((line, index) => {
         const y = startY + (index + 0.5) * textStyle.lineHeight;
+        console.log(`绘制第${index + 1}行: "${line}" at (${centerX}, ${y})`);
         ctx.fillText(line, centerX, y);
       });
       
+      // 强制刷新确保文字绘制完成
+      ctx.save();
+      ctx.restore();
+      
       console.log('语录文字绘制完成，使用字体:', ctx.font);
+      console.log('绘制了', lines.length, '行文字');
+      
     } catch (error) {
       console.error('绘制语录文字失败:', error);
-      // 如果绘制失败，使用简单的文字绘制
-      ctx.fillStyle = '#181818';
-      ctx.font = 'normal normal 20px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, width / 2, height * 0.25);
+      
+      // 降级处理：使用简单的文字绘制
+      try {
+        console.log('尝试降级文字绘制');
+        const fallbackFontSize = Math.min(32, width / 15);
+        ctx.fillStyle = '#181818';
+        ctx.font = `${fallbackFontSize}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        console.log('降级字体设置:', ctx.font);
+        
+        // 简单的文字换行处理
+        const maxWidth = width - 64;
+        const words = text.split('');
+        let line = '';
+        let y = height * 0.25;
+        let lineCount = 0;
+        
+        for (let i = 0; i < words.length; i++) {
+          const testLine = line + words[i];
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > maxWidth && line !== '') {
+            console.log(`降级绘制第${lineCount + 1}行: "${line}" at (${width / 2}, ${y})`);
+            ctx.fillText(line, width / 2, y);
+            line = words[i];
+            y += fallbackFontSize * 1.3;
+            lineCount++;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line !== '') {
+          console.log(`降级绘制最后一行: "${line}" at (${width / 2}, ${y})`);
+          ctx.fillText(line, width / 2, y);
+          lineCount++;
+        }
+        
+        console.log('降级文字绘制完成，共绘制', lineCount, '行');
+        
+      } catch (fallbackError) {
+        console.error('降级文字绘制也失败:', fallbackError);
+      }
     }
   }
 
@@ -497,12 +588,14 @@ struct WallpaperPage {
 
   /**
    * 下载壁纸 - 将生成的壁纸保存到相册
+   * 修复：优化Canvas绘制同步和图像数据获取逻辑
    */
-  private async setWallpaper() {
+  private async downloadWallpaper() {
     try {
       console.log('开始下载壁纸:', this.quotes[this.currentQuoteIndex]);
+      
       // 等待画布就绪（必要时回退到屏幕尺寸）
-      const ready = await this.ensureCanvasReady(2000); // 增加超时时间
+      const ready = await this.ensureCanvasReady(3000); // 增加超时时间到3秒
       if (!ready) {
         promptAction.showToast({
           message: '壁纸预览未准备就绪，请稍后重试',
@@ -510,22 +603,16 @@ struct WallpaperPage {
         });
         return;
       }
+      
       promptAction.showToast({
         message: '正在生成壁纸...',
         duration: 2000
       });
 
-      // 确保绘制的是当前状态（包含背景和文字）
-      console.log('开始重新绘制完整壁纸用于保存');
-      await this.drawCompleteWallpaper();
-      // 等待绘制完成，增加等待时间确保绘制完成
-      await new Promise<void>((resolve) => setTimeout(resolve, 300));
-      console.log('壁纸绘制完成，准备获取图像数据');
-
       // 修复：通过局部常量收窄类型，避免空指针，并进行最终检查
       const validCanvasContext = this.canvasElement;
       if (!validCanvasContext) {
-        console.error('Canvas上下文未就绪，无法导出图像数据 (在下载壁纸中)');
+        console.error('Canvas上下文未就绪，无法导出图像数据');
         promptAction.showToast({
           message: '生成壁纸失败，请稍后重试',
           duration: 2000
@@ -533,13 +620,82 @@ struct WallpaperPage {
         return;
       }
 
-      // 将Canvas内容转换为ImageData
-      const imageData = validCanvasContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
-      // 创建PixelMap
-      const pixelMap = await this.createPixelMapFromImageData(imageData);
+      // 关键修复：确保Canvas状态完全同步
+      console.log('开始重新绘制完整壁纸用于保存');
       
-      // 保存壁纸到相册
-      await this.saveImageToAlbum(pixelMap);
+      // 1. 清空Canvas确保干净状态
+      validCanvasContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      
+      // 2. 强制刷新Canvas状态
+      validCanvasContext.save();
+      validCanvasContext.restore();
+      
+      // 3. 等待Canvas状态稳定
+      await new Promise<void>((resolve) => setTimeout(resolve, 100));
+      
+      // 4. 重新绘制完整壁纸
+      await this.drawCompleteWallpaper();
+      
+      // 5. 关键修复：等待足够长的时间确保所有绘制操作完成
+      // 包括背景波浪绘制和文字渲染
+      console.log('等待Canvas绘制完全完成...');
+      await new Promise<void>((resolve) => setTimeout(resolve, 2000)); // 增加到2秒
+      
+      // 6. 多次强制刷新Canvas确保绘制完成
+      for (let i = 0; i < 3; i++) {
+        validCanvasContext.save();
+        validCanvasContext.restore();
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+      }
+      
+      console.log('Canvas绘制完成，准备获取图像数据');
+
+      // 7. 获取Canvas图像数据
+      // 修复要点：getImageData 仅接受整数宽高，且应与PixelMap尺寸严格一致
+      const exportWidth: number = Math.max(1, Math.floor(this.canvasWidth));
+      const exportHeight: number = Math.max(1, Math.floor(this.canvasHeight));
+      console.log(`准备获取Canvas内容，Canvas尺寸: ${this.canvasWidth}x${this.canvasHeight} -> 导出尺寸(取整): ${exportWidth}x${exportHeight}`);
+      const imageData = validCanvasContext.getImageData(0, 0, exportWidth, exportHeight);
+      console.log('ImageData获取成功，数据长度:', imageData.data.length);
+       
+      // 8. 验证ImageData是否包含有效内容
+      const pixels = imageData.data;
+      let hasContent = false;
+      let colorVariations = 0;
+      const firstPixelR = pixels[0];
+      const firstPixelG = pixels[1];
+      const firstPixelB = pixels[2];
+       
+      // 采样检查Canvas内容
+      for (let i = 0; i < pixels.length; i += 64) { // 减少采样频率提高性能
+        if (pixels[i] !== firstPixelR || pixels[i + 1] !== firstPixelG || pixels[i + 2] !== firstPixelB) {
+          colorVariations++;
+          if (colorVariations > 50) { // 增加阈值确保内容丰富
+            hasContent = true;
+            break;
+          }
+        }
+      }
+       
+      console.log('Canvas内容检查:', hasContent ? '包含多种颜色内容' : '可能为纯色图像');
+      console.log('第一个像素颜色:', `rgb(${firstPixelR}, ${firstPixelG}, ${firstPixelB})`);
+      console.log('颜色变化数:', colorVariations);
+       
+      // 9. 处理图像数据并保存
+      if (!hasContent && colorVariations < 10) {
+        console.warn('警告：Canvas内容变化较少，可能绘制未完成，尝试重新绘制');
+        // 最后一次尝试重新绘制
+        await this.drawCompleteWallpaper();
+        await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+        const retryImageData = validCanvasContext.getImageData(0, 0, exportWidth, exportHeight);
+        const retryPixelMap = await this.createPixelMapFromImageData(retryImageData);
+        await this.saveImageToAlbum(retryPixelMap);
+      } else {
+        // 创建PixelMap并保存
+        const pixelMap = await this.createPixelMapFromImageData(imageData);
+        console.log('从ImageData创建PixelMap成功');
+        await this.saveImageToAlbum(pixelMap);
+      }
       
       console.log('壁纸下载成功');
       promptAction.showToast({
@@ -603,23 +759,20 @@ struct WallpaperPage {
 
   /**
    * 将ImageData转换为PixelMap
+   * 说明：严格使用 imageData 自身的 width/height 与 RGBA_8888 像素格式，
+   * 避免因使用 Canvas 的浮点尺寸或不匹配尺寸导致像素行跨距（stride）错误，
+   * 出现导出纯色或错位的问题。
    */
   private async createPixelMapFromImageData(imageData: ImageData): Promise<image.PixelMap> {
     try {
-      // 创建PixelMap的配置
+      // 创建PixelMap的配置（使用推荐的强类型枚举与实际像素尺寸）
       const opts: image.InitializationOptions = {
-        alphaType: 0, // UNKNOWN
-        editable: true,
-        pixelFormat: 3, // RGBA_8888
-        scaleMode: 1, // CENTER_CROP
-        size: {
-          height: this.canvasHeight,
-          width: this.canvasWidth
-        }
+        size: { width: imageData.width, height: imageData.height },
+        pixelFormat: image.PixelMapFormat.RGBA_8888,
+        editable: true
       };
-      // 从ImageData创建PixelMap
-      // 修复：确保传递的是 ArrayBuffer
-      const pixelMap = await image.createPixelMap(imageData.data.buffer.slice(0) as ArrayBuffer, opts);
+      // 使用ImageData的底层ArrayBuffer直接创建PixelMap
+      const pixelMap = await image.createPixelMap(imageData.data.buffer, opts);
       return pixelMap;
     } catch (err) {
       console.error('创建PixelMap失败:', err);
@@ -680,7 +833,10 @@ struct WallpaperPage {
 
   /**
    * 保存图片到相册
-   * 使用SaveButton组件提供的临时权限保存图片到相册
+   * 使用SaveButton组件提供的临时权限保存图片到相册。
+   * 实现方式：采用MediaAssetChangeRequest + applyChanges（HarmonyOS 5.0 推荐方式），
+   * 相比直接createAsset + fs写入，更安全且权限模型更友好。
+   * @param pixelMap 需要保存的像素图
    */
   private async saveImageToAlbum(pixelMap: image.PixelMap): Promise<void> {
     try {
@@ -689,32 +845,25 @@ struct WallpaperPage {
       
       // 创建photoAccessHelper实例
       const phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-      
-      // 生成符合规范的文件名：包含有效文件主名和扩展名，长度1-255字符
-      const timestamp = new Date().getTime();
-      const fileName = `wallpaper_${timestamp}.jpg`;
-      
-      // 将PixelMap转换为ArrayBuffer
+
+      // 将PixelMap编码为JPEG二进制
       const imagePackerApi = image.createImagePacker();
-      const packOpts: image.PackingOption = {
-        format: 'image/jpeg',
-        quality: 90
-      };
+      const packOpts: image.PackingOption = { format: 'image/jpeg', quality: 90 };
       const arrayBuffer = await imagePackerApi.packing(pixelMap, packOpts);
-      
-      // 使用SaveButton提供的临时权限创建资产
-      // 在点击SaveButton后10秒内通过createAsset接口创建图片文件
-      const uri = await phAccessHelper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg');
-      
-      // 打开文件并写入数据
-      const file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-      try {
-        await fs.write(file.fd, arrayBuffer);
-      } finally {
-        await fs.close(file.fd);
-      }
-      
-      console.log('图片已成功保存到相册:', fileName);
+
+      // 通过变更请求保存（与CanvasTestPage保持一致）
+      const createAssetRequest = photoAccessHelper.MediaAssetChangeRequest.createAssetRequest(
+        context,
+        photoAccessHelper.PhotoType.IMAGE,
+        'jpg'
+      );
+      createAssetRequest.addResource(photoAccessHelper.ResourceType.IMAGE_RESOURCE, arrayBuffer);
+      await phAccessHelper.applyChanges(createAssetRequest);
+
+      // 释放编码器资源
+      imagePackerApi.release();
+
+      console.log('图片已成功保存到相册（applyChanges）');
       promptAction.showToast({
         message: '壁纸已保存到相册',
         duration: 2000
@@ -847,7 +996,7 @@ struct WallpaperPage {
                 .onClick((event: ClickEvent, result: number) => {
                   if (result === 0) { // 0表示SUCCESS
                     // SaveButton点击成功，获得10秒临时权限，立即执行保存
-                    this.setWallpaper();
+                    this.downloadWallpaper();
                   } else {
                     console.error('SaveButton点击失败:', result);
                     promptAction.showToast({

@@ -42,6 +42,75 @@ try {
     ohpm install --all --registry https://ohpm.openharmony.cn/ohpm/ --strict_ssl true
     Write-Host '   Note: Ensure all dependencies are installed to avoid build failures.' -ForegroundColor DarkGray
 
+    # Ensure Java (for signing) exists in PATH; try to detect common DevEco JDK locations if missing
+    if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
+        #region Helper: Add-JavaPath
+        <#
+            .SYNOPSIS
+                将指定JDK/JRE的bin目录临时注入到当前进程的PATH，并在未设置时推断JAVA_HOME。
+            .DESCRIPTION
+                - 校验传入的bin路径是否存在；
+                - 将其前置添加到PATH，确保后续子进程能发现java.exe；
+                - 若JAVA_HOME未设置，则以bin的上级目录作为JAVA_HOME；
+                - 输出探测日志，便于诊断问题。
+            .PARAMETER binPath
+                期望加入PATH的JDK/JRE bin目录的绝对路径。
+            .OUTPUTS
+                [bool] True 表示成功注入，False 表示路径无效或注入失败。
+            .NOTES
+                脚本仅影响当前PowerShell会话，不会修改系统环境变量，安全可回退。
+        #>
+        function Add-JavaPath([string]$binPath) {
+            if ($binPath -and (Test-Path $binPath)) {
+                $env:PATH = "$binPath;$env:PATH"
+                if (-not $env:JAVA_HOME) {
+                    try { $env:JAVA_HOME = (Split-Path $binPath -Parent) } catch {}
+                }
+                Write-Host ("   Java detected via: {0}" -f $binPath) -ForegroundColor DarkGray
+                return $true
+            }
+            return $false
+        }
+        #endregion
+
+        $candidateBins = @(
+            "D:\\DevEco Studio\\tools\\jdk\\bin",
+            "D:\\DevEco Studio\\tools\\java\\openjdk\\bin",
+            "C:\\DevEco Studio\\tools\\jdk\\bin",
+            "C:\\DevEco Studio\\tools\\java\\openjdk\\bin",
+            "C:\\Program Files\\Huawei\\DevEco Studio\\tools\\jdk\\bin",
+            "C:\\Program Files\\Huawei\\DevEco Studio\\tools\\java\\openjdk\\bin",
+            "D:\\Program Files\\Huawei\\DevEco Studio\\tools\\jdk\\bin",
+            "D:\\Program Files\\Huawei\\DevEco Studio\\tools\\java\\openjdk\\bin",
+            "$env:JAVA_HOME\\bin",
+            "C:\\Program Files\\OpenJDK\\jdk-17\\bin",
+            "C:\\Program Files\\Java\\jdk-17\\bin"
+        )
+
+        $added = $false
+        foreach ($bin in $candidateBins) {
+            if (Add-JavaPath -binPath $bin) { $added = $true; break }
+        }
+
+        # 最后兜底：在 DevEco Studio 目录下递归搜索 java.exe
+        if (-not $added) {
+            $searchRoots = @("D:\\DevEco Studio", "C:\\DevEco Studio", "C:\\Program Files\\Huawei\\DevEco Studio", "D:\\Program Files\\Huawei\\DevEco Studio")
+            foreach ($root in $searchRoots) {
+                if (Test-Path $root) {
+                    $javaExe = Get-ChildItem -Path $root -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+                    if ($javaExe) {
+                        $binPath = Split-Path $javaExe.FullName -Parent
+                        if (Add-JavaPath -binPath $binPath) { $added = $true; break }
+                    }
+                }
+            }
+        }
+
+        if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
+            Write-Host '   Warning: Java not found in PATH. Packaging may produce unsigned HAP and installation can fail.' -ForegroundColor Yellow
+        }
+    }
+
     Write-Host '2) Build project...' -ForegroundColor Green
     hvigorw assembleApp
     Write-Host '   Note: Run standard assemble task to generate .hap artifacts.' -ForegroundColor DarkGray

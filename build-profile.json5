@@ -1,7 +1,19 @@
 {
   "app": {
     "signingConfigs": [
-
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B11F8494298F188C1F0B79364E5D92ECF62A07E9F3DFBB07984123275A2D2422B1091F5EAFCDBD0",
+          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.p12",
+          "storePassword": "0000001BA8AAB8956A62B28760B7648A3CE9F6992F1BE40602FB6665905C1A45C4668A72CF6007F71FBE09"
+        }
+      }
     ],
     "products": [
       {

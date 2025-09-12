@@ -1,6 +1,5 @@
 import { drawing } from '@kit.ArkGraphics2D';
 import { image } from '@kit.ImageKit';
-import { font } from '@kit.ArkUI';
 import { Context } from '@kit.AbilityKit';
 import { Quote } from './QuoteDataManager';
 
@@ -39,7 +38,7 @@ const DEFAULT_CONFIG: WallpaperConfig = {
   textColor: '#FFFFFF',
   backgroundColor: '#1a1a2e',
   gradientColors: ['#1a1a2e', '#16213e', '#0f3460'],
-  fontFamily: 'FangZhengFont',
+  fontFamily: 'HarmonyOS Sans',
   padding: 80,
   maxWidth: 920,
   waveCount: 3,
@@ -61,7 +60,7 @@ interface WaveLayer {
 export class WallpaperGenerator {
   private static instance: WallpaperGenerator;
   private context: Context;
-  private isFontRegistered: boolean = false;
+
 
   constructor(context: Context) {
     this.context = context;
@@ -75,29 +74,14 @@ export class WallpaperGenerator {
     return WallpaperGenerator.instance;
   }
 
-  // 注册自定义字体
-  private async registerFont(): Promise<void> {
-    if (this.isFontRegistered) {
-      return;
-    }
 
-    try {
-      await font.registerFont({
-        familyName: 'FangZhengFont',
-        familySrc: '$rawfile("fangzheng.ttf")'
-      });
-      this.isFontRegistered = true;
-    } catch (error) {
-      console.error('注册字体失败:', error);
-    }
-  }
 
   // 生成壁纸（简化版本）
   public async generateWallpaper(
     quote: Quote,
     config: Partial<WallpaperConfig> = {}
   ): Promise<image.PixelMap> {
-    await this.registerFont();
+
     
     const finalConfig: WallpaperConfig = {
       width: config.width ?? DEFAULT_CONFIG.width,

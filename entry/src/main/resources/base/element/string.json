@@ -13,8 +13,12 @@
       "value": "label"
     },
     {
-      "name": "permission_set_wallpaper_reason",
-      "value": "应用需要设置壁纸权限以将生成的语录壁纸设置为系统壁纸"
+      "name": "permission_read_imagevideo_reason",
+      "value": "应用需要读取相册权限以访问和处理图片资源"
+    },
+    {
+      "name": "permission_write_imagevideo_reason",
+      "value": "应用需要相册访问权限以保存生成的语录壁纸图片到相册"
     }
   ]
 }

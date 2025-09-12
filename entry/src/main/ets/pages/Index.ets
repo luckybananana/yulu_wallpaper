@@ -323,19 +323,21 @@ struct Index {
                 .fontColor('#1A1A1A')
                 .layoutWeight(1)
               
-              Button() {
-                Image($r('app.media.ic_search'))
-                  .width(20)
-                  .height(20)
-                  .fillColor('#666666')
+              Row({ space: 8 }) {
+                Button() {
+                  Image($r('app.media.ic_search'))
+                    .width(20)
+                    .height(20)
+                    .fillColor('#666666')
+                }
+                .width(40)
+                .height(40)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(20)
+                .onClick(() => {
+                  this.toggleSearchMode();
+                })
               }
-              .width(40)
-              .height(40)
-              .backgroundColor(Color.Transparent)
-              .borderRadius(20)
-              .onClick(() => {
-                this.toggleSearchMode();
-              })
             }
             .width('100%')
             .height(56)
@@ -718,3 +720,35 @@ struct Index {
     .height('100%')
   }
 }
+
+// ... existing code ...
+  /**
+   * 处理物理返回键/侧滑返回事件。
+   * 优先级依次为：操作菜单 > 多选模式 > 搜索模式。
+   * 返回 true 表示事件已被本页面消费（拦截默认返回行为）；返回 false 表示放行系统默认返回。
+   */
+  onBackPress(): boolean {
+    try {
+      // 1) 若操作菜单打开，优先关闭
+      if (this.showActionMenu) {
+        this.hideQuoteActionMenu();
+        return true;
+      }
+      // 2) 若处于多选模式，退出多选
+      if (this.isMultiSelectMode) {
+        this.exitMultiSelectMode();
+        return true;
+      }
+      // 3) 若处于搜索模式，退出搜索并清空关键字
+      if (this.isSearchMode) {
+        this.toggleSearchMode();
+        return true;
+      }
+      // 4) 其他情况放行默认返回（如退出页面/应用）
+      return false;
+    } catch (error) {
+      console.error('处理返回事件异常:', error);
+      // 发生异常时不拦截，避免影响系统默认行为
+      return false;
+    }
+  }

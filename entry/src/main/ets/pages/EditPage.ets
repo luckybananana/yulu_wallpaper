@@ -1,4 +1,4 @@
-import { promptAction, router, font } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
 import { QuoteDataManager, Quote, AddQuoteParams, UpdateQuoteParams } from '../common/QuoteDataManager';
 
 // 添加颜色候选数组，与 WallpaperPage 的 WALLPAPER_COLORS 保持一致
@@ -61,11 +61,6 @@ struct EditPage {
    * 页面即将出现时的初始化
    */
   async aboutToAppear() {
-    // 注册自定义字体
-    font.registerFont({
-      familyName: 'fangzheng',
-      familySrc: $rawfile('fangzheng.ttf')
-    });
     await this.initPage();
   }
 
@@ -536,7 +531,7 @@ struct EditPage {
                   .fontWeight(FontWeight.Medium)
                   .padding({ left: 32, right: 32 })
                   .decoration({ type: TextDecorationType.None })
-                  .fontFamily('fangzheng') // 使用注册的字体名称
+                  .fontFamily('HarmonyOS Sans') // 使用系统默认字体
               }
               .width('100%')
               .justifyContent(FlexAlign.Center)

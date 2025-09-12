@@ -1,6 +1,6 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window, font } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 
 const DOMAIN = 0x0000;
 
@@ -25,8 +25,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   /**
-   * 窗口创建回调：设置主页面并在此处全局注册自定义字体。
-   * 意义：按照官方建议在窗口阶段注册，使字体在整个应用生命周期内可用，避免各页面重复注册。
+   * 窗口创建回调：设置主页面
    * @param windowStage 主窗口阶段对象
    */
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -38,17 +37,6 @@ export default class EntryAbility extends UIAbility {
         return;
       }
       hilog.info(DOMAIN, 'EntryAbility', 'Succeeded in loading the content.');
-
-      // 全局注册 fangzheng 字体。路径指向 rawfile/fangzheng.ttf。
-      try {
-        font.registerFont({
-          familyName: 'fangzheng',
-          familySrc: $rawfile('fangzheng.ttf')
-        });
-        hilog.info(DOMAIN, 'EntryAbility', '%{public}s', 'Font fangzheng registered globally.');
-      } catch (e) {
-        hilog.error(DOMAIN, 'EntryAbility', 'registerFont fangzheng failed: %{public}s', JSON.stringify(e));
-      }
     });
   }
 
