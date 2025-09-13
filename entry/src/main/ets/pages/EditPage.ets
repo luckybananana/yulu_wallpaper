@@ -1,4 +1,4 @@
-import { promptAction, router } from '@kit.ArkUI';
+// import { router } from '@kit.ArkUI';
 import { QuoteDataManager, Quote, AddQuoteParams, UpdateQuoteParams } from '../common/QuoteDataManager';
 
 // 添加颜色候选数组，与 WallpaperPage 的 WALLPAPER_COLORS 保持一致
@@ -47,7 +47,7 @@ struct EditPage {
   @State maxLength: number = 200;
   @State isLoading: boolean = false;
   @State quotes: Quote[] = [];
-  private dataManager: QuoteDataManager = QuoteDataManager.getInstance(getContext(this));
+  private dataManager: QuoteDataManager = QuoteDataManager.getInstance(this.getUIContext().getHostContext());
   
   // Canvas相关状态 - 与WallpaperPage保持一致
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
@@ -73,7 +73,7 @@ struct EditPage {
     try {
       // 检查是否为编辑模式（通过路由参数）
       // 获取路由参数，根据修正后的 EditPageParams 接口，quote 是 string 类型
-      const params = router.getParams() as EditPageParams | undefined;
+      const params = this.getUIContext().getRouter().getParams() as EditPageParams | undefined;
 
       // 检查 params 是否存在且为对象（router.getParams 通常返回对象或 undefined）
       if (params) {
@@ -95,7 +95,7 @@ struct EditPage {
              this.isEditMode = false; // 回退到新增模式或显示错误提示
              this.showToast('数据加载失败');
              // 可选：返回上一页
-             // router.back();
+             // this.getUIContext().getRouter().back();
           }
         }
         // 如果是新增模式 (params.mode !== 'edit' 或 params.quote 不存在)，则保持默认状态 (isEditMode = false, quoteContent = '')
@@ -296,7 +296,7 @@ struct EditPage {
    */
   goBack() {
     console.log('返回主界面');
-    router.back();
+    this.getUIContext().getRouter().back();
   }
 
   /**
@@ -345,7 +345,7 @@ struct EditPage {
       
       // 保存成功后返回主页
       setTimeout(() => {
-        router.back();
+        this.getUIContext().getRouter().back();
       }, 600);
     } catch (error) {
       console.error('保存失败:', error);
@@ -363,7 +363,7 @@ struct EditPage {
       message: message,
       duration: 3000
     };
-    promptAction.showToast(toast);
+    this.getUIContext().getPromptAction().showToast(toast);
   }
 
   /**

@@ -1,5 +1,3 @@
-import { router } from '@kit.ArkUI';
-import { promptAction } from '@kit.ArkUI';
 import { picker } from '@kit.CoreFileKit';
 import { QuoteDataManager, Quote, AddQuoteParams } from '../common/QuoteDataManager';
 import { fileIo } from '@kit.CoreFileKit';
@@ -46,7 +44,7 @@ struct ImportExportPage {
   @State isLoading: boolean = false;
   @State selectedFile: string = '';
   // 服务实例
-  private quoteManager = QuoteDataManager.getInstance(getContext(this));
+  private quoteManager = QuoteDataManager.getInstance(this.getUIContext().getHostContext());
 
   /**
    * 页面初始化
@@ -67,7 +65,8 @@ struct ImportExportPage {
           message: '暂无数据可导出',
           duration: 2000
         };
-        promptAction.showToast(noDataToast);
+        // 在导出数据为空时提示
+        this.getUIContext().getPromptAction().showToast(noDataToast);
         return;
       }
       // 导出为简单字符串数组格式，与quotes.json保持一致
@@ -92,13 +91,15 @@ struct ImportExportPage {
           message: `成功导出${quotes.length}条语录\n文件位置: ${filePath}`, // 修复换行符
           duration: 3000
         };
-        promptAction.showToast(exportSuccessToast);
+        // 导出成功提示
+        this.getUIContext().getPromptAction().showToast(exportSuccessToast);
       } else {
         const cancelToast: ShowToastOptions = {
           message: '导出已取消',
           duration: 2000
         };
-        promptAction.showToast(cancelToast);
+        // 导出取消提示
+        this.getUIContext().getPromptAction().showToast(cancelToast);
       }
     } catch (error) {
       console.error('导出数据失败:', error);
@@ -106,7 +107,8 @@ struct ImportExportPage {
         message: '导出失败，请重试',
         duration: 2000
       };
-      promptAction.showToast(exportErrorToast);
+      // 导出失败提示
+      this.getUIContext().getPromptAction().showToast(exportErrorToast);
     } finally {
       this.isLoading = false;
     }
@@ -131,7 +133,8 @@ struct ImportExportPage {
         message: '选择文件失败',
         duration: 2000 // 修复位置
       };
-      promptAction.showToast(selectFileErrorToast);
+      // 选择文件失败提示
+      this.getUIContext().getPromptAction().showToast(selectFileErrorToast);
     }
   }
 
@@ -150,8 +153,8 @@ struct ImportExportPage {
       fileIo.closeSync(file.fd);
       // 使用util.TextDecoder正确解码UTF-8文件内容
       const uint8Array = new Uint8Array(buffer, 0, readLen);
-      const decoder = util.TextDecoder.create('utf-8');
-      const content = decoder.decodeWithStream(uint8Array, { stream: false });
+      const decoder = new util.TextDecoder('utf-8');
+      const content = decoder.decode(uint8Array);
       const jsonData: string[] | ImportData = JSON.parse(content);
       let quotes: Quote[] = [];
       // 支持两种格式：1. 直接的字符串数组 2. 包含quotes属性的对象
@@ -187,14 +190,16 @@ struct ImportExportPage {
       const successToast: ShowToastOptions = {
         message: `成功导入${importCount}条语录`
       };
-      promptAction.showToast(successToast);
+      // 导入成功提示
+      this.getUIContext().getPromptAction().showToast(successToast);
     } catch (error) {
       console.error('导入数据失败:', error);
       const errorToast: ShowToastOptions = {
         message: '导入失败', // 正确初始化对象
         duration: 2000
       };
-      promptAction.showToast(errorToast);
+      // 导入失败提示
+      this.getUIContext().getPromptAction().showToast(errorToast);
     } finally {
       this.isLoading = false;
     }
@@ -204,7 +209,7 @@ struct ImportExportPage {
    * 返回上一页
    */
   goBack() {
-    router.back();
+    this.getUIContext().getRouter().back();
   }
 
   /**
@@ -244,7 +249,7 @@ struct ImportExportPage {
               color: '#007AFF'
             }]
           };
-          promptAction.showDialog(dialogOptions); // 传递正确类型的对象
+          this.getUIContext().getPromptAction().showDialog(dialogOptions); // 传递正确类型的对象
         })
       }
       .width('100%')

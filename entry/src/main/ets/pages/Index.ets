@@ -1,4 +1,4 @@
-import { promptAction, router } from '@kit.ArkUI';
+// import { router } from '@kit.ArkUI';
 import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
 
 // Toast选项接口
@@ -20,7 +20,7 @@ struct Index {
   @State searchKeyword: string = '';
   @State filteredQuotes: Quote[] = [];
   
-  private dataManager: QuoteDataManager = QuoteDataManager.getInstance(getContext(this));
+  private dataManager: QuoteDataManager = QuoteDataManager.getInstance(this.getUIContext().getHostContext());
 
   async aboutToAppear() {
     await this.loadData();
@@ -41,7 +41,7 @@ struct Index {
       const loadErrorToast: ShowToastOptions = {
         message: '加载语录失败，请重试'
       };
-      promptAction.showToast(loadErrorToast);
+      this.getUIContext().getPromptAction().showToast(loadErrorToast);
     } finally {
       this.isLoading = false;
     }
@@ -116,7 +116,7 @@ struct Index {
       const deleteSuccessToast: ShowToastOptions = {
         message: '删除成功'
       };
-      promptAction.showToast(deleteSuccessToast);
+      this.getUIContext().getPromptAction().showToast(deleteSuccessToast);
       
       this.exitMultiSelectMode();
       await this.loadData();
@@ -125,14 +125,14 @@ struct Index {
       const deleteErrorToast: ShowToastOptions = {
         message: '删除失败，请重试'
       };
-      promptAction.showToast(deleteErrorToast);
+      this.getUIContext().getPromptAction().showToast(deleteErrorToast);
     }
   }
 
   // 新增语录
   addQuote() {
     this.hideQuoteActionMenu();
-    router.pushUrl({
+    this.getUIContext().getRouter().pushUrl({
       url: 'pages/EditPage'
     });
   }
@@ -143,7 +143,7 @@ struct Index {
     // this.hideQuoteActionMenu(); 
     if (this.currentQuote) {
       // 先执行跳转逻辑
-      router.pushUrl({
+      this.getUIContext().getRouter().pushUrl({
         url: 'pages/EditPage',
         params: { quote: JSON.stringify(this.currentQuote), mode: 'edit' }
       }).then(() => {
@@ -156,7 +156,7 @@ struct Index {
         const errorToast: ShowToastOptions = {
           message: '跳转失败，请重试'
         };
-        promptAction.showToast(errorToast);
+        this.getUIContext().getPromptAction().showToast(errorToast);
       });
     } else {
       // 理论上不会发生，但为了健壮性
@@ -174,7 +174,7 @@ struct Index {
       try {
         // 显示确认对话框
         // 关键修改 2: 在 showDialog 的回调中处理后续逻辑
-        const result = await promptAction.showDialog({
+        const result = await this.getUIContext().getPromptAction().showDialog({
           title: '确认删除',
           message: '确定要删除这条语录吗？此操作不可撤销。',
           buttons: [
@@ -184,7 +184,7 @@ struct Index {
             },
             {
               text: '删除',
-              color: '#FF3B30' // 通常用红色表示危险操作
+              color: '#FF3B30'
             }
           ]
         });
@@ -199,14 +199,14 @@ struct Index {
             const deleteSuccessToast: ShowToastOptions = {
               message: '删除成功'
             };
-            promptAction.showToast(deleteSuccessToast);
+            this.getUIContext().getPromptAction().showToast(deleteSuccessToast);
             await this.loadData(); // 重新加载数据以反映删除
           } catch (error) {
             console.error('删除语录失败:', error);
             const deleteErrorToast: ShowToastOptions = {
               message: '删除失败，请重试'
             };
-            promptAction.showToast(deleteErrorToast);
+            this.getUIContext().getPromptAction().showToast(deleteErrorToast);
           }
         } else {
             // 用户点击了“取消”或其他按钮，也应该隐藏菜单
@@ -240,7 +240,7 @@ struct Index {
     // this.hideQuoteActionMenu();
     if (this.currentQuote) {
       // 先执行跳转逻辑
-      router.pushUrl({
+      this.getUIContext().getRouter().pushUrl({
         url: 'pages/WallpaperPage',
         params: { quote: JSON.stringify(this.currentQuote) }
       }).then(() => {
@@ -253,7 +253,7 @@ struct Index {
         const errorToast: ShowToastOptions = {
           message: '跳转失败，请重试'
         };
-        promptAction.showToast(errorToast);
+        this.getUIContext().getPromptAction().showToast(errorToast);
       });
     } else {
       // 理论上不会发生，但为了健壮性
@@ -263,14 +263,14 @@ struct Index {
 
   // 打开设置
   openSettings() {
-    router.pushUrl({
+    this.getUIContext().getRouter().pushUrl({
       url: 'pages/SettingsPage'
     });
   }
 
   // 打开导入导出
   openImportExport() {
-    router.pushUrl({
+    this.getUIContext().getRouter().pushUrl({
       url: 'pages/ImportExportPage'
     });
   }
@@ -298,7 +298,7 @@ struct Index {
       const searchErrorToast: ShowToastOptions = {
         message: '搜索失败，请重试'
       };
-      promptAction.showToast(searchErrorToast);
+      this.getUIContext().getPromptAction().showToast(searchErrorToast);
     }
   }
 

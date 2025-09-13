@@ -1,5 +1,4 @@
-import { router } from '@kit.ArkUI';
-import { promptAction } from '@kit.ArkUI';
+// 旧路由导入已移除：统一使用 UIContext 获取 Router 实例
 import { QuoteDataManager, Quote } from '../common/QuoteDataManager';
 import { image } from '@kit.ImageKit'; // 使用HarmonyOS 5.0推荐的图像处理API
 import display from '@ohos.display'; // 获取屏幕尺寸用于回退
@@ -57,7 +56,7 @@ struct WallpaperPage {
   private canvasElement: CanvasRenderingContext2D | null = null;
   @State currentQuoteColor: string = '#4A90E2'; // 默认颜色
   // 服务实例
-  private quoteManager = QuoteDataManager.getInstance(getContext(this));
+  private quoteManager = QuoteDataManager.getInstance(this.getUIContext().getHostContext());
 
   // 绘制任务调度相关 - 避免快速滑动导致文字重叠
   // 含义：为所有触发绘制的来源（尺寸变化、页面显隐、语录切换等）提供统一的节流合并与并发取消能力
@@ -164,7 +163,7 @@ struct WallpaperPage {
    * 优化：支持解析JSON字符串形式的quote参数
    */
   initializeIndex() {
-    const params = router.getParams() as RouterParams;
+    const params = this.getUIContext().getRouter().getParams() as RouterParams;
     if (params) {
       // 优先使用传递的quote参数
       if (params.quote) {
@@ -601,7 +600,7 @@ struct WallpaperPage {
    * 返回上一页
    */
   private goBack() {
-    router.back();
+    this.getUIContext().getRouter().back();
   }
 
   /**
@@ -615,14 +614,14 @@ struct WallpaperPage {
       // 等待画布就绪（必要时回退到屏幕尺寸）
       const ready = await this.ensureCanvasReady(3000); // 增加超时时间到3秒
       if (!ready) {
-        promptAction.showToast({
+        this.getUIContext().getPromptAction().showToast({
           message: '壁纸预览未准备就绪，请稍后重试',
           duration: 2000
         });
         return;
       }
       
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: '正在生成壁纸...',
         duration: 2000
       });
@@ -631,7 +630,7 @@ struct WallpaperPage {
       const validCanvasContext = this.canvasElement;
       if (!validCanvasContext) {
         console.error('Canvas上下文未就绪，无法导出图像数据');
-        promptAction.showToast({
+        this.getUIContext().getPromptAction().showToast({
           message: '生成壁纸失败，请稍后重试',
           duration: 2000
         });
@@ -716,7 +715,7 @@ struct WallpaperPage {
       }
       
       console.log('壁纸下载成功');
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: '壁纸已保存到相册！',
         duration: 2000
       });
@@ -726,7 +725,7 @@ struct WallpaperPage {
       if (err instanceof Error) {
         errMsg = err.message || errMsg;
       }
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: errMsg,
         duration: 2000
       });
@@ -752,7 +751,9 @@ struct WallpaperPage {
       // 如果尺寸为0但上下文有效，尝试获取屏幕尺寸
       if ((this.canvasWidth <= 0 || this.canvasHeight <= 0) && this.canvasElement) {
         try {
-          const d = await display.getDefaultDisplay();
+          // ... existing code ...
+          // 兜底获取屏幕尺寸：优先使用同步接口，避免异步等待带来的时序问题（V5 推荐）
+          const d = display.getDefaultDisplaySync();
           this.canvasWidth = d.width;
           this.canvasHeight = d.height;
           console.log(`Canvas尺寸回退为屏幕尺寸: ${this.canvasWidth}x${this.canvasHeight}`);
@@ -761,7 +762,7 @@ struct WallpaperPage {
             this.drawLayeredWaves(this.currentQuoteColor);
           }
         } catch (e) {
-          console.warn('获取屏幕尺寸失败，保持原尺寸。');
+          console.warn('获取屏幕尺寸失败，保持原尺寸。', e);
         }
       }
       // 如果仍未就绪，等待一小段时间再检查
@@ -818,30 +819,30 @@ struct WallpaperPage {
         console.log('WallpaperPage: 序列化后的语录参数:', quoteParam); // 调试日志
       } catch (serializeError) {
         console.error('WallpaperPage: 序列化语录对象失败:', serializeError, quote);
-        promptAction.showToast({
+        this.getUIContext().getPromptAction().showToast({
           message: '数据准备失败，无法编辑'
         });
         return; // 终止执行
       }
       // 执行页面跳转
-      router.pushUrl({
-        url: 'pages/EditPage',
-        params: {
-          mode: 'edit',
-          // 关键修改：传递序列化后的字符串
-          quote: quoteParam
-        }
-      }).then(() => {
+      this.getUIContext().getRouter().pushUrl({
+         url: 'pages/EditPage',
+         params: {
+           mode: 'edit',
+           // 关键修改：传递序列化后的字符串
+           quote: quoteParam
+         }
+       }).then(() => {
         console.log('WallpaperPage: 成功跳转到编辑页面');
       }).catch((error: Error) => {
         console.error('WallpaperPage: 跳转编辑页面失败:', error);
-        promptAction.showToast({
+        this.getUIContext().getPromptAction().showToast({
           message: '跳转失败，请重试'
         });
       });
     } else {
       console.warn('WallpaperPage: 尝试编辑语录，但当前语录为空');
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: '无法编辑当前语录'
       });
     }
@@ -858,8 +859,8 @@ struct WallpaperPage {
    */
   private async saveImageToAlbum(pixelMap: image.PixelMap): Promise<void> {
     try {
-      // 获取应用上下文
-      const context = getContext(this) as common.UIAbilityContext;
+      // 获取应用上下文（通过 UIContext 获取 HostContext，HarmonyOS 5.0 推荐）
+      const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
       
       // 创建photoAccessHelper实例
       const phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
@@ -867,6 +868,7 @@ struct WallpaperPage {
       // 将PixelMap编码为JPEG二进制
       const imagePackerApi = image.createImagePacker();
       const packOpts: image.PackingOption = { format: 'image/jpeg', quality: 90 };
+      // 兼容性处理：部分 SDK 仍为 packing 命名（V5 文档未统一）；统一使用 packing
       const arrayBuffer = await imagePackerApi.packing(pixelMap, packOpts);
 
       // 通过变更请求保存（与CanvasTestPage保持一致）
@@ -882,13 +884,13 @@ struct WallpaperPage {
       imagePackerApi.release();
 
       console.log('图片已成功保存到相册（applyChanges）');
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: '壁纸已保存到相册',
         duration: 2000
       });
     } catch (error) {
       console.error('保存图片到相册失败:', error);
-      promptAction.showToast({
+      this.getUIContext().getPromptAction().showToast({
         message: '保存失败，请重试',
         duration: 2000
       });
@@ -1013,7 +1015,7 @@ struct WallpaperPage {
                     this.downloadWallpaper();
                   } else {
                     console.error('SaveButton点击失败:', result);
-                    promptAction.showToast({
+                    this.getUIContext().getPromptAction().showToast({
                       message: '保存权限获取失败，请重试',
                       duration: 2000
                     });

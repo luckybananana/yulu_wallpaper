@@ -110,7 +110,8 @@ export class QuoteDataManager {
     try {
       const resMgr = this.context.resourceManager;
       const quotesBuffer = await resMgr.getRawFileContent('quotes.json');
-      const quotesText = util.TextDecoder.create('utf-8').decodeWithStream(quotesBuffer);
+      // V5 推荐：使用标准构造函数创建 TextDecoder
+      const quotesText = new util.TextDecoder('utf-8').decode(quotesBuffer);
       const initialQuotes: string[] = JSON.parse(quotesText);
       
       // 转换为标准格式

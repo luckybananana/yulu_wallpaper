@@ -1,0 +1,54 @@
+"D:\DevEco Studio\tools\node\node.exe" "D:\DevEco Studio\tools\hvigor\bin\hvigorw.js" --mode project -p product=default assembleApp --analyze=normal --parallel --incremental --daemon
+> hvigor Finished ::PreBuildApp... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@PreBuild...  
+> hvigor Finished ::DuplicateDependencyCheck... after 1 ms 
+> hvigor Finished :entry:default@CreateModuleInfo... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@GenerateMetadata...  
+> hvigor Finished :entry:default@ConfigureCmake... after 1 ms 
+> hvigor Finished :entry:default@MergeProfile... after 4 ms 
+> hvigor Finished :entry:default@CreateBuildProfile... after 3 ms 
+> hvigor Finished :entry:default@PreCheckSyscap... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+> hvigor Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+> hvigor Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@MakePackInfo...  
+> hvigor Finished :entry:default@SyscapTransform... after 2 ms 
+> hvigor Finished :entry:default@ProcessProfile... after 167 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessRouterMap...  
+> hvigor Finished :entry:default@ProcessStartupConfig... after 2 ms 
+> hvigor Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessResource...  
+> hvigor UP-TO-DATE :entry:default@GenerateLoaderJson...  
+> hvigor UP-TO-DATE :entry:default@ProcessLibs...  
+> hvigor Finished :entry:default@CompileResource... after 306 ms 
+> hvigor UP-TO-DATE :entry:default@DoNativeStrip...  
+> hvigor Finished :entry:default@BuildJS... after 2 ms 
+> hvigor UP-TO-DATE :entry:default@CacheNativeLibs...  
+> hvigor WARN: ArkTS:WARN File: E:/project/yulu_wallpaper/entry/src/main/ets/common/QuoteDataManager.ets:114:56
+ 'decode' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/project/yulu_wallpaper/entry/src/main/ets/pages/WallpaperPage.ets:872:48
+ 'packing' has been deprecated.
+
+WARN: ArkTS:WARN File: E:/project/yulu_wallpaper/entry/src/main/ets/pages/ImportExportPage.ets:157:31
+ 'decode' has been deprecated.
+
+
+> hvigor Finished :entry:default@CompileArkTS... after 3 s 366 ms 
+> hvigor Finished :entry:default@GeneratePkgModuleJson... after 2 ms 
+> hvigor WARN: If obfuscation is needed, enable obfuscation settings in this build process; failing to do so may prevent future obfuscation. 
+               Properly configure obfuscation rules to avoid runtime issues.
+> hvigor Finished :entry:default@PackageHap... after 30 ms 
+> hvigor Finished :entry:default@SignHap... after 131 ms 
+> hvigor Finished :entry:default@CollectDebugSymbol... after 2 ms 
+> hvigor Finished :entry:assembleHap... after 1 ms 
+> hvigor UP-TO-DATE ::MakeProjectPackInfo...  
+> hvigor UP-TO-DATE ::GeneratePackRes...  
+> hvigor Finished ::PackageApp... after 595 ms 
+> hvigor Finished ::SignApp... after 84 ms 
+> hvigor Finished ::assembleApp... after 1 ms 
+> hvigor BUILD SUCCESSFUL in 4 s 879 ms 
+
+Process finished with exit code 0
+
+Build Analyzer results available

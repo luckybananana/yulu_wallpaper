@@ -7,11 +7,11 @@
         "material": {
           "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B11F8494298F188C1F0B79364E5D92ECF62A07E9F3DFBB07984123275A2D2422B1091F5EAFCDBD0",
+          "keyPassword": "0000001BD170D12A746020701DE591F21299D24CC7E6731111AA267A950A4B8C7B28D89C2287450D5D1A98",
           "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_yulu_wallpaper_CH2RpDk-A_BLYlxxBgfddyRUTMMV78jw_F1EvMn-5X8=.p12",
-          "storePassword": "0000001BA8AAB8956A62B28760B7648A3CE9F6992F1BE40602FB6665905C1A45C4668A72CF6007F71FBE09"
+          "storePassword": "0000001B5947BE370B952F0E19089710358708B9935E1F378C7873EFC36EBA698D2D6A1E604AF40AC0D203"
         }
       }
     ],

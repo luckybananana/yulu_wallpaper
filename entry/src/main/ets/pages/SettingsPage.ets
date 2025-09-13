@@ -1,7 +1,6 @@
-import { router } from '@kit.ArkUI';
-import { promptAction } from '@kit.ArkUI';
+// 旧路由导入已移除：统一使用 UIContext 获取 Router 实例
 import { preferences } from '@kit.ArkData';
-import { bundleManager } from '@kit.AbilityKit';
+import { bundleManager, common } from '@kit.AbilityKit';
 
 /**
  * 字体大小选项接口
@@ -87,10 +86,20 @@ struct SettingsPage {
 
   /**
    * 保存设置 (保留方法，但可能仅用于其他设置)
+   * 说明：显式指定 Context 与首选项名称，使用对象参数形式消除重载歧义，确保返回类型为 Preferences；
+   * 同时在获取宿主 Context 处进行判空，避免类型为 Context | undefined 导致的编译错误。
    */
   async saveSetting(key: string, value: string | number | boolean) {
     try {
-      const dataPreferences = await preferences.getPreferences(getContext(), 'app_settings');
+      // 获取宿主上下文（可能为 undefined），判空后再继续
+      const hostCtx = this.getUIContext().getHostContext();
+      if (!hostCtx) {
+        console.error('保存设置失败：无法获取宿主上下文');
+        this.getUIContext().getPromptAction().showToast({ message: '无法获取应用上下文，保存失败', duration: 2000 });
+        return; // 无法继续
+      }
+      // 使用对象参数形式指定首选项名称，避免回调式重载
+      const dataPreferences: preferences.Preferences = await preferences.getPreferences(hostCtx, { name: 'app_settings' });
       await dataPreferences.put(key, value);
       await dataPreferences.flush();
     } catch (error) {
@@ -99,7 +108,8 @@ struct SettingsPage {
         message: '保存设置失败',
         duration: 2000
       };
-      promptAction.showToast(saveErrorToast);
+      // 在保存设置失败时的提示替换
+      this.getUIContext().getPromptAction().showToast(saveErrorToast);
     }
   }
 
@@ -142,14 +152,16 @@ struct SettingsPage {
         message: '当前已是最新版本',
         buttons: [{ text: '知道了', color: '#007AFF' }]
       };
-      promptAction.showDialog(dialogOptions); // 传递类型安全的对象
+      // 在检查更新中展示对话框
+      this.getUIContext().getPromptAction().showDialog(dialogOptions);
     } catch (error) {
       console.error('检查更新失败:', error);
       const updateErrorToast: ShowToastOptions = {
         message: '检查更新失败',
         duration: 2000
       };
-      promptAction.showToast(updateErrorToast);
+      // 在检查更新失败时的提示
+      this.getUIContext().getPromptAction().showToast(updateErrorToast);
     } finally {
       this.isLoading = false;
     }
@@ -164,7 +176,8 @@ struct SettingsPage {
       message: `版本：${this.appVersion}\n语录壁纸是一款简洁优雅的语录管理和壁纸生成应用。\n• 收集和管理您喜爱的语录\n• 生成精美的语录壁纸\n• 支持数据导入导出\n• 多种个性化设置\n感谢您的使用！`, // 修复换行符
       buttons: [{ text: '知道了', color: '#007AFF' }]
     };
-    promptAction.showDialog(dialogOptions); // 传递类型安全的对象
+    // 在关于页面展示对话框
+    this.getUIContext().getPromptAction().showDialog(dialogOptions);
   }
 
   /**
@@ -177,14 +190,15 @@ struct SettingsPage {
       message: '我们重视您的隐私保护：\n• 所有数据仅存储在本地设备\n• 不会收集或上传个人信息\n• 不会访问您的其他应用数据\n• 导出功能仅在您主动操作时执行\n如有疑问，请联系开发者。', // 修复字符串和换行符
       buttons: [{ text: '知道了', color: '#007AFF' }] // 修复 buttons 格式
     };
-    promptAction.showDialog(dialogOptions); // 传递正确类型的对象
+    // 在隐私政策展示对话框
+    this.getUIContext().getPromptAction().showDialog(dialogOptions);
   }
 
   /**
    * 返回上一页
    */
   goBack() {
-    router.back();
+    this.getUIContext().getRouter().back();
   }
 
   /**
